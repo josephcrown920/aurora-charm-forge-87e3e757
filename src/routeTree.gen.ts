@@ -9,38 +9,382 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkflowsRouteImport } from './routes/workflows'
+import { Route as UgcRouteImport } from './routes/ugc'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as LipsyncRouteImport } from './routes/lipsync'
+import { Route as GiftsRouteImport } from './routes/gifts'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ColorsRouteImport } from './routes/colors'
+import { Route as ClipsRouteImport } from './routes/clips'
+import { Route as CanvasRouteImport } from './routes/canvas'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AffiliateRouteImport } from './routes/affiliate'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
+import { Route as ApiPublicGenerateRouteImport } from './routes/api/public/generate'
 
+const WorkflowsRoute = WorkflowsRouteImport.update({
+  id: '/workflows',
+  path: '/workflows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UgcRoute = UgcRouteImport.update({
+  id: '/ugc',
+  path: '/ugc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LipsyncRoute = LipsyncRouteImport.update({
+  id: '/lipsync',
+  path: '/lipsync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftsRoute = GiftsRouteImport.update({
+  id: '/gifts',
+  path: '/gifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColorsRoute = ColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClipsRoute = ClipsRouteImport.update({
+  id: '/clips',
+  path: '/clips',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CanvasRoute = CanvasRouteImport.update({
+  id: '/canvas',
+  path: '/canvas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AffiliateRoute = AffiliateRouteImport.update({
+  id: '/affiliate',
+  path: '/affiliate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack-webhook',
+    path: '/api/public/paystack-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicGenerateRoute = ApiPublicGenerateRouteImport.update({
+  id: '/api/public/generate',
+  path: '/api/public/generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/affiliate': typeof AffiliateRoute
+  '/auth': typeof AuthRoute
+  '/canvas': typeof CanvasRoute
+  '/clips': typeof ClipsRoute
+  '/colors': typeof ColorsRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/gallery': typeof GalleryRoute
+  '/gifts': typeof GiftsRoute
+  '/lipsync': typeof LipsyncRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
+  '/ugc': typeof UgcRoute
+  '/workflows': typeof WorkflowsRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/api/public/generate': typeof ApiPublicGenerateRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/affiliate': typeof AffiliateRoute
+  '/auth': typeof AuthRoute
+  '/canvas': typeof CanvasRoute
+  '/clips': typeof ClipsRoute
+  '/colors': typeof ColorsRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/gallery': typeof GalleryRoute
+  '/gifts': typeof GiftsRoute
+  '/lipsync': typeof LipsyncRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
+  '/ugc': typeof UgcRoute
+  '/workflows': typeof WorkflowsRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/api/public/generate': typeof ApiPublicGenerateRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/affiliate': typeof AffiliateRoute
+  '/auth': typeof AuthRoute
+  '/canvas': typeof CanvasRoute
+  '/clips': typeof ClipsRoute
+  '/colors': typeof ColorsRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/gallery': typeof GalleryRoute
+  '/gifts': typeof GiftsRoute
+  '/lipsync': typeof LipsyncRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
+  '/ugc': typeof UgcRoute
+  '/workflows': typeof WorkflowsRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/api/public/generate': typeof ApiPublicGenerateRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/affiliate'
+    | '/auth'
+    | '/canvas'
+    | '/clips'
+    | '/colors'
+    | '/contact'
+    | '/dashboard'
+    | '/gallery'
+    | '/gifts'
+    | '/lipsync'
+    | '/sitemap.xml'
+    | '/studio'
+    | '/ugc'
+    | '/workflows'
+    | '/legal/$slug'
+    | '/api/public/generate'
+    | '/api/public/paystack-webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/affiliate'
+    | '/auth'
+    | '/canvas'
+    | '/clips'
+    | '/colors'
+    | '/contact'
+    | '/dashboard'
+    | '/gallery'
+    | '/gifts'
+    | '/lipsync'
+    | '/sitemap.xml'
+    | '/studio'
+    | '/ugc'
+    | '/workflows'
+    | '/legal/$slug'
+    | '/api/public/generate'
+    | '/api/public/paystack-webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/affiliate'
+    | '/auth'
+    | '/canvas'
+    | '/clips'
+    | '/colors'
+    | '/contact'
+    | '/dashboard'
+    | '/gallery'
+    | '/gifts'
+    | '/lipsync'
+    | '/sitemap.xml'
+    | '/studio'
+    | '/ugc'
+    | '/workflows'
+    | '/legal/$slug'
+    | '/api/public/generate'
+    | '/api/public/paystack-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AffiliateRoute: typeof AffiliateRoute
+  AuthRoute: typeof AuthRoute
+  CanvasRoute: typeof CanvasRoute
+  ClipsRoute: typeof ClipsRoute
+  ColorsRoute: typeof ColorsRoute
+  ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
+  GalleryRoute: typeof GalleryRoute
+  GiftsRoute: typeof GiftsRoute
+  LipsyncRoute: typeof LipsyncRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudioRoute: typeof StudioRoute
+  UgcRoute: typeof UgcRoute
+  WorkflowsRoute: typeof WorkflowsRoute
+  LegalSlugRoute: typeof LegalSlugRoute
+  ApiPublicGenerateRoute: typeof ApiPublicGenerateRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/workflows': {
+      id: '/workflows'
+      path: '/workflows'
+      fullPath: '/workflows'
+      preLoaderRoute: typeof WorkflowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ugc': {
+      id: '/ugc'
+      path: '/ugc'
+      fullPath: '/ugc'
+      preLoaderRoute: typeof UgcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lipsync': {
+      id: '/lipsync'
+      path: '/lipsync'
+      fullPath: '/lipsync'
+      preLoaderRoute: typeof LipsyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gifts': {
+      id: '/gifts'
+      path: '/gifts'
+      fullPath: '/gifts'
+      preLoaderRoute: typeof GiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colors': {
+      id: '/colors'
+      path: '/colors'
+      fullPath: '/colors'
+      preLoaderRoute: typeof ColorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clips': {
+      id: '/clips'
+      path: '/clips'
+      fullPath: '/clips'
+      preLoaderRoute: typeof ClipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/canvas': {
+      id: '/canvas'
+      path: '/canvas'
+      fullPath: '/canvas'
+      preLoaderRoute: typeof CanvasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/affiliate': {
+      id: '/affiliate'
+      path: '/affiliate'
+      fullPath: '/affiliate'
+      preLoaderRoute: typeof AffiliateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +392,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paystack-webhook': {
+      id: '/api/public/paystack-webhook'
+      path: '/api/public/paystack-webhook'
+      fullPath: '/api/public/paystack-webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/generate': {
+      id: '/api/public/generate'
+      path: '/api/public/generate'
+      fullPath: '/api/public/generate'
+      preLoaderRoute: typeof ApiPublicGenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AffiliateRoute: AffiliateRoute,
+  AuthRoute: AuthRoute,
+  CanvasRoute: CanvasRoute,
+  ClipsRoute: ClipsRoute,
+  ColorsRoute: ColorsRoute,
+  ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
+  GalleryRoute: GalleryRoute,
+  GiftsRoute: GiftsRoute,
+  LipsyncRoute: LipsyncRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudioRoute: StudioRoute,
+  UgcRoute: UgcRoute,
+  WorkflowsRoute: WorkflowsRoute,
+  LegalSlugRoute: LegalSlugRoute,
+  ApiPublicGenerateRoute: ApiPublicGenerateRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
