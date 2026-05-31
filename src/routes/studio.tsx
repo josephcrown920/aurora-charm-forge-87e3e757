@@ -1,0 +1,783 @@
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { UploadSlot } from "@/components/studio/UploadSlot";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Sparkles, Wand2, LogOut, Loader2, Download, Camera, Film, Mic2, Coins, Zap, LayoutDashboard, Shield, Workflow } from "lucide-react";
+import { toast } from "sonner";
+import { generatePerformanceShot, listGenerations, generateVideoFromImage, lipSyncVideo, generateSplitReality } from "@/lib/studio.functions";
+import { getMyProfile, createPaystackCheckout } from "@/lib/billing.functions";
+import { PLANS } from "@/lib/billing.plans";
+import demoSelfie from "@/assets/demo-selfie.jpg";
+import { RECIPES } from "@/lib/tutorials";
+import { MODEL_LIST, VIDEO_MODEL_LIST, getModelMeta } from "@/lib/models";
+import { ModelBadge } from "@/components/ModelBadge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export const Route = createFileRoute("/studio")({
+  component: StudioPage,
+  head: () => ({
+    meta: [
+      { title: "Studio — Aurora" },
+      { name: "description", content: "The full Aurora studio: upload references, pick a model, run generations and iterate on cinematic shots." },
+      { property: "og:title", content: "Aurora Studio" },
+      { property: "og:description", content: "Run image and video generations across every top model from one canvas." },
+      { property: "og:url", content: "https://aurorastudiostar.lovable.app/studio" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "https://aurorastudiostar.lovable.app/studio" }],
+  }),
+});
+
+const MODELS = MODEL_LIST;
+
+const colorsWide = (color: string) =>
+  `Place the subject into a minimalist studio performance scene. Full-body side profile pose, arms slightly extended forward as if performing. Use an exact suspended vintage studio microphone — photoreal shape, size, material, cable — hanging from ceiling at chest level. Environment is a seamless ${color} cyclorama studio — background and floor are one continuous ${color} color, no visible edges or corners. Soft even glossy lighting with smooth gradient. Subject stands on a circular performance platform matching the ${color} tone, slightly elevated with subtle shadow and faint reflective sheen. Preserve exact facial likeness, beard, skin tone, hairstyle, body proportions. Outfit identical to the outfit reference. Cinematic studio lighting, gentle floor shadow, rim light separation, ultra-realistic skin texture, natural pores, sharp clothing detail, high-end music video aesthetic, 4K photoreal quality.`;
+
+const colorsCloseUp = (color: string) =>
+  `Place the subject into a studio performance scene. Medium close-up from chest up. Subject turned slightly to side but mostly facing camera — approximately 30-45° angled pose, majority of face visible. Use an exact suspended vintage studio microphone — identical design, metallic finish, hanging cable — positioned in front at mouth level. Environment is a seamless continuous ${color} cyclorama background filling entire frame top to bottom, no visible floor line, corners, or edges. Preserve exact facial likeness, beard, hairstyle, skin tone, proportions. Outfit identical to the outfit reference. Pose natural and expressive as if mid-performance, hands slightly raised or gesturing. Soft even studio lighting, gentle shadows, subtle rim light separation, ultra-realistic skin texture with natural pores, sharp clothing detail, shallow depth of field but subject fully crisp, high-end music video aesthetic, 4K photoreal quality.`;
+
+const musicVideoScene =
+  `Create a hyper-realistic composite using the provided reference images. Use the close-up selfie as the primary identity source, preserving exact facial features, skin tone, complexion, beard texture, hairstyle, eye detail, and overall likeness with absolute accuracy. Dress the subject in the exact outfit from the outfit reference — accurate colors, fabric textures, proportions, and fit. Place the subject outdoors in the location reference as the main background environment, and incorporate the prop/vehicle from the prop reference behind the subject — naturally placed, correct scale and angle. Match the pose reference exactly: same body positioning, framing, perspective, and camera angle. Include a vintage hanging microphone suspended directly in front of the subject at mouth level. Apply true cinematic shallow depth of field — subject and microphone razor-sharp, background softly blurred with natural optical bokeh and realistic lens falloff. Visual style of ARRI Alexa cinema camera with high-quality prime lens: filmic color science, natural highlight roll-off, accurate dynamic range, professional golden-hour outdoor lighting. Advanced skin realism — authentic pores, micro-texture, fine lines, natural asymmetry, freckles, vellus hairs, real matte vs oily zones, no smoothing or plastic artifacts. High-fidelity eye detail with crisp iris texture, accurate subsurface light, refined eyelids and lashes. Ultra-photorealistic, seamless blending, accurate proportions, true optical depth, 4K, no text or logos.`;
+
+const PRESETS = [
+  { label: "Concert Stage", prompt: "Cinematic concert performance shot of the subject on a massive stage, dramatic purple stage lighting, smoke, crowd silhouettes, professional music photography, 85mm lens, shallow depth of field, ultra detailed" },
+  { label: "Editorial Cover", prompt: "High-fashion editorial cover shot of the subject, studio lighting with violet rim light, seamless paper backdrop, confident pose, magazine quality, medium format camera look" },
+  { label: "Neon Street", prompt: "Cinematic night street performance, neon purple and pink reflections, rain-soaked pavement, motion blur background, professional cinematic still" },
+  { label: "Urban Rooftop", prompt: "Cinematic editorial photograph of the subject on a downtown rooftop at golden hour, skyline of glass towers behind, low sun rim-lighting the subject from the side, warm cinematic color grade, anamorphic 50mm look, sharp focus on the subject, shallow depth of field, 4K. Preserve exact facial likeness and outfit." },
+  { label: "Urban Alley", prompt: "Gritty urban alleyway portrait of the subject at night, wet pavement reflecting overhead street lamps, brick walls and graffiti softly out of focus, single hard key light from above, deep shadows, ARRI cinema look, anamorphic flares, 35mm lens, 4K. Preserve exact facial likeness and outfit." },
+  { label: "Urban Subway", prompt: "Cinematic underground subway platform shot — subject standing on the platform with a blurred train streaking past behind them creating long motion-blur light streaks, fluorescent overhead lighting mixed with warm tungsten, hyper-real grain, 4K editorial still. Preserve exact facial likeness and outfit." },
+  { label: "Urban Crosswalk", prompt: "Aerial-angle street photograph of the subject mid-stride on a busy downtown crosswalk surrounded by motion-blurred pedestrians, taxis with bokeh tail lights, overcast cinematic color grade, ARRI Alexa film look, 4K. Preserve exact facial likeness and outfit." },
+  { label: "Colors — Wide (Hot Pink)", prompt: colorsWide("hot pink") },
+  { label: "Colors — Close-up (Hot Pink)", prompt: colorsCloseUp("hot pink") },
+  { label: "Colors — Wide (Royal Blue)", prompt: colorsWide("royal blue") },
+  { label: "Colors — Close-up (Sunset Orange)", prompt: colorsCloseUp("sunset orange") },
+  { label: "Music Video Scene", prompt: musicVideoScene },
+];
+
+const REANGLES = [
+  { label: "Side profile", prompt: "super close up, from the side front angle of the subject, keep bokeh depth of field, preserve identity, outfit, and environment exactly" },
+  { label: "Wide shot", prompt: "wide shot from behind the subject, showing full environment, keep cinematic depth of field, preserve identity, outfit, and environment exactly" },
+  { label: "Low angle", prompt: "low angle looking up at the subject, dramatic perspective, keep bokeh depth of field, preserve identity, outfit, and environment exactly" },
+  { label: "Extreme close-up", prompt: "extreme close-up on the face, eyes looking into camera, shallow depth of field, preserve identity and environment exactly" },
+  { label: "Over the shoulder", prompt: "over the shoulder shot from behind, looking at the scene ahead, cinematic bokeh, preserve identity, outfit, and environment exactly" },
+  { label: "Dutch angle", prompt: "tilted dutch angle, dynamic composition, dramatic cinematic lighting, preserve identity, outfit, and environment exactly" },
+];
+
+// Each lighting style has a CSS gradient `preview` so users see the look at a glance.
+const LIGHTING = [
+  { label: "Rembrandt", preview: "radial-gradient(circle at 30% 35%, #f5e3c8 0%, #b8916a 22%, #2a1a10 70%)", prompt: "Rembrandt lighting — single key light at 45°, signature triangle of light on the shadow-side cheek, deep falloff, painterly contrast" },
+  { label: "Butterfly / Beauty", preview: "radial-gradient(ellipse at 50% 25%, #fff5e0 0%, #f0c9a0 35%, #5a3a28 90%)", prompt: "Butterfly (Paramount) beauty lighting — key light directly above camera, small symmetrical nose shadow, glowing skin, soft fill, fashion editorial polish" },
+  { label: "Split", preview: "linear-gradient(90deg, #f0d9b0 0%, #f0d9b0 50%, #1a1208 50%, #0a0805 100%)", prompt: "Split lighting — hard key from 90° side, half the face in light and half in shadow, dramatic high-contrast portrait" },
+  { label: "Loop", preview: "radial-gradient(circle at 38% 40%, #f5e0c0 0%, #c89a72 30%, #3a2818 80%)", prompt: "Loop lighting — key light slightly above eye level at 30-45°, small loop nose shadow, flattering natural portrait look" },
+  { label: "Clamshell", preview: "linear-gradient(180deg, #fff5e8 0%, #f8e0c8 50%, #f0d0b0 100%)", prompt: "Clamshell beauty lighting — large softbox above and silver reflector below, even shadow-free skin, catchlights top and bottom of eyes, glossy magazine cover" },
+  { label: "Hard noir", preview: "repeating-linear-gradient(20deg, #0a0a0a 0px, #0a0a0a 10px, #d8c8a8 10px, #d8c8a8 14px, #0a0a0a 14px, #0a0a0a 26px)", prompt: "Film noir hard lighting — single bare bulb key, deep black shadows, venetian blind slashes, high contrast monochrome mood" },
+  { label: "Neon Cyberpunk", preview: "linear-gradient(120deg, #ff2d8a 0%, #ff2d8a 35%, #1a0a2a 50%, #06b6d4 65%, #06b6d4 100%)", prompt: "Cyberpunk neon lighting — magenta key from one side, cyan rim from the other, wet reflections, atmospheric haze, blade-runner color palette" },
+  { label: "Golden Hour", preview: "linear-gradient(180deg, #ffd28a 0%, #ff9a3a 50%, #6a2818 100%)", prompt: "Warm golden-hour sun key from low angle behind subject, long soft shadows, hair backlit and glowing, lens flare, amber cinematic grade" },
+  { label: "Blue Hour", preview: "linear-gradient(180deg, #2a4a78 0%, #4a6a98 50%, #ffb070 92%, #ffb070 100%)", prompt: "Blue-hour ambient light, cool desaturated palette, soft directional twilight, faint warm practical lights, moody cinematic atmosphere" },
+  { label: "Stage Spotlight", preview: "radial-gradient(circle at 50% 35%, #fff8d8 0%, #d8b870 12%, #0a0a0a 45%)", prompt: "Single hard top spotlight, tight pool of light on subject, full black surround, theatrical haze, dust motes catching the beam" },
+  { label: "Concert Wash", preview: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #06b6d4 100%)", prompt: "Concert stage wash — saturated purple and magenta moving heads, lens flares, atmospheric fog, rim separation from cyan back-light" },
+  { label: "Window Light", preview: "linear-gradient(95deg, #fff5e8 0%, #e8d8c0 35%, #3a2a1a 100%)", prompt: "Soft natural window light from camera-left, gentle wrap, lifted shadows, airy film aesthetic, fine grain" },
+  { label: "Ring Light", preview: "radial-gradient(circle at 50% 50%, transparent 30%, #f5e8d0 32%, #f5e8d0 40%, #2a1a14 70%)", prompt: "On-axis ring light, even flat illumination, signature circular catchlights in the eyes, glossy beauty-vlog look" },
+  { label: "Volumetric God Rays", preview: "linear-gradient(110deg, #07060c 0%, #fff5d0 35%, #07060c 55%, #fff5d0 70%, #07060c 100%)", prompt: "Strong volumetric god rays cutting through atmospheric haze behind subject, defined light shafts, cinematic backlight with rim glow" },
+  { label: "Color Gels (Red/Teal)", preview: "linear-gradient(90deg, #dc2626 0%, #dc2626 45%, #0a0a0a 50%, #14b8a6 55%, #14b8a6 100%)", prompt: "Cross-color gel lighting — deep red key, teal rim, hard shadows, music-video color contrast" },
+  { label: "Police-light Strobe", preview: "linear-gradient(90deg, #ff1a1a 0%, #ff1a1a 33%, #0a0a0a 33%, #0a0a0a 66%, #1a4aff 66%, #1a4aff 100%)", prompt: "Alternating red and blue strobe lighting from below, hard rapid shadows, gritty street cinema mood" },
+];
+
+function StudioPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const [selfie, setSelfie] = useState<string | null>(null);
+  const [outfit, setOutfit] = useState<string | null>(null);
+  const [scene, setScene] = useState<string | null>(null);
+  const [prop, setProp] = useState<string | null>(null);
+  const [motion, setMotion] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState(PRESETS[0].prompt);
+  const [model, setModel] = useState(MODELS[0].value);
+  const [videoModel, setVideoModel] = useState(VIDEO_MODEL_LIST[0].value);
+  const [cameraMovement, setCameraMovement] = useState<string>("static");
+  const [endFrameUrl, setEndFrameUrl] = useState<string | null>(null);
+  const [videoPrompt, setVideoPrompt] = useState("subject performing and singing expressively, natural body movement, camera locked");
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [lipsyncModel, setLipsyncModel] = useState<"fal-ai/sync-lipsync/v2" | "fal-ai/wav2lip">("fal-ai/sync-lipsync/v2");
+
+  useEffect(() => {
+    if (!loading && !user) navigate({ to: "/auth" });
+  }, [user, loading, navigate]);
+
+  const genFn = useServerFn(generatePerformanceShot);
+  const listFn = useServerFn(listGenerations);
+  const videoFn = useServerFn(generateVideoFromImage);
+  const lipSyncFn = useServerFn(lipSyncVideo);
+  const splitFn = useServerFn(generateSplitReality);
+  const profileFn = useServerFn(getMyProfile);
+  const checkoutFn = useServerFn(createPaystackCheckout);
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: () => profileFn(),
+    enabled: !!user,
+    refetchInterval: 15_000,
+  });
+
+  const { data: history } = useQuery({
+    queryKey: ["gens", user?.id],
+    queryFn: () => listFn(),
+    enabled: !!user,
+  });
+
+  const latest = useMemo(() => {
+    const items = history?.items ?? [];
+    return items.find((i) => i.status === "complete" && i.result_image_url);
+  }, [history]);
+
+  const latestVideo = useMemo(() => {
+    const items = history?.items ?? [];
+    return items.find((i) => i.status === "complete" && i.result_video_url);
+  }, [history]);
+
+  const mut = useMutation({
+    mutationFn: async () => {
+      const imageUrls = [selfie, outfit, scene, prop].filter((x): x is string => !!x);
+      if (imageUrls.length === 0) throw new Error("Add at least one reference image");
+      return genFn({ data: { prompt, imageUrls, motionVideoUrl: motion ?? null, model } });
+    },
+    onSuccess: () => {
+      toast.success("Shot ready");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  const splitMut = useMutation({
+    mutationFn: async () => {
+      const imageUrls = [selfie, outfit, scene, prop].filter((x): x is string => !!x);
+      if (imageUrls.length === 0) throw new Error("Add at least one reference image");
+      return splitFn({ data: { imageUrls, basePrompt: prompt } });
+    },
+    onSuccess: () => {
+      toast.success("Split reality ready — ultra + cinematic");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+
+  const reangleMut = useMutation({
+    mutationFn: async (anglePrompt: string) => {
+      if (!latest?.result_image_url) throw new Error("Generate a base shot first");
+      return genFn({ data: { prompt: anglePrompt, imageUrls: [latest.result_image_url], motionVideoUrl: null, model } });
+    },
+    onSuccess: () => {
+      toast.success("New angle ready");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  const videoMut = useMutation({
+    mutationFn: async () => {
+      if (!latest?.result_image_url) throw new Error("Generate a base shot first");
+      return videoFn({
+        data: {
+          imageUrl: latest.result_image_url,
+          prompt: videoPrompt,
+          duration: 5,
+          resolution: "720p",
+          modelKey: videoModel,
+          cameraMovement,
+          endFrameUrl: endFrameUrl ?? null,
+        },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Video ready");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  const lipSyncMut = useMutation({
+    mutationFn: async () => {
+      if (!audioUrl) throw new Error("Upload your audio first");
+      let videoUrl = latestVideo?.result_video_url ?? null;
+      if (!videoUrl) {
+        const baseImg = latest?.result_image_url;
+        if (!baseImg) throw new Error("Generate or upload a base image/video first");
+        toast.message("Animating image first…", { description: "Turning your still into a talking-head clip." });
+        const v = await videoFn({
+          data: {
+            imageUrl: baseImg,
+            prompt: "subtle talking-head movement, natural micro-expressions, locked camera",
+            duration: 5,
+            resolution: "720p",
+            modelKey: videoModel,
+            cameraMovement: "static",
+            endFrameUrl: null,
+          },
+        });
+        videoUrl = v.videoUrl;
+      }
+      return lipSyncFn({ data: { videoUrl, audioUrl, model: lipsyncModel } });
+    },
+    onSuccess: () => {
+      toast.success("Lip-sync ready");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  // Resolve a permanent public URL for the bundled demo selfie (uploads it
+  // to the studio bucket once per user so the AI model can fetch it).
+  const [demoUrl, setDemoUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    const path = `${user.id}/demo/selfie.jpg`;
+    const existing = supabase.storage.from("studio").getPublicUrl(path).data.publicUrl;
+    // try a HEAD-style fetch by image load
+    const probe = new Image();
+    probe.onload = () => setDemoUrl(existing);
+    probe.onerror = async () => {
+      try {
+        const blob = await (await fetch(demoSelfie)).blob();
+        await supabase.storage.from("studio").upload(path, blob, { contentType: "image/jpeg", upsert: true });
+        setDemoUrl(supabase.storage.from("studio").getPublicUrl(path).data.publicUrl);
+      } catch (e) {
+        console.error("Demo seed failed", e);
+      }
+    };
+    probe.src = existing;
+  }, [user]);
+
+  const demoMut = useMutation({
+    mutationFn: async () => {
+      if (!demoUrl) throw new Error("Demo selfie not ready yet — try again in a second");
+      return genFn({ data: { prompt: PRESETS[3].prompt, imageUrls: [demoUrl], motionVideoUrl: null, model } });
+    },
+    onSuccess: () => {
+      toast.success("Demo shot ready");
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  // Pending recipe from landing-page tutorial — pre-fill prompt + selfie and auto-fire.
+  const [recipeFired, setRecipeFired] = useState(false);
+  useEffect(() => {
+    if (recipeFired) return;
+    if (typeof window === "undefined") return;
+    if (!user || !demoUrl) return;
+    const pending = localStorage.getItem("aurora.pendingRecipe");
+    if (!pending) return;
+    const recipe = RECIPES.find((r) => r.id === pending);
+    if (!recipe) {
+      localStorage.removeItem("aurora.pendingRecipe");
+      return;
+    }
+    localStorage.removeItem("aurora.pendingRecipe");
+    setRecipeFired(true);
+    setPrompt(recipe.prompt);
+    setSelfie(demoUrl);
+    toast.message(`Running "${recipe.title}" with our demo selfie…`);
+    genFn({ data: { prompt: recipe.prompt, imageUrls: [demoUrl], motionVideoUrl: null, model } })
+      .then(() => {
+        qc.invalidateQueries({ queryKey: ["gens"] });
+        qc.invalidateQueries({ queryKey: ["profile"] });
+        toast.success("Demo shot ready");
+      })
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Failed"));
+  }, [user, demoUrl, recipeFired, genFn, model, qc]);
+
+  const checkoutMut = useMutation({
+    mutationFn: async (plan: "starter" | "creator" | "studio") => checkoutFn({ data: { plan } }),
+    onSuccess: (res) => {
+      window.location.href = res.authorizationUrl;
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Checkout failed"),
+  });
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="size-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen relative" style={{ background: "var(--gradient-soft)" }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-stage)" }} />
+
+      <header className="relative z-10 flex items-center justify-between px-6 md:px-10 py-5 border-b border-border/60 backdrop-blur-xl bg-background/40">
+        <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
+          <span className="size-8 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
+            <Sparkles className="size-4 text-primary-foreground" />
+          </span>
+          Aurora Studio
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/60 text-sm">
+            <Coins className="size-3.5 text-primary" />
+            <span className="font-medium">{profile?.credits ?? "—"}</span>
+            <span className="text-muted-foreground text-xs">credits</span>
+          </div>
+          <span className="text-sm text-muted-foreground hidden md:inline">
+            Hi, <span className="text-foreground font-medium">{profile?.display_name || user.email?.split("@")[0]}</span> 👋
+          </span>
+          <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">
+            <LayoutDashboard className="size-3.5" /> Dashboard
+          </Link>
+          <Link to="/canvas" className="text-xs sm:text-sm px-2.5 py-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 inline-flex items-center gap-1.5">
+            <Workflow className="size-3.5" /> Canvas
+          </Link>
+          <Link to="/colors" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Colors</Link>
+          <Link to="/gallery" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Gallery</Link>
+          <Link to="/gifts" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Gifts</Link>
+          {profile?.isAdmin && (
+            <Link to="/admin" className="text-sm hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition-colors">
+              <Shield className="size-3.5 text-amber-500" /> Admin
+            </Link>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              navigate({ to: "/" });
+            }}
+          >
+            <LogOut className="size-4 mr-1" /> Sign out
+          </Button>
+        </div>
+      </header>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-10 grid lg:grid-cols-[1fr_1.1fr] gap-10">
+        {/* Control panel */}
+        <section className="space-y-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
+              {profile?.display_name ? (
+                <>Welcome, <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{profile.display_name}.</span></>
+              ) : (
+                <>Direct your <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>shoot.</span></>
+              )}
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              {profile?.display_name
+                ? `Let's make something great today. Drop your references on the left — we'll stage the studio.`
+                : `Drop your references — we'll stage the studio.`}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <UploadSlot userId={user.id} label="You" hint="Selfie / portrait" value={selfie} onChange={setSelfie} />
+            <UploadSlot userId={user.id} label="Outfit" hint="What to wear" value={outfit} onChange={setOutfit} />
+            <UploadSlot userId={user.id} label="Scene" hint="Set / vibe" value={scene} onChange={setScene} />
+            <UploadSlot userId={user.id} label="Prop / Vehicle" hint="Car, mic, instrument…" value={prop} onChange={setProp} />
+          </div>
+
+          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+            <UploadSlot
+              userId={user.id}
+              label="Motion clip (optional)"
+              hint="Record yourself performing — used as pose reference"
+              accept="video/*"
+              kind="video"
+              value={motion}
+              onChange={setMotion}
+            />
+            <p className="text-xs text-muted-foreground pb-2 max-w-[180px]">
+              Motion clip is stored as a pose reference. Full video motion transfer is on the roadmap.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Direction</label>
+            <Textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} className="resize-none bg-card/60" />
+            <div className="flex flex-wrap gap-2 pt-1">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => setPrompt(p.prompt)}
+                  className="text-xs px-3 py-1.5 rounded-full border border-border bg-card/60 hover:bg-accent hover:border-primary/40 transition-colors"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tutorial recipes — visible reference photos from the prompt guides */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tutorial recipes</label>
+            <p className="text-xs text-muted-foreground">Tap to load a guided recipe and reference look.</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {RECIPES.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => { setPrompt(r.prompt); toast.message(`Loaded recipe: ${r.title}`); }}
+                  className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors"
+                >
+                  <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-1.5 left-1.5 right-1.5">
+                    <p className="text-[10px] uppercase tracking-wider text-white/70">{r.tag}</p>
+                    <p className="text-[11px] font-medium text-white leading-tight line-clamp-2">{r.title}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Image model</label>
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="bg-card/60">
+                <div className="flex items-center gap-2">
+                  <ModelBadge model={model} />
+                  <span className="text-sm">{getModelMeta(model).label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>
+                    <div className="flex items-center gap-2 py-0.5">
+                      <ModelBadge model={m.value} />
+                      <div className="flex flex-col">
+                        <span className="text-sm">{m.label}</span>
+                        <span className="text-[10px] text-muted-foreground">{m.tagline}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lighting</label>
+            <p className="text-xs text-muted-foreground">Tap a look to append it. The thumbnail previews the mood.</p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+              {LIGHTING.map((l) => (
+                <button
+                  key={l.label}
+                  type="button"
+                  onClick={() => setPrompt((p) => `${p.trim().replace(/[.,;]\s*$/, "")}. ${l.prompt}.`)}
+                  className="group rounded-lg border border-border bg-card/40 hover:border-primary/50 transition-colors overflow-hidden text-left"
+                  title={l.label}
+                >
+                  <div className="aspect-[4/3] w-full" style={{ background: l.preview }} />
+                  <div className="px-1.5 py-1 text-[10px] font-medium text-foreground/90 truncate">{l.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cost + runtime estimate */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-card/40 px-3 py-2">
+            <span className="inline-flex items-center gap-1.5">
+              <Zap className="size-3.5 text-primary" />
+              Cost: <span className="text-foreground font-medium">1 credit</span>
+              <span className="opacity-50">·</span>
+              ETA: <span className="text-foreground font-medium">~10–20s</span>
+            </span>
+            <span className="opacity-70">{getModelMeta(model)?.label ?? model}</span>
+          </div>
+
+          <Button
+            disabled={mut.isPending}
+            onClick={() => mut.mutate()}
+            className="w-full h-14 text-base font-medium shadow-[var(--shadow-glow)]"
+            style={{ background: "var(--gradient-hero)" }}
+          >
+            {mut.isPending ? (
+              <><Loader2 className="size-5 mr-2 animate-spin" /> Staging the shoot…</>
+            ) : (
+              <><Wand2 className="size-5 mr-2" /> Generate performance shot · 1 credit</>
+            )}
+          </Button>
+
+          <Button
+            disabled={splitMut.isPending}
+            onClick={() => splitMut.mutate()}
+            variant="outline"
+            className="w-full border-primary/40 text-foreground"
+          >
+            {splitMut.isPending ? (
+              <><Loader2 className="size-4 mr-2 animate-spin" /> Splitting reality…</>
+            ) : (
+              <><Sparkles className="size-4 mr-2 text-primary" /> Split Reality · ultra + cinematic · 2 credits · ~20–30s</>
+            )}
+          </Button>
+
+          <Button
+            disabled={demoMut.isPending || !demoUrl}
+            onClick={() => demoMut.mutate()}
+            variant="outline"
+            className="w-full"
+          >
+            {demoMut.isPending ? (
+              <><Loader2 className="size-4 mr-2 animate-spin" /> Running demo…</>
+            ) : (
+              <><Zap className="size-4 mr-2" /> Try a demo shoot (no upload needed)</>
+            )}
+          </Button>
+
+        </section>
+
+        {/* Preview / Gallery */}
+        <section className="space-y-4">
+          <div className="rounded-3xl overflow-hidden border border-border bg-card/60 backdrop-blur-xl aspect-[4/5] relative shadow-[var(--shadow-soft)]">
+            {mut.isPending ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                <div className="size-16 rounded-full flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
+                  <Loader2 className="size-7 animate-spin text-primary-foreground" />
+                </div>
+                <p className="text-sm">Lighting the stage…</p>
+              </div>
+            ) : latest?.result_image_url ? (
+              <>
+                <img src={latest.result_image_url} alt="Latest shot" className="w-full h-full object-cover" />
+                <a
+                  href={latest.result_image_url}
+                  download
+                  className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
+                >
+                  <Download className="size-4" /> Save
+                </a>
+              </>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground p-8 text-center">
+                <Sparkles className="size-10 text-primary/50" />
+                <p className="text-sm">Your performance shot will appear here.</p>
+              </div>
+            )}
+          </div>
+
+          {history && history.items.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Recent shoots</h3>
+              <div className="grid grid-cols-3 gap-3">
+                {history.items.slice(0, 9).map((g) => (
+                  <div key={g.id} className="aspect-square rounded-xl overflow-hidden border border-border bg-card/60 relative group">
+                    {g.result_image_url ? (
+                      <>
+                        <img src={g.result_image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="absolute top-1.5 left-1.5"><ModelBadge model={g.model} size="xs" /></div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground px-2 text-center">
+                        {g.status === "failed" ? "Failed" : g.status}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 text-right">
+                <Link to="/dashboard" className="text-xs text-primary hover:underline">View all in dashboard →</Link>
+              </div>
+            </div>
+          )}
+
+          {latest?.result_image_url && (
+            <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Camera className="size-4 text-primary" />
+                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Re-angle the last shot</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Generate a new camera angle from your latest result — same scene, same outfit, new shot.</p>
+              <div className="flex flex-wrap gap-2">
+                {REANGLES.map((a) => (
+                  <button
+                    key={a.label}
+                    type="button"
+                    disabled={reangleMut.isPending}
+                    onClick={() => reangleMut.mutate(a.prompt)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border bg-background/60 hover:bg-accent hover:border-primary/40 transition-colors disabled:opacity-50"
+                  >
+                    {a.label}
+                  </button>
+                ))}
+              </div>
+              {reangleMut.isPending && (
+                <p className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
+                  <Loader2 className="size-3 animate-spin" /> Re-shooting…
+                </p>
+              )}
+            </div>
+          )}
+
+          {latest?.result_image_url && (
+            <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Film className="size-4 text-primary" />
+                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Bring it to life</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Animate your latest shot. Pick a video model and a camera move — Kling supports an optional end-frame for true motion control.</p>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Video model</label>
+                  <Select value={videoModel} onValueChange={setVideoModel}>
+                    <SelectTrigger className="bg-background/60 h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {VIDEO_MODEL_LIST.map((m) => (
+                        <SelectItem key={m.value} value={m.value} className="text-sm">
+                          <div className="flex flex-col">
+                            <span>{m.label}</span>
+                            <span className="text-[10px] text-muted-foreground">{m.tagline}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Camera move</label>
+                  <Select value={cameraMovement} onValueChange={setCameraMovement}>
+                    <SelectTrigger className="bg-background/60 h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="static">Static (locked off)</SelectItem>
+                      <SelectItem value="push_in">Push in</SelectItem>
+                      <SelectItem value="pull_out">Pull out</SelectItem>
+                      <SelectItem value="zoom_in">Slow zoom in</SelectItem>
+                      <SelectItem value="zoom_out">Slow zoom out</SelectItem>
+                      <SelectItem value="pan_left">Pan left</SelectItem>
+                      <SelectItem value="pan_right">Pan right</SelectItem>
+                      <SelectItem value="tilt_up">Tilt up</SelectItem>
+                      <SelectItem value="tilt_down">Tilt down</SelectItem>
+                      <SelectItem value="orbit_cw">Orbit clockwise</SelectItem>
+                      <SelectItem value="orbit_ccw">Orbit counter-clockwise</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Textarea rows={2} value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} className="resize-none bg-background/60 text-sm" />
+
+              {videoModel.startsWith("kling") && (
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">End frame (optional, Kling motion control)</label>
+                  <div className="w-32">
+                    <UploadSlot
+                      userId={user.id}
+                      label=""
+                      hint="Where it ends"
+                      value={endFrameUrl}
+                      onChange={setEndFrameUrl}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-background/40 px-3 py-2">
+                <span className="inline-flex items-center gap-1.5">
+                  <Zap className="size-3.5 text-primary" />
+                  Cost: <span className="text-foreground font-medium">5 credits</span>
+                  <span className="opacity-50">·</span>
+                  ETA: <span className="text-foreground font-medium">~60–180s</span>
+                </span>
+                <span className="opacity-70">{videoModel.startsWith("kling") ? "Kling 3.0" : "Seedance 2.0"}</span>
+              </div>
+              <Button disabled={videoMut.isPending} onClick={() => videoMut.mutate()} variant="secondary" className="w-full">
+                {videoMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Rendering video…</> : <><Film className="size-4 mr-2" /> Generate video · 5 credits</>}
+              </Button>
+
+              {latestVideo?.result_video_url && (
+                <div className="rounded-xl overflow-hidden border border-border bg-background/40">
+                  <video src={latestVideo.result_video_url} className="w-full h-auto" controls playsInline />
+                </div>
+              )}
+            </div>
+          )}
+
+          {latestVideo?.result_video_url && (
+            <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Mic2 className="size-4 text-primary" />
+                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Lip sync to your audio</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Upload your song/vocal and we'll sync the lips on your latest video. Choose between Sync 1.9 (premium, more natural) and Wav2Lip (classic, faster & cheaper).</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { v: "fal-ai/sync-lipsync/v2" as const, label: "Sync 1.9", hint: "Premium · natural" },
+                  { v: "fal-ai/wav2lip" as const, label: "Wav2Lip", hint: "Classic · fast" },
+                ].map((opt) => (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => setLipsyncModel(opt.v)}
+                    className={`text-left rounded-xl border p-2.5 transition-colors ${lipsyncModel === opt.v ? "border-primary/60 bg-primary/10" : "border-border bg-background/60 hover:border-primary/30"}`}
+                  >
+                    <div className="text-sm font-medium">{opt.label}</div>
+                    <div className="text-[10px] text-muted-foreground">{opt.hint}</div>
+                  </button>
+                ))}
+              </div>
+              <UploadSlot
+                userId={user.id}
+                label="Audio"
+                hint="Upload mp3 / wav"
+                accept="audio/*"
+                kind="video"
+                value={audioUrl}
+                onChange={setAudioUrl}
+              />
+              <Button disabled={lipSyncMut.isPending || !audioUrl} onClick={() => lipSyncMut.mutate()} variant="secondary" className="w-full">
+                {lipSyncMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Syncing lips…</> : <><Mic2 className="size-4 mr-2" /> Lip sync video · 3 credits</>}
+              </Button>
+            </div>
+          )}
+
+          <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Coins className="size-4 text-primary" />
+              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Buy credits</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">1 credit per image · 5 per video · 3 per lip-sync. Secure checkout via Paystack.</p>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.keys(PLANS) as Array<"starter" | "creator" | "studio">).map((k) => {
+                const p = PLANS[k];
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    disabled={checkoutMut.isPending}
+                    onClick={() => checkoutMut.mutate(k)}
+                    className="flex flex-col items-start gap-1 rounded-xl border border-border bg-background/60 hover:border-primary/40 hover:bg-accent transition-colors p-3 text-left disabled:opacity-50"
+                  >
+                    <span className="text-xs uppercase tracking-wider text-muted-foreground">{k}</span>
+                    <span className="text-lg font-semibold">{p.credits} <span className="text-xs font-normal text-muted-foreground">credits</span></span>
+                    <span className="text-xs text-muted-foreground">${p.usd}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {checkoutMut.isPending && (
+              <p className="text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="size-3 animate-spin" /> Opening Paystack…</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
