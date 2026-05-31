@@ -14,16 +14,640 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      affiliate_events: {
+        Row: {
+          amount_usd: number | null
+          code: string
+          created_at: string
+          id: string
+          kind: string
+          ref_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_usd?: number | null
+          code: string
+          created_at?: string
+          id?: string
+          kind: string
+          ref_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_usd?: number | null
+          code?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          ref_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      affiliates: {
+        Row: {
+          code: string
+          commission_pct: number
+          created_at: string
+          id: string
+          payout_email: string | null
+          total_earned_usd: number
+          user_id: string
+        }
+        Insert: {
+          code: string
+          commission_pct?: number
+          created_at?: string
+          id?: string
+          payout_email?: string | null
+          total_earned_usd?: number
+          user_id: string
+        }
+        Update: {
+          code?: string
+          commission_pct?: number
+          created_at?: string
+          id?: string
+          payout_email?: string | null
+          total_earned_usd?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string | null
+          status: string
+          topic: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name?: string | null
+          status?: string
+          topic?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string | null
+          status?: string
+          topic?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      credit_ledger: {
+        Row: {
+          created_at: string
+          delta: number
+          id: string
+          reason: string
+          ref_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delta: number
+          id?: string
+          reason: string
+          ref_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delta?: number
+          id?: string
+          reason?: string
+          ref_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          path: string | null
+          payload: Json | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          path?: string | null
+          payload?: Json | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          path?: string | null
+          payload?: Json | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      generations: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          credits_cost: number
+          error: string | null
+          id: string
+          input_images: Json
+          is_favorite: boolean
+          kind: string
+          mode: string
+          model: string | null
+          motion_video_url: string | null
+          prompt: string
+          result_image_url: string | null
+          result_video_url: string | null
+          status: string
+          tags: string[]
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          credits_cost?: number
+          error?: string | null
+          id?: string
+          input_images?: Json
+          is_favorite?: boolean
+          kind?: string
+          mode?: string
+          model?: string | null
+          motion_video_url?: string | null
+          prompt: string
+          result_image_url?: string | null
+          result_video_url?: string | null
+          status?: string
+          tags?: string[]
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          credits_cost?: number
+          error?: string | null
+          id?: string
+          input_images?: Json
+          is_favorite?: boolean
+          kind?: string
+          mode?: string
+          model?: string | null
+          motion_video_url?: string | null
+          prompt?: string
+          result_image_url?: string | null
+          result_video_url?: string | null
+          status?: string
+          tags?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gift_cards: {
+        Row: {
+          amount_usd: number
+          code: string
+          created_at: string
+          created_by: string
+          credits: number
+          design: string
+          id: string
+          note: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+        }
+        Insert: {
+          amount_usd?: number
+          code: string
+          created_at?: string
+          created_by: string
+          credits: number
+          design?: string
+          id?: string
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          code?: string
+          created_at?: string
+          created_by?: string
+          credits?: number
+          design?: string
+          id?: string
+          note?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+        }
+        Relationships: []
+      }
+      gpu_workers: {
+        Row: {
+          auth_token: string | null
+          capabilities: string[]
+          created_at: string
+          endpoint_url: string
+          id: string
+          in_flight: number
+          last_heartbeat: string | null
+          max_concurrency: number
+          models: string[]
+          name: string
+          priority: number
+          region: string | null
+          status: string
+        }
+        Insert: {
+          auth_token?: string | null
+          capabilities?: string[]
+          created_at?: string
+          endpoint_url: string
+          id?: string
+          in_flight?: number
+          last_heartbeat?: string | null
+          max_concurrency?: number
+          models?: string[]
+          name: string
+          priority?: number
+          region?: string | null
+          status?: string
+        }
+        Update: {
+          auth_token?: string | null
+          capabilities?: string[]
+          created_at?: string
+          endpoint_url?: string
+          id?: string
+          in_flight?: number
+          last_heartbeat?: string | null
+          max_concurrency?: number
+          models?: string[]
+          name?: string
+          priority?: number
+          region?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ref_code: string | null
+          source: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ref_code?: string | null
+          source?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ref_code?: string | null
+          source?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          document: string
+          id: string
+          ip: string | null
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          document: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          document?: string
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      lipsync_jobs: {
+        Row: {
+          audio_url: string
+          created_at: string
+          engine: string
+          error: string | null
+          id: string
+          result_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          video_url: string
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          engine?: string
+          error?: string | null
+          id?: string
+          result_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          video_url: string
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          engine?: string
+          error?: string | null
+          id?: string
+          result_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          credits_granted: number
+          currency: string
+          id: string
+          provider: string
+          raw: Json | null
+          reference: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          credits_granted?: number
+          currency?: string
+          id?: string
+          provider?: string
+          raw?: Json | null
+          reference: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          credits_granted?: number
+          currency?: string
+          id?: string
+          provider?: string
+          raw?: Json | null
+          reference?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          credits: number
+          display_name: string | null
+          email: string | null
+          id: string
+          lifetime_credits_purchased: number
+          plan: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits?: number
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          lifetime_credits_purchased?: number
+          plan?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          lifetime_credits_purchased?: number
+          plan?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      provider_logs: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          endpoint: string
+          error: string | null
+          id: string
+          kind: string
+          latency_ms: number | null
+          provider: string
+          ref_id: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          endpoint: string
+          error?: string | null
+          id?: string
+          kind: string
+          latency_ms?: number | null
+          provider: string
+          ref_id?: string | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          endpoint?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          latency_ms?: number | null
+          provider?: string
+          ref_id?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      worker_jobs: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          error: string | null
+          id: string
+          kind: string
+          latency_ms: number | null
+          ref_id: string | null
+          status: string
+          user_id: string | null
+          worker_id: string | null
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind: string
+          latency_ms?: number | null
+          ref_id?: string | null
+          status?: string
+          user_id?: string | null
+          worker_id?: string | null
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          latency_ms?: number | null
+          ref_id?: string | null
+          status?: string
+          user_id?: string | null
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_jobs_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "gpu_workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          created_at: string
+          description: string | null
+          graph: Json
+          id: string
+          is_public: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          graph?: Json
+          id?: string
+          is_public?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          graph?: Json
+          id?: string
+          is_public?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      deduct_credits: {
+        Args: { _amount: number; _reason: string; _ref: string; _user: string }
+        Returns: boolean
+      }
+      grant_credits: {
+        Args: { _amount: number; _reason: string; _ref: string; _user: string }
+        Returns: undefined
+      }
+      has_role: {
+        Args: { _role: Database["public"]["Enums"]["app_role"]; _user: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +774,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
