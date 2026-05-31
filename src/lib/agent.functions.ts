@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { generateText, Output } from "ai";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { generateWithFallback } from "@/lib/llm-fallback.server";
+
 
 const SYSTEM = `You are AURORA AGENT — a senior music-video / short-film director.
 A user gives you ONE paragraph describing a story/shoot they want to create.
@@ -43,24 +43,17 @@ export const runAuroraAgent = createServerFn({ method: "POST" })
     }).parse(d)
   )
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("Missing LOVABLE_API_KEY");
-
-    const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3-flash-preview");
-
     const refNote = data.referenceImages?.length
       ? `\n\nThe user attached ${data.referenceImages.length} reference image(s). Treat them as the talent / wardrobe / location anchor — keep them visually consistent across every shot.`
       : "";
 
     try {
-      const { experimental_output } = await generateText({
-        model,
+      const { output } = await generateWithFallback({
         system: SYSTEM,
         prompt: `BRIEF:\n${data.brief}${refNote}\n\nReturn the full production plan now.`,
-        experimental_output: Output.object({ schema: PlanSchema }),
+        schema: PlanSchema,
       });
-      return experimental_output as AgentPlan;
+      return output as AgentPlan;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Agent failed";
       if (message.includes("429")) throw new Error("Aurora Agent is rate-limited. Try again in a moment.");
