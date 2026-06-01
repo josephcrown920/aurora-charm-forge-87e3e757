@@ -13,6 +13,7 @@ import {
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { usePageViewTracking } from "@/hooks/use-tracking";
+import { AuroraChatbot } from "@/components/AuroraChatbot";
 
 function NotFoundComponent() {
   return (
@@ -131,6 +132,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <Toaster />
+      <AuroraChatbot />
     </QueryClientProvider>
   );
 }
