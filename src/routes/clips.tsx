@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import joshPerformance from "@/assets/video-josh-performance.mp4.asset.json";
+
 import joshCloseup from "@/assets/video-josh-closeup.mp4.asset.json";
 import joshLowangle from "@/assets/video-josh-lowangle.mp4.asset.json";
 import joshProfile from "@/assets/video-josh-profile.mp4.asset.json";
