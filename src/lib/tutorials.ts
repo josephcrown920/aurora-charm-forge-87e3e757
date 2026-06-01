@@ -44,19 +44,13 @@ export const RECIPES: Recipe[] = [
       "Place the subject seated naturally in the backseat of a Mercedes-Maybach, viewed through a slightly lowered car window. Preserve exact facial identity — same facial structure, skin tone, beard, lips, eye shape, and proportions. Transform the interior into ultra-luxury Maybach: white quilted leather executive seats, luxury center console, ambient LED lighting, illuminated luxury panels, fiber-optic starlight headliner ceiling, ultra-premium limousine atmosphere. Cinematography looks captured on an ARRI Alexa 35 with a Cooke anamorphic lens. Cinematic natural lighting, subtle reflections on the car window glass, soft luxury interior lighting on the subject. Very shallow depth of field, creamy optical bokeh, luxury ambient lights and starlight ceiling blooming into soft light circles. Tack-sharp face, ultra-photorealistic skin: visible pores, natural texture, realistic light falloff. Luxury editorial automotive photography, cinematic contrast, filmic highlight roll-off, 8K photorealism, subtle film grain.",
   },
   {
-    id: "phone-lipsync",
-    title: "Phone lip-sync scene",
-    tag: "POV · Viral",
-    blurb:
-      "Looks like a friend caught you on their phone at the spot. AI plants a smartphone in front of your face — perfect for green-screen lip syncs.",
-    image: shot2,
-    steps: [
-      "We use a stylized location (gas station, rooftop, street).",
-      "A hand enters frame holding a phone in front of your mouth.",
-      "Animate it, drop your audio — viral content.",
-    ],
-    prompt:
-      "Use the reference selfie as the exact identity. Place the subject in a cinematic nighttime exterior scene with moody practical lighting. Keep the subject's expression and ultra-realistic skin texture. Add a realistic modern smartphone held horizontally directly in front of his/her mouth with a bright green chroma screen. Include a hand and partial forearm entering from the side holding the phone — match scale, perspective, reflections, and contact shadows so the phone and hand blend naturally with the scene lighting. Cinematic shallow depth of field, natural skin pores, filmic color science, 4K photoreal quality, no text or logos.",
+    id: "phone-lipsync-removed-placeholder",
+    title: "",
+    tag: "",
+    blurb: "",
+    image: shot1,
+    steps: [],
+    prompt: "",
   },
   {
     id: "urban-cuts",
