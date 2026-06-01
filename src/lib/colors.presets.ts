@@ -31,7 +31,7 @@ export type Setup = {
   name: string;
   description: string;
   kind: SetupKind;
-  /** CSS gradient mockup that previews the scene tinted by the color. */
+  /** CSS gradient mockup that previews the scene tinted by the color (fallback when no image). */
   preview: (hex: string) => string;
   prompt: (color: string) => string;
 };
