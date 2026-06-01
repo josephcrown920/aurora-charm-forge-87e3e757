@@ -148,17 +148,19 @@ function Index() {
       {/* Spacer for fixed header */}
       <div className="h-20" />
 
-      {/* 1. Hero + contact form */}
+      {/* 1. Primary CTA — moved to top */}
+      <FinalCTA />
+
+      {/* 2. Hero + contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 2. Trust badges */}
+      {/* 3. Trust badges */}
       <TrustBar />
-
 
       {/* 4. Our services */}
       <ServicesGrid />
 
-      {/* 5. Trending Canvas workflows */}
+      {/* 5. Trending Canvas workflows (image + video pipelines) */}
       <TrendingWorkflows />
 
       {/* 6. Why us */}
@@ -172,8 +174,6 @@ function Index() {
       {/* 8. Reviews */}
       <Testimonials />
 
-      {/* 9. Final CTA */}
-      <FinalCTA />
 
       <SiteFooter />
     </main>
