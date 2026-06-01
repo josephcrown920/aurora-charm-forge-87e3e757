@@ -25,7 +25,7 @@ type Clip = {
 
 const clips: Clip[] = [
   { id: "still-v1", title: "Josh — Performance Still v1", group: "Performance Still", url: stillV1, duration: "still", notes: "Identity-locked from new refs.", isImage: true, identity: "locked", framing: "Tight close-up, 16:9", motion: "Still frame", lighting: "Teal/red night, rim light", vibe: "Cinematic music-video" },
-  { id: "perf-orig", title: "Josh — Performance (orig)", group: "Performance Video", url: joshPerformance.url, duration: "5s", notes: "First pass — identity off.", identity: "off", framing: "Medium, golden hour", motion: "Parallax push-in", lighting: "Warm sun flare", vibe: "Daytime hero" },
+  
   { id: "perf-closeup", title: "Josh — Close-up", group: "Performance Video", url: joshCloseup.url, duration: "5s", notes: "Tight portrait.", identity: "off", framing: "Tight close-up", motion: "Locked-off, micro breathing", lighting: "Hard rim light", vibe: "Portrait intimate" },
   { id: "perf-low", title: "Josh — Low-angle Hero", group: "Performance Video", url: joshLowangle.url, duration: "5s", notes: "Low hero, golden flare.", identity: "off", framing: "Low-angle hero", motion: "Slight push", lighting: "Golden-hour flare", vibe: "Dominant hero" },
   { id: "perf-profile", title: "Josh — Profile Track", group: "Performance Video", url: joshProfile.url, duration: "5s", notes: "Side dolly w/ neon streaks.", identity: "off", framing: "Side profile", motion: "Sideways dolly", lighting: "Teal shadow + sodium", vibe: "Neon street" },
