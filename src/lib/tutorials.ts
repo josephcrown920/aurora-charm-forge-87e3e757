@@ -1,7 +1,7 @@
 import shot1 from "@/assets/showcase-1.jpg";
 import shot2 from "@/assets/showcase-2.jpg";
 import shot3 from "@/assets/showcase-3.jpg";
-import shot4 from "@/assets/showcase-4.jpg";
+import shot5 from "@/assets/showcase-5.jpg";
 
 export type Recipe = {
   id: string;
