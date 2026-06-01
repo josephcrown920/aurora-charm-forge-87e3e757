@@ -385,10 +385,10 @@ function StudioPage() {
 
           {/* Compact 5-slot reference row */}
           <div className="grid grid-cols-5 gap-2">
-            <UploadSlot userId={user.id} label="You" hint="Selfie" value={selfie} onChange={setSelfie} compact />
-            <UploadSlot userId={user.id} label="Outfit" hint="Wear" value={outfit} onChange={setOutfit} compact />
-            <UploadSlot userId={user.id} label="Scene" hint="Vibe" value={scene} onChange={setScene} compact />
-            <UploadSlot userId={user.id} label="Prop" hint="Mic / car" value={prop} onChange={setProp} compact />
+            <UploadSlot userId={user.id} label="You" hint="Selfie" value={selfie} onChange={setSelfie}>/>
+            <UploadSlot userId={user.id} label="Outfit" hint="Wear" value={outfit} onChange={setOutfit}>/>
+            <UploadSlot userId={user.id} label="Scene" hint="Vibe" value={scene} onChange={setScene}>/>
+            <UploadSlot userId={user.id} label="Prop" hint="Mic / car" value={prop} onChange={setProp}>/>
             <UploadSlot
               userId={user.id}
               label="Motion"
