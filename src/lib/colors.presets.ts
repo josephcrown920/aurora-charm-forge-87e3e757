@@ -33,8 +33,6 @@ export type Setup = {
   kind: SetupKind;
   /** CSS gradient mockup that previews the scene tinted by the color (fallback when no image). */
   preview: (hex: string) => string;
-  /** Real reference performance image showing the setup. Falls back to gradient if absent. */
-  image?: string;
   prompt: (color: string) => string;
 };
 
@@ -45,7 +43,6 @@ export const SETUPS: Setup[] = [
     name: "Studio · Wide",
     description: "Seamless cyclorama, full body, the color floods the frame.",
     kind: "studio",
-    image: "/src/assets/colors-studio-wide.jpg",
     preview: (c) => `radial-gradient(ellipse at 50% 70%, ${c}cc 0%, ${c}80 35%, ${c}30 100%)`,
     prompt: (color) =>
       `Wide full-body editorial photograph of the subject on a seamless ${color} cyclorama studio backdrop that floods the frame. Outfit identical to reference, tinted by the ambient ${color} light. Bold monochromatic styling, soft studio softboxes from camera-left, subtle ${color} rim light. Preserve exact facial likeness and skin tone. ARRI Alexa look, 50mm lens, 4K, no text or logos.`,
@@ -55,7 +52,6 @@ export const SETUPS: Setup[] = [
     name: "Studio · Close-Up",
     description: "Beauty crop with the color as a glowing gel wash.",
     kind: "studio",
-    image: "/src/assets/colors-studio-closeup.jpg",
     preview: (c) => `radial-gradient(circle at 35% 40%, ${c}ff 0%, ${c}60 40%, #0a0a0a 90%)`,
     prompt: (color) =>
       `Intimate cinematic close-up of the subject, shoulders up. Saturated ${color} gel light washes one side of the face, deep shadow on the other. Preserve facial likeness, beard, skin texture, eye detail. Crisp catch-lights. f/1.8 anamorphic 85mm, fine grain, hyper-real skin pores, 4K editorial beauty shot.`,
@@ -65,7 +61,6 @@ export const SETUPS: Setup[] = [
     name: "Studio · Split Color",
     description: "Two-tone gels split the face down the middle.",
     kind: "studio",
-    image: "/src/assets/colors-studio-split.jpg",
     preview: (c) => `linear-gradient(90deg, ${c} 0%, ${c} 50%, #f5f5f5 50%, #e5e5e5 100%)`,
     prompt: (color) =>
       `Bold dual-tone studio portrait — one side lit by a saturated ${color} gel, the other by neutral white, hard vertical split down center of face. Preserve facial likeness. High-contrast fashion editorial, sharp shadows, 4K.`,
@@ -75,7 +70,6 @@ export const SETUPS: Setup[] = [
     name: "Studio · Neon Bath",
     description: "Subject surrounded by glowing neon strips of the color.",
     kind: "studio",
-    image: "/src/assets/colors-studio-neonbath.jpg",
     preview: (c) =>
       `repeating-linear-gradient(180deg, #0a0a0a 0px, #0a0a0a 14px, ${c} 14px, ${c} 18px)`,
     prompt: (color) =>
@@ -86,7 +80,6 @@ export const SETUPS: Setup[] = [
     name: "Studio · Color Smoke",
     description: "Plumes of colored smoke swirl mid-action.",
     kind: "studio",
-    image: "/src/assets/colors-studio-smoke.jpg",
     preview: (c) =>
       `radial-gradient(ellipse at 30% 60%, ${c}cc 0%, transparent 50%), radial-gradient(ellipse at 75% 35%, ${c}99 0%, transparent 55%), #0a0a0a`,
     prompt: (color) =>
