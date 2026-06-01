@@ -464,24 +464,6 @@ function StudioPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lighting</label>
-            <p className="text-xs text-muted-foreground">Tap a look to append it. The thumbnail previews the mood.</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-              {LIGHTING.map((l) => (
-                <button
-                  key={l.label}
-                  type="button"
-                  onClick={() => setPrompt((p) => `${p.trim().replace(/[.,;]\s*$/, "")}. ${l.prompt}.`)}
-                  className="group rounded-lg border border-border bg-card/40 hover:border-primary/50 transition-colors overflow-hidden text-left"
-                  title={l.label}
-                >
-                  <div className="aspect-[4/3] w-full" style={{ background: l.preview }} />
-                  <div className="px-1.5 py-1 text-[10px] font-medium text-foreground/90 truncate">{l.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Cost + runtime estimate */}
           <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-card/40 px-3 py-2">
