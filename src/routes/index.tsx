@@ -154,8 +154,6 @@ function Index() {
       {/* 2. Trust badges */}
       <TrustBar />
 
-      {/* 3. Live example — Canvas pipeline + finished generation */}
-      <FinishedExample />
 
       {/* 4. Our services */}
       <ServicesGrid />
