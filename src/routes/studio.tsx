@@ -74,25 +74,6 @@ const REANGLES = [
   { label: "Dutch angle", prompt: "tilted dutch angle, dynamic composition, dramatic cinematic lighting, preserve identity, outfit, and environment exactly" },
 ];
 
-// Each lighting style has a CSS gradient `preview` so users see the look at a glance.
-const LIGHTING = [
-  { label: "Rembrandt", preview: "radial-gradient(circle at 30% 35%, #f5e3c8 0%, #b8916a 22%, #2a1a10 70%)", prompt: "Rembrandt lighting — single key light at 45°, signature triangle of light on the shadow-side cheek, deep falloff, painterly contrast" },
-  { label: "Butterfly / Beauty", preview: "radial-gradient(ellipse at 50% 25%, #fff5e0 0%, #f0c9a0 35%, #5a3a28 90%)", prompt: "Butterfly (Paramount) beauty lighting — key light directly above camera, small symmetrical nose shadow, glowing skin, soft fill, fashion editorial polish" },
-  { label: "Split", preview: "linear-gradient(90deg, #f0d9b0 0%, #f0d9b0 50%, #1a1208 50%, #0a0805 100%)", prompt: "Split lighting — hard key from 90° side, half the face in light and half in shadow, dramatic high-contrast portrait" },
-  { label: "Loop", preview: "radial-gradient(circle at 38% 40%, #f5e0c0 0%, #c89a72 30%, #3a2818 80%)", prompt: "Loop lighting — key light slightly above eye level at 30-45°, small loop nose shadow, flattering natural portrait look" },
-  { label: "Clamshell", preview: "linear-gradient(180deg, #fff5e8 0%, #f8e0c8 50%, #f0d0b0 100%)", prompt: "Clamshell beauty lighting — large softbox above and silver reflector below, even shadow-free skin, catchlights top and bottom of eyes, glossy magazine cover" },
-  { label: "Hard noir", preview: "repeating-linear-gradient(20deg, #0a0a0a 0px, #0a0a0a 10px, #d8c8a8 10px, #d8c8a8 14px, #0a0a0a 14px, #0a0a0a 26px)", prompt: "Film noir hard lighting — single bare bulb key, deep black shadows, venetian blind slashes, high contrast monochrome mood" },
-  { label: "Neon Cyberpunk", preview: "linear-gradient(120deg, #ff2d8a 0%, #ff2d8a 35%, #1a0a2a 50%, #06b6d4 65%, #06b6d4 100%)", prompt: "Cyberpunk neon lighting — magenta key from one side, cyan rim from the other, wet reflections, atmospheric haze, blade-runner color palette" },
-  { label: "Golden Hour", preview: "linear-gradient(180deg, #ffd28a 0%, #ff9a3a 50%, #6a2818 100%)", prompt: "Warm golden-hour sun key from low angle behind subject, long soft shadows, hair backlit and glowing, lens flare, amber cinematic grade" },
-  { label: "Blue Hour", preview: "linear-gradient(180deg, #2a4a78 0%, #4a6a98 50%, #ffb070 92%, #ffb070 100%)", prompt: "Blue-hour ambient light, cool desaturated palette, soft directional twilight, faint warm practical lights, moody cinematic atmosphere" },
-  { label: "Stage Spotlight", preview: "radial-gradient(circle at 50% 35%, #fff8d8 0%, #d8b870 12%, #0a0a0a 45%)", prompt: "Single hard top spotlight, tight pool of light on subject, full black surround, theatrical haze, dust motes catching the beam" },
-  { label: "Concert Wash", preview: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #06b6d4 100%)", prompt: "Concert stage wash — saturated purple and magenta moving heads, lens flares, atmospheric fog, rim separation from cyan back-light" },
-  { label: "Window Light", preview: "linear-gradient(95deg, #fff5e8 0%, #e8d8c0 35%, #3a2a1a 100%)", prompt: "Soft natural window light from camera-left, gentle wrap, lifted shadows, airy film aesthetic, fine grain" },
-  { label: "Ring Light", preview: "radial-gradient(circle at 50% 50%, transparent 30%, #f5e8d0 32%, #f5e8d0 40%, #2a1a14 70%)", prompt: "On-axis ring light, even flat illumination, signature circular catchlights in the eyes, glossy beauty-vlog look" },
-  { label: "Volumetric God Rays", preview: "linear-gradient(110deg, #07060c 0%, #fff5d0 35%, #07060c 55%, #fff5d0 70%, #07060c 100%)", prompt: "Strong volumetric god rays cutting through atmospheric haze behind subject, defined light shafts, cinematic backlight with rim glow" },
-  { label: "Color Gels (Red/Teal)", preview: "linear-gradient(90deg, #dc2626 0%, #dc2626 45%, #0a0a0a 50%, #14b8a6 55%, #14b8a6 100%)", prompt: "Cross-color gel lighting — deep red key, teal rim, hard shadows, music-video color contrast" },
-  { label: "Police-light Strobe", preview: "linear-gradient(90deg, #ff1a1a 0%, #ff1a1a 33%, #0a0a0a 33%, #0a0a0a 66%, #1a4aff 66%, #1a4aff 100%)", prompt: "Alternating red and blue strobe lighting from below, hard rapid shadows, gritty street cinema mood" },
-];
 
 function StudioPage() {
   const { user, loading } = useAuth();
@@ -371,42 +352,33 @@ function StudioPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-10 grid lg:grid-cols-[1fr_1.1fr] gap-10">
         {/* Control panel */}
-        <section className="space-y-6">
+        <section className="space-y-5">
           <div>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
               {profile?.display_name ? (
                 <>Welcome, <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{profile.display_name}.</span></>
               ) : (
                 <>Direct your <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>shoot.</span></>
               )}
             </h1>
-            <p className="mt-2 text-muted-foreground">
-              {profile?.display_name
-                ? `Let's make something great today. Drop your references on the left — we'll stage the studio.`
-                : `Drop your references — we'll stage the studio.`}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">Drop references → write direction → generate. That's it.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <UploadSlot userId={user.id} label="You" hint="Selfie / portrait" value={selfie} onChange={setSelfie} />
-            <UploadSlot userId={user.id} label="Outfit" hint="What to wear" value={outfit} onChange={setOutfit} />
-            <UploadSlot userId={user.id} label="Scene" hint="Set / vibe" value={scene} onChange={setScene} />
-            <UploadSlot userId={user.id} label="Prop / Vehicle" hint="Car, mic, instrument…" value={prop} onChange={setProp} />
-          </div>
-
-          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+          {/* Compact 5-slot reference row */}
+          <div className="grid grid-cols-5 gap-2">
+            <UploadSlot userId={user.id} label="You" hint="Selfie" value={selfie} onChange={setSelfie} />
+            <UploadSlot userId={user.id} label="Outfit" hint="Wear" value={outfit} onChange={setOutfit} />
+            <UploadSlot userId={user.id} label="Scene" hint="Vibe" value={scene} onChange={setScene} />
+            <UploadSlot userId={user.id} label="Prop" hint="Mic / car" value={prop} onChange={setProp} />
             <UploadSlot
               userId={user.id}
-              label="Motion clip (optional)"
-              hint="Record yourself performing — used as pose reference"
+              label="Motion"
+              hint="Pose clip"
               accept="video/*"
               kind="video"
               value={motion}
               onChange={setMotion}
             />
-            <p className="text-xs text-muted-foreground pb-2 max-w-[180px]">
-              Motion clip is stored as a pose reference. Full video motion transfer is on the roadmap.
-            </p>
           </div>
 
           <div className="space-y-2">
@@ -472,24 +444,6 @@ function StudioPage() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lighting</label>
-            <p className="text-xs text-muted-foreground">Tap a look to append it. The thumbnail previews the mood.</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-              {LIGHTING.map((l) => (
-                <button
-                  key={l.label}
-                  type="button"
-                  onClick={() => setPrompt((p) => `${p.trim().replace(/[.,;]\s*$/, "")}. ${l.prompt}.`)}
-                  className="group rounded-lg border border-border bg-card/40 hover:border-primary/50 transition-colors overflow-hidden text-left"
-                  title={l.label}
-                >
-                  <div className="aspect-[4/3] w-full" style={{ background: l.preview }} />
-                  <div className="px-1.5 py-1 text-[10px] font-medium text-foreground/90 truncate">{l.label}</div>
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Cost + runtime estimate */}

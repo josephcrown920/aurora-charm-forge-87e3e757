@@ -152,13 +152,13 @@ function Index() {
       {/* 1. Hero + "Talk to Aurora" contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 2. Product showcases — moved up right under the hero */}
+      {/* 2. CLI — first thing after the hero */}
+      <CliSection />
+
+      {/* 3. Product showcases */}
       <SupercomputerSection />
       <MotionControlSection />
       <CanvasShowcase />
-
-      {/* 3. CLI */}
-      <CliSection />
 
       {/* 4. Trust badges */}
       <TrustBar />
@@ -175,7 +175,7 @@ function Index() {
       {/* 8. Reviews */}
       <Testimonials />
 
-      {/* 9. Final CTA — back to its original bottom position */}
+      {/* 9. Final CTA */}
       <FinalCTA />
 
       <SiteFooter />
