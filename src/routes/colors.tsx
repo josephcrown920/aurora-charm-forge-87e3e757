@@ -18,6 +18,22 @@ import { Sparkles, Loader2, Palette, Wand2, ArrowLeft, Check, ImagePlus, X } fro
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+// Real performance reference photos shot on a hot-pink cyclorama.
+// Tinted at render-time to match the chosen color via a mix-blend overlay.
+import studioWideImg from "@/assets/colors-studio-wide.jpg";
+import studioCloseupImg from "@/assets/colors-studio-closeup.jpg";
+import studioSplitImg from "@/assets/colors-studio-split.jpg";
+import studioNeonImg from "@/assets/colors-studio-neonbath.jpg";
+import studioSmokeImg from "@/assets/colors-studio-smoke.jpg";
+
+const SETUP_IMAGES: Record<string, string> = {
+  wide: studioWideImg,
+  closeup: studioCloseupImg,
+  "split-color": studioSplitImg,
+  "neon-bath": studioNeonImg,
+  "color-smoke": studioSmokeImg,
+};
+
 export const Route = createFileRoute("/colors")({
   component: ColorsStudio,
   head: () => ({
