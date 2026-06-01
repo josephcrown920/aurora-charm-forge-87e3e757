@@ -322,16 +322,35 @@ function ColorsStudio() {
                     )}
                   >
                     <div
-                      className="relative aspect-[4/3] w-full"
+                      className="relative aspect-[4/3] w-full overflow-hidden"
                       style={{ background: s.preview(selectedColor.swatch) }}
                     >
-                      {/* Subject silhouette overlay so the preview reads as "a person in this scene" */}
-                      <svg viewBox="0 0 80 60" className="absolute inset-0 size-full opacity-80 mix-blend-multiply">
-                        <ellipse cx="40" cy="22" rx="6" ry="7" fill="rgba(0,0,0,0.55)" />
-                        <path d="M28 60 Q28 40 40 38 Q52 40 52 60 Z" fill="rgba(0,0,0,0.55)" />
-                      </svg>
+                      {SETUP_IMAGES[s.id] ? (
+                        <>
+                          <img
+                            src={SETUP_IMAGES[s.id]}
+                            alt={s.name}
+                            loading="lazy"
+                            className="absolute inset-0 size-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                          />
+                          {/* Re-tint the hot-pink reference photo to whatever color is selected. */}
+                          {selectedColor.id !== "hot-pink" && (
+                            <div
+                              aria-hidden
+                              className="absolute inset-0 mix-blend-color pointer-events-none"
+                              style={{ backgroundColor: selectedColor.swatch }}
+                            />
+                          )}
+                          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/70 to-transparent" />
+                        </>
+                      ) : (
+                        <svg viewBox="0 0 80 60" className="absolute inset-0 size-full opacity-80 mix-blend-multiply">
+                          <ellipse cx="40" cy="22" rx="6" ry="7" fill="rgba(0,0,0,0.55)" />
+                          <path d="M28 60 Q28 40 40 38 Q52 40 52 60 Z" fill="rgba(0,0,0,0.55)" />
+                        </svg>
+                      )}
                       {active && (
-                        <div className="absolute top-1.5 right-1.5 size-5 rounded-full bg-background/95 flex items-center justify-center">
+                        <div className="absolute top-1.5 right-1.5 size-5 rounded-full bg-background/95 flex items-center justify-center z-10">
                           <Check className="size-3 text-primary" />
                         </div>
                       )}
