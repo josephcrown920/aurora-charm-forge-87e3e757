@@ -52,7 +52,9 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
               .eq("code", String(refCode).toLowerCase())
               .maybeSingle();
             if (aff) {
-              const amountUsd = (Number((event.data as { amount?: number }).amount ?? 0) / 100 / 1500) * (aff.commission_pct / 100);
+              // Paystack amount is in the minor unit of the charged currency
+              // (cents for USD). Checkout charges USD, so cents → USD = /100.
+              const amountUsd = (Number((event.data as { amount?: number }).amount ?? 0) / 100) * (aff.commission_pct / 100);
               await supabaseAdmin.from("affiliate_events").insert({
                 code: aff.code,
                 kind: "conversion",
