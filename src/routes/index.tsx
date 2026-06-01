@@ -15,6 +15,13 @@ import { HeroContactForm } from "@/components/landing/HeroContactForm";
 import { ServicesGrid } from "@/components/landing/ServicesGrid";
 import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
+import { FinishedExample } from "@/components/landing/FinishedExample";
+import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
+import {
+  SupercomputerSection,
+  MotionControlSection,
+  AiCanvasSection,
+} from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
 
 const FAQ_ITEMS = [
@@ -147,16 +154,27 @@ function Index() {
       {/* 2. Trust badges */}
       <TrustBar />
 
-      {/* 3. Our services */}
+      {/* 3. Live example — Canvas pipeline + finished generation */}
+      <FinishedExample />
+
+      {/* 4. Our services */}
       <ServicesGrid />
 
-      {/* 4. Why us */}
+      {/* 5. Trending Canvas workflows */}
+      <TrendingWorkflows />
+
+      {/* 6. Why us */}
       <WhyUs />
 
-      {/* 5. Reviews */}
+      {/* 7. Product showcases (Supercomputer · Motion · Canvas) */}
+      <SupercomputerSection />
+      <MotionControlSection />
+      <AiCanvasSection />
+
+      {/* 8. Reviews */}
       <Testimonials />
 
-      {/* 6. Final CTA */}
+      {/* 9. Final CTA */}
       <FinalCTA />
 
       <SiteFooter />

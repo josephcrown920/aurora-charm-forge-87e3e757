@@ -30,8 +30,8 @@ export function ServicesGrid() {
             <Link
               key={s.title}
               to={s.to}
-              className="group relative rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 overflow-hidden no-underline hover:-translate-y-1 transition-all duration-300 hover:border-violet-400/40"
-              style={{ animationDelay: `${i * 60}ms` }}
+              className="group relative rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 overflow-hidden no-underline hover:-translate-y-1 transition-all duration-300 hover:border-violet-400/40 animate-fade-in"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
             >
               <div className={`absolute -inset-20 blur-3xl opacity-40 bg-gradient-to-br ${s.accent} group-hover:opacity-70 transition-opacity`} />
               <div className="relative">
