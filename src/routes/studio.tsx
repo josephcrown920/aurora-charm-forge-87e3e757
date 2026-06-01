@@ -371,42 +371,34 @@ function StudioPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-10 grid lg:grid-cols-[1fr_1.1fr] gap-10">
         {/* Control panel */}
-        <section className="space-y-6">
+        <section className="space-y-5">
           <div>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
               {profile?.display_name ? (
                 <>Welcome, <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{profile.display_name}.</span></>
               ) : (
                 <>Direct your <span style={{ background: "var(--gradient-hero)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>shoot.</span></>
               )}
             </h1>
-            <p className="mt-2 text-muted-foreground">
-              {profile?.display_name
-                ? `Let's make something great today. Drop your references on the left — we'll stage the studio.`
-                : `Drop your references — we'll stage the studio.`}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">Drop references → write direction → generate. That's it.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <UploadSlot userId={user.id} label="You" hint="Selfie / portrait" value={selfie} onChange={setSelfie} />
-            <UploadSlot userId={user.id} label="Outfit" hint="What to wear" value={outfit} onChange={setOutfit} />
-            <UploadSlot userId={user.id} label="Scene" hint="Set / vibe" value={scene} onChange={setScene} />
-            <UploadSlot userId={user.id} label="Prop / Vehicle" hint="Car, mic, instrument…" value={prop} onChange={setProp} />
-          </div>
-
-          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+          {/* Compact 5-slot reference row */}
+          <div className="grid grid-cols-5 gap-2">
+            <UploadSlot userId={user.id} label="You" hint="Selfie" value={selfie} onChange={setSelfie} compact />
+            <UploadSlot userId={user.id} label="Outfit" hint="Wear" value={outfit} onChange={setOutfit} compact />
+            <UploadSlot userId={user.id} label="Scene" hint="Vibe" value={scene} onChange={setScene} compact />
+            <UploadSlot userId={user.id} label="Prop" hint="Mic / car" value={prop} onChange={setProp} compact />
             <UploadSlot
               userId={user.id}
-              label="Motion clip (optional)"
-              hint="Record yourself performing — used as pose reference"
+              label="Motion"
+              hint="Pose clip"
               accept="video/*"
               kind="video"
               value={motion}
               onChange={setMotion}
+              compact
             />
-            <p className="text-xs text-muted-foreground pb-2 max-w-[180px]">
-              Motion clip is stored as a pose reference. Full video motion transfer is on the roadmap.
-            </p>
           </div>
 
           <div className="space-y-2">
