@@ -15,12 +15,13 @@ import { HeroContactForm } from "@/components/landing/HeroContactForm";
 import { ServicesGrid } from "@/components/landing/ServicesGrid";
 import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
+import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
+import { CliSection } from "@/components/landing/CliSection";
 
 import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
 import {
   SupercomputerSection,
   MotionControlSection,
-  AiCanvasSection,
 } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
 
@@ -148,32 +149,34 @@ function Index() {
       {/* Spacer for fixed header */}
       <div className="h-20" />
 
-      {/* 1. Primary CTA — moved to top */}
-      <FinalCTA />
-
-      {/* 2. Hero + contact form */}
+      {/* 1. Hero + "Talk to Aurora" contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 3. Trust badges */}
-      <TrustBar />
-
-      {/* 4. Our services */}
-      <ServicesGrid />
-
-      {/* 5. Trending Canvas workflows (image + video pipelines) */}
-      <TrendingWorkflows />
-
-      {/* 6. Why us */}
-      <WhyUs />
-
-      {/* 7. Product showcases (Supercomputer · Motion · Canvas) */}
+      {/* 2. Product showcases — moved up right under the hero */}
       <SupercomputerSection />
       <MotionControlSection />
-      <AiCanvasSection />
+      <CanvasShowcase />
+
+      {/* 3. CLI */}
+      <CliSection />
+
+      {/* 4. Trust badges */}
+      <TrustBar />
+
+      {/* 5. Our services */}
+      <ServicesGrid />
+
+      {/* 6. Trending Canvas workflows */}
+      <TrendingWorkflows />
+
+      {/* 7. Why us */}
+      <WhyUs />
 
       {/* 8. Reviews */}
       <Testimonials />
 
+      {/* 9. Final CTA — back to its original bottom position */}
+      <FinalCTA />
 
       <SiteFooter />
     </main>
