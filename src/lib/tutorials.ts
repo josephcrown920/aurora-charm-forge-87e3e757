@@ -44,15 +44,6 @@ export const RECIPES: Recipe[] = [
       "Place the subject seated naturally in the backseat of a Mercedes-Maybach, viewed through a slightly lowered car window. Preserve exact facial identity — same facial structure, skin tone, beard, lips, eye shape, and proportions. Transform the interior into ultra-luxury Maybach: white quilted leather executive seats, luxury center console, ambient LED lighting, illuminated luxury panels, fiber-optic starlight headliner ceiling, ultra-premium limousine atmosphere. Cinematography looks captured on an ARRI Alexa 35 with a Cooke anamorphic lens. Cinematic natural lighting, subtle reflections on the car window glass, soft luxury interior lighting on the subject. Very shallow depth of field, creamy optical bokeh, luxury ambient lights and starlight ceiling blooming into soft light circles. Tack-sharp face, ultra-photorealistic skin: visible pores, natural texture, realistic light falloff. Luxury editorial automotive photography, cinematic contrast, filmic highlight roll-off, 8K photorealism, subtle film grain.",
   },
   {
-    id: "phone-lipsync-removed-placeholder",
-    title: "",
-    tag: "",
-    blurb: "",
-    image: shot1,
-    steps: [],
-    prompt: "",
-  },
-  {
     id: "urban-cuts",
     title: "Urban cuts",
     tag: "Street · Cinematic",
