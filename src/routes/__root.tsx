@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { usePageViewTracking } from "@/hooks/use-tracking";
 import { AuroraChatbot } from "@/components/AuroraChatbot";
+import { AdminHotkey } from "@/components/AdminHotkey";
 
 function NotFoundComponent() {
   return (
@@ -133,6 +134,7 @@ function RootComponent() {
       <Outlet />
       <Toaster />
       <AuroraChatbot />
+      <AdminHotkey />
     </QueryClientProvider>
   );
 }
