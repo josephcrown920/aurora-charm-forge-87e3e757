@@ -15,7 +15,7 @@ import { HeroContactForm } from "@/components/landing/HeroContactForm";
 import { ServicesGrid } from "@/components/landing/ServicesGrid";
 import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
-import { FinishedExample } from "@/components/landing/FinishedExample";
+
 import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
 import {
   SupercomputerSection,
