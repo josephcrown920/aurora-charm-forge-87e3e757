@@ -41,10 +41,14 @@ export function WhyUs() {
             </p>
           </div>
           <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
-            {PILLARS.map((p) => {
+            {PILLARS.map((p, i) => {
               const Icon = p.icon;
               return (
-                <div key={p.title} className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 hover:border-violet-400/40 transition">
+                <div
+                  key={p.title}
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-5 hover:border-violet-400/40 transition animate-fade-in"
+                  style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards" }}
+                >
                   <span className="inline-flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/30 to-fuchsia-500/10 border border-white/10 mb-4">
                     <Icon className="size-5 text-violet-200" />
                   </span>
