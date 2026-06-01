@@ -60,18 +60,18 @@ export const RECIPES: Recipe[] = [
       "Use the reference selfie as the exact identity. Place the subject in a cinematic nighttime exterior scene with moody practical lighting. Keep the subject's expression and ultra-realistic skin texture. Add a realistic modern smartphone held horizontally directly in front of his/her mouth with a bright green chroma screen. Include a hand and partial forearm entering from the side holding the phone — match scale, perspective, reflections, and contact shadows so the phone and hand blend naturally with the scene lighting. Cinematic shallow depth of field, natural skin pores, filmic color science, 4K photoreal quality, no text or logos.",
   },
   {
-    id: "collage",
-    title: "Editorial collage panel",
-    tag: "High fashion close-up",
+    id: "urban-cuts",
+    title: "Urban cuts",
+    tag: "Street · Cinematic",
     blurb:
-      "Cinematic chest-up portrait with gold-chain detail and creamy studio bokeh — the building-block panel for vertical collage Reels.",
-    image: shot4,
+      "Gritty urban storytelling — alley, subway, crosswalk. Wet pavement, anamorphic flares, ARRI color science. The look that prints on a music-video billboard.",
+    image: shot5,
     steps: [
-      "One headshot drives identity.",
-      "Aurora delivers a tight editorial close-up.",
-      "Use Re-angle to spin out eyes, lips, side profile panels.",
+      "Selfie locks identity, outfit reference locks wardrobe.",
+      "Pick an Urban preset (Alley, Subway, Crosswalk) or stack them.",
+      "Re-angle for a side profile, then animate with Seedance.",
     ],
     prompt:
-      "Tight close-up portrait from chest up of the subject, preserving exact facial features, skin tone, hairstyle, beard, and proportions. Outfit matches the reference. Visible gold chain and accessories. Background is a soft blurred studio environment with creamy optical bokeh. Soft studio rim lighting, editorial fashion photography, 85mm lens, cinematic color grading with warm tones, ultra-realistic skin texture with natural pores and micro-detail, high-end magazine cover look, 4K photoreal quality.",
+      "Cinematic urban street portrait of the subject — wet pavement reflecting neon and street lamps, brick walls and graffiti softly out of focus, a single hard key light from above with deep shadows, anamorphic lens flares, 35mm ARRI Alexa look, filmic grain. Preserve exact facial likeness, outfit, beard, hairstyle, and proportions. Shallow depth of field with the subject tack-sharp, gritty editorial music-video mood, 4K photoreal quality, no text or logos.",
   },
 ];
