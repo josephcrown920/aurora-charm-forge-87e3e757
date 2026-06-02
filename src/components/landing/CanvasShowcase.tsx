@@ -4,15 +4,14 @@ import shot1 from "@/assets/showcase-1.jpg";
 import shot3 from "@/assets/showcase-3.jpg";
 import shot5 from "@/assets/showcase-5.jpg";
 import joshStill from "@/assets/josh-performance-still-v1.jpg";
-import joshCloseup from "@/assets/video-josh-closeup.mp4.asset.json";
 
 /**
  * AI Canvas — shows a real, finished workflow:
- *   Selfie ──► Style transfer ──► Motion shot ──► Final video
- * Ends in a playing video so users see the END product, not just a CTA.
+ *   Selfie ──► Style transfer ──► Motion shot ──► Final still
+ * Ends in the finished rendered frame (static image, not video).
  */
 export function CanvasShowcase() {
-  const videoUrl = (joshCloseup as { url: string }).url;
+
 
   return (
     <section className="relative z-10 mx-4 md:mx-12 my-16 rounded-[32px] overflow-hidden border border-white/10 animate-fade-in"
