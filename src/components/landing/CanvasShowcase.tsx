@@ -68,25 +68,25 @@ export function CanvasShowcase() {
           />
           <Arrow />
 
-          {/* Node 4 — Finished render (video) */}
+          {/* Node 4 — Finished render (static image, no video) */}
           <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-300/50 bg-black shadow-[0_0_60px_-10px_rgba(110,231,183,0.45)]">
             <div className="absolute top-2 left-2 z-10 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-400/90 text-[10px] font-bold text-emerald-950">
-              <CheckCircle2 className="size-3" /> FINAL RENDER
+              <CheckCircle2 className="size-3" /> RENDERED
             </div>
-            <video
-              src={videoUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={shot5}
+            <div className="absolute top-2 right-2 z-10 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/70 border border-white/15 text-[10px] font-semibold text-white">
+              Kling 3.0 · 10s
+            </div>
+            <img
+              src={shot5 || joshStill}
+              alt="Performance Studio — finished render"
               className="w-full aspect-[3/4] object-cover"
             />
             <div className="p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
-              <p className="text-xs font-semibold text-white">Cinematic close-up · 1080p</p>
-              <p className="text-[10px] text-emerald-300/90 mt-0.5">Generated in 47s · 11 credits</p>
+              <p className="text-xs font-semibold text-white">Performance Studio · finished</p>
+              <p className="text-[10px] text-emerald-300/90 mt-0.5">Selfie → cinematic stage performance · 11 credits</p>
             </div>
           </div>
+
         </div>
 
         {/* CTAs */}
