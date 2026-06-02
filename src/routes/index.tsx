@@ -152,13 +152,15 @@ function Index() {
       {/* 1. Hero + "Talk to Aurora" contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 2. CLI — first thing after the hero */}
+      {/* 2. Finished render — Performance Studio (was at bottom) */}
+      <CanvasShowcase />
+
+      {/* 3. CLI */}
       <CliSection />
 
-      {/* 3. Product showcases */}
+      {/* 4. Product showcases */}
       <SupercomputerSection />
       <MotionControlSection />
-      <CanvasShowcase />
 
       {/* 4. Trust badges */}
       <TrustBar />
