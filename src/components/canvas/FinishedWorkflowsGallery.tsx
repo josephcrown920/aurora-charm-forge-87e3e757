@@ -175,7 +175,30 @@ export function FinishedWorkflowsGallery({
                 </div>
               </div>
 
-              <div className="mt-auto pt-6 flex gap-2">
+              <div className="mt-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase tracking-widest text-white/50">Recipe · prompts</p>
+                  <CopyButton
+                    label="Copy all"
+                    value={active.steps.map((s, i) => `${i + 1}. [${s.node} · ${s.model}]\n${s.prompt}`).join("\n\n")}
+                  />
+                </div>
+                <ol className="mt-2 space-y-2">
+                  {active.steps.map((s, i) => (
+                    <li key={i} className="rounded-lg border border-white/10 bg-white/5 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[11px] font-semibold text-emerald-300">
+                          {i + 1}. {s.node} <span className="text-white/40">· {s.model}</span>
+                        </p>
+                        <CopyButton value={s.prompt} />
+                      </div>
+                      <p className="mt-1.5 text-[12px] text-white/80 leading-relaxed">{s.prompt}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="mt-6 flex gap-2">
                 <Button
                   onClick={() => {
                     onLoad?.(active.id);
