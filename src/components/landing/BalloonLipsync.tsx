@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, Sparkles } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2 } from "lucide-react";
 import balloonAsset from "@/assets/balloon-head.png.asset.json";
 import audioAsset from "@/assets/the-one-hook.mp3.asset.json";
 
