@@ -9,21 +9,16 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TrustBar } from "@/components/landing/TrustBar";
 import { StickyCreditsBar } from "@/components/landing/StickyCreditsBar";
-import { ExitIntentModal } from "@/components/landing/ExitIntentModal";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { HeroContactForm } from "@/components/landing/HeroContactForm";
 import { ServicesGrid } from "@/components/landing/ServicesGrid";
 import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
-import { CliSection } from "@/components/landing/CliSection";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 
 import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
-import {
-  SupercomputerSection,
-  MotionControlSection,
-} from "@/components/landing/ScreenshotSections";
+import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
 
 const FAQ_ITEMS = [
@@ -88,7 +83,6 @@ function Index() {
       <TutorialModal trigger={tutorialTick} />
       <ScrollProgress />
       <StickyCreditsBar />
-      <ExitIntentModal />
 
       {/* Ambient violet glows */}
       <div className="pointer-events-none absolute -top-40 -right-40 size-[640px] rounded-full blur-3xl opacity-50"
@@ -153,29 +147,23 @@ function Index() {
       {/* 1. Hero + "Talk to Aurora" contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 2. Balloon head lip-sync visualizer */}
+      {/* 2. Balloon head lip-sync visualizer (with template CTAs) */}
       <BalloonLipsync />
 
-      {/* 3. Finished render — Performance Studio (was at bottom) */}
+      {/* 3. Canvas showcase */}
       <CanvasShowcase />
 
-      {/* 3. CLI */}
-      <CliSection />
-
-      {/* 4. Product showcases */}
+      {/* 4. Supercomputer / product hero */}
       <SupercomputerSection />
-      <MotionControlSection />
-
-      {/* 4. Trust badges */}
-      <TrustBar />
 
       {/* 5. Our services */}
       <ServicesGrid />
 
-      {/* 6. Trending Canvas workflows */}
+      {/* 6. Trending Canvas workflows — preset + blank templates for Colors and Lip-sync */}
       <TrendingWorkflows />
 
-      {/* 7. Why us */}
+      {/* 7. Trust + Why us */}
+      <TrustBar />
       <WhyUs />
 
       {/* 8. Reviews */}

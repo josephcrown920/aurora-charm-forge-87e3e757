@@ -1,13 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { Sparkles, ArrowRight, Flame, Mic2, Camera, Film, Image as ImageIcon, Wand2, SplitSquareHorizontal, Palette } from "lucide-react";
 
-const WORKFLOWS = [
-  { name: "Selfie → Concert Lip-sync", uses: "12.4k", icon: Mic2, glow: "from-emerald-500/40 to-teal-500/10", nodes: ["Selfie", "Audio", "Performance shot", "Lip-sync"] },
-  { name: "Editorial Cover Shoot", uses: "8.9k", icon: Camera, glow: "from-amber-500/40 to-rose-500/10", nodes: ["Selfie", "Outfit", "Rembrandt", "Cover crop"] },
-  { name: "Split Reality (Concert vs Golden Hour)", uses: "6.2k", icon: SplitSquareHorizontal, glow: "from-violet-500/40 to-fuchsia-500/10", nodes: ["Selfie", "Two grades", "Side-by-side video"] },
-  { name: "Color Story", uses: "5.4k", icon: Palette, glow: "from-fuchsia-500/40 to-pink-500/10", nodes: ["Selfie", "Palette", "Studio scene", "Image"] },
-  { name: "UGC Ad Loop", uses: "4.1k", icon: Film, glow: "from-cyan-500/40 to-blue-500/10", nodes: ["Product", "Talent", "Kling 3.0", "Caption"] },
-  { name: "Outfit Try-On Reel", uses: "3.7k", icon: ImageIcon, glow: "from-pink-500/40 to-rose-500/10", nodes: ["Selfie", "Outfit", "Seedream", "Seedance"] },
+type Workflow = {
+  name: string;
+  uses: string;
+  icon: typeof Mic2;
+  glow: string;
+  nodes: string[];
+  /** Optional canvas template id — if set, card deep-links to /canvas?template=... */
+  template?: string;
+  badge?: "PRESET" | "BLANK";
+};
+
+const WORKFLOWS: Workflow[] = [
+  { name: "Lip-sync · NBA Josh preset", uses: "14.2k", icon: Mic2, glow: "from-emerald-500/40 to-teal-500/10", nodes: ["Selfie", "Audio", "Concert shot", "Sync 1.9"], template: "lipsync-preset", badge: "PRESET" },
+  { name: "Lip-sync · Blank scaffold", uses: "6.8k", icon: Mic2, glow: "from-emerald-400/30 to-cyan-500/10", nodes: ["Selfie", "Audio", "Video", "Lip-sync"], template: "lipsync-blank", badge: "BLANK" },
+  { name: "Colors · Blue Performance", uses: "9.7k", icon: Palette, glow: "from-blue-500/40 to-indigo-500/10", nodes: ["Selfie", "Royal-blue cyc", "Editorial portrait"], template: "colors-preset", badge: "PRESET" },
+  { name: "Colors · Blank canvas", uses: "4.4k", icon: Palette, glow: "from-fuchsia-500/40 to-pink-500/10", nodes: ["Selfie", "Palette", "Scene"], template: "colors-blank", badge: "BLANK" },
+  { name: "Editorial Cover Shoot", uses: "8.9k", icon: Camera, glow: "from-amber-500/40 to-rose-500/10", nodes: ["Selfie", "Outfit", "Rembrandt", "Cover crop"], template: "editorial-cover" },
+  { name: "Split Reality", uses: "6.2k", icon: SplitSquareHorizontal, glow: "from-violet-500/40 to-fuchsia-500/10", nodes: ["Selfie", "Two grades", "Side-by-side"], template: "split-reality" },
+  { name: "UGC Ad Loop", uses: "4.1k", icon: Film, glow: "from-cyan-500/40 to-blue-500/10", nodes: ["Product", "Talent", "Kling 3.0", "Caption"], template: "ugc-loop" },
+  { name: "Music Video Mini", uses: "3.2k", icon: Wand2, glow: "from-pink-500/40 to-rose-500/10", nodes: ["Selfie", "Audio", "Video", "Lip-sync"], template: "music-video-mini" },
 ];
 
 export function TrendingWorkflows() {
@@ -29,10 +42,11 @@ export function TrendingWorkflows() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {WORKFLOWS.map((w) => {
           const Icon = w.icon;
+          const href = w.template ? `/canvas?template=${w.template}` : "/canvas";
           return (
-            <Link
+            <a
               key={w.name}
-              to="/canvas"
+              href={href}
               className="group relative rounded-2xl border border-white/10 bg-white/[0.03] p-4 overflow-hidden hover:border-white/30 hover:-translate-y-0.5 transition-all no-underline"
             >
               <div className={`absolute -inset-16 opacity-50 blur-3xl bg-gradient-to-br ${w.glow} group-hover:opacity-80 transition-opacity`} />
@@ -40,7 +54,15 @@ export function TrendingWorkflows() {
                 <span className="size-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
                   <Icon className="size-4 text-white" />
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-white/50">{w.uses} runs</span>
+                <div className="flex items-center gap-1.5">
+                  {w.badge && (
+                    <span className={`text-[9px] font-bold tracking-[0.15em] px-1.5 py-0.5 rounded ${
+                      w.badge === "PRESET" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
+                      : "bg-sky-500/20 text-sky-300 border border-sky-400/30"
+                    }`}>{w.badge}</span>
+                  )}
+                  <span className="text-[10px] uppercase tracking-wider text-white/50">{w.uses} runs</span>
+                </div>
               </div>
               <p className="relative text-white font-medium text-sm leading-tight">{w.name}</p>
               <div className="relative mt-3 flex flex-wrap gap-1.5">
@@ -51,7 +73,7 @@ export function TrendingWorkflows() {
               <div className="relative mt-3 inline-flex items-center gap-1 text-[11px] text-violet-300 group-hover:text-violet-200">
                 <Sparkles className="size-3" /> Open in Canvas <ArrowRight className="size-3" />
               </div>
-            </Link>
+            </a>
           );
         })}
       </div>
