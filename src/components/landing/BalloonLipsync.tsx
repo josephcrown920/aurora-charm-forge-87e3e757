@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2 } from "lucide-react";
 import balloonAsset from "@/assets/balloon-head.png.asset.json";
 import audioAsset from "@/assets/the-one-hook.mp3.asset.json";
@@ -291,20 +290,18 @@ export function BalloonLipsync() {
               {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
               {playing ? "Pause hook" : "Play the hook"}
             </button>
-            <Link
-              to="/canvas"
-              search={{ template: "lipsync-preset" } as never}
+            <a
+              href="/canvas?template=lipsync-preset"
               className="inline-flex items-center gap-2 rounded-full border border-pink-300/40 bg-white/5 px-4 py-2.5 text-sm font-medium text-pink-100 hover:bg-white/10 no-underline"
             >
               <Wand2 className="size-3.5" /> Use this template <ArrowRight className="size-3.5" />
-            </Link>
-            <Link
-              to="/canvas"
-              search={{ template: "lipsync-blank" } as never}
+            </a>
+            <a
+              href="/canvas?template=lipsync-blank"
               className="inline-flex items-center gap-1.5 text-xs text-white/60 hover:text-white no-underline"
             >
               or start blank
-            </Link>
+            </a>
           </div>
           <span className="mt-2 inline-flex items-center gap-1.5 text-xs text-white/55">
             <Volume2 className="size-3.5" /> Best with sound on
