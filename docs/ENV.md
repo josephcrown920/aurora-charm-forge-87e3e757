@@ -59,8 +59,9 @@ Order in `src/lib/llm-fallback.server.ts`: **Lovable AI → Gemini → OpenAI �
 
 | Secret | Purpose |
 |---|---|
-| `PAYSTACK_SECRET_KEY` | Paystack server API + webhook signature verify |
+| `PAYSTACK_SECRET_KEY` | Paystack server API + webhook signature verify (handles both NGN and USD charges; currency is decided per-request by `src/lib/geo.functions.ts`) |
 | `CRON_SECRET` | Shared secret for `/api/public/*` cron endpoints |
+
 
 ---
 

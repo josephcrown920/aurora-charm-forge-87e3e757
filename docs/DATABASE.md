@@ -6,7 +6,7 @@ Aurora uses Lovable Cloud (Supabase Postgres). All schema changes go through SQL
 
 - **Roles** live in `user_roles` (never on `profiles`). Checked via `public.has_role(uuid, app_role)` (SECURITY DEFINER).
 - **Credits** are mutated only via `public.grant_credits()` / `public.deduct_credits()` (SECURITY DEFINER). Direct updates to `profiles.credits` are blocked by RLS.
-- **Auth user signups** trigger `public.handle_new_user()` → creates a profile with 5 signup-bonus credits and a `credit_ledger` entry.
+- **Auth user signups** trigger `public.handle_new_user()` → creates a profile with 5 signup-bonus credits and a `credit_ledger` entry. Trigger is wired on `auth.users` (managed by the integration — do not edit `auth.*` directly).
 - Server code uses three Supabase clients (see `src/integrations/supabase/`):
   - `client.ts` — browser, publishable key, RLS applies
   - `auth-middleware.ts` — server fn middleware, user-scoped, RLS applies
