@@ -17,6 +17,7 @@ import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
 import { CliSection } from "@/components/landing/CliSection";
+import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 
 import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
 import {
@@ -152,7 +153,10 @@ function Index() {
       {/* 1. Hero + "Talk to Aurora" contact form */}
       <HeroContactForm greeting={greeting} />
 
-      {/* 2. Finished render — Performance Studio (was at bottom) */}
+      {/* 2. Balloon head lip-sync visualizer */}
+      <BalloonLipsync />
+
+      {/* 3. Finished render — Performance Studio (was at bottom) */}
       <CanvasShowcase />
 
       {/* 3. CLI */}
