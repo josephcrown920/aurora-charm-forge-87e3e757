@@ -19,7 +19,10 @@ export const getMyProfile = createServerFn({ method: "GET" })
     return { ...data, isAdmin };
   });
 
-const InitPaystackSchema = z.object({ plan: z.enum(["starter", "creator", "studio"]) });
+const InitPaystackSchema = z.object({
+  plan: z.enum(["starter", "creator", "studio"]),
+  currency: z.enum(["USD", "NGN"]).optional(),
+});
 
 export const createPaystackCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -29,6 +32,23 @@ export const createPaystackCheckout = createServerFn({ method: "POST" })
     const key = process.env.PAYSTACK_SECRET_KEY;
     if (!key) throw new Error("Paystack not configured");
     const plan = PLANS[data.plan];
+
+    // Currency: explicit choice → param; otherwise sniff from edge geo headers.
+    let currency: "USD" | "NGN" = data.currency ?? "USD";
+    if (!data.currency) {
+      try {
+        const country = (
+          (await import("@tanstack/react-start/server")).getRequestHeader("cf-ipcountry") ||
+          (await import("@tanstack/react-start/server")).getRequestHeader("x-vercel-ip-country") ||
+          ""
+        ).toUpperCase();
+        if (country === "NG") currency = "NGN";
+      } catch {
+        // ignore — default USD
+      }
+    }
+    const price = plan.prices[currency];
+
     const { data: profile } = await supabaseAdmin.from("profiles").select("email").eq("user_id", userId).maybeSingle();
     const email = profile?.email;
     if (!email) throw new Error("Profile email missing — please re-login");
@@ -48,11 +68,11 @@ export const createPaystackCheckout = createServerFn({ method: "POST" })
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
-        amount: plan.amount_minor,
-        currency: plan.currency,
+        amount: price.amount_minor,
+        currency,
         reference,
         ...(callback_url ? { callback_url } : {}),
-        metadata: { user_id: userId, plan: data.plan, credits: plan.credits },
+        metadata: { user_id: userId, plan: data.plan, credits: plan.credits, currency },
       }),
     });
     if (!res.ok) {
@@ -64,8 +84,8 @@ export const createPaystackCheckout = createServerFn({ method: "POST" })
     await supabaseAdmin.from("payments").insert({
       user_id: userId,
       reference: json.data.reference,
-      amount_kobo: plan.amount_minor,
-      currency: plan.currency,
+      amount_kobo: price.amount_minor,
+      currency,
       credits_granted: plan.credits,
       status: "pending",
     });
