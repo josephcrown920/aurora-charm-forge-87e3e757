@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, Sparkles } from "lucide-react";
+import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2 } from "lucide-react";
 import balloonAsset from "@/assets/balloon-head.png.asset.json";
 import audioAsset from "@/assets/the-one-hook.mp3.asset.json";
 
@@ -282,7 +282,7 @@ export function BalloonLipsync() {
             drop any selfie, get a singing performance back.
           </p>
 
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               onClick={toggle}
               className="inline-flex items-center gap-2 rounded-full bg-pink-400 px-5 py-3 text-sm font-bold text-pink-950 hover:opacity-95 shadow-[0_0_30px_-5px_rgba(236,72,153,0.7)]"
@@ -290,10 +290,23 @@ export function BalloonLipsync() {
               {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
               {playing ? "Pause hook" : "Play the hook"}
             </button>
-            <span className="inline-flex items-center gap-1.5 text-xs text-white/55">
-              <Volume2 className="size-3.5" /> Best with sound on
-            </span>
+            <a
+              href="/canvas?template=lipsync-preset"
+              className="inline-flex items-center gap-2 rounded-full border border-pink-300/40 bg-white/5 px-4 py-2.5 text-sm font-medium text-pink-100 hover:bg-white/10 no-underline"
+            >
+              <Wand2 className="size-3.5" /> Use this template <ArrowRight className="size-3.5" />
+            </a>
+            <a
+              href="/canvas?template=lipsync-blank"
+              className="inline-flex items-center gap-1.5 text-xs text-white/60 hover:text-white no-underline"
+            >
+              or start blank
+            </a>
           </div>
+          <span className="mt-2 inline-flex items-center gap-1.5 text-xs text-white/55">
+            <Volume2 className="size-3.5" /> Best with sound on
+          </span>
+
 
           {/* Full lyrics list (side) */}
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-5">
