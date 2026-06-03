@@ -21,6 +21,7 @@ type FinishedWorkflow = {
   credits: number;
   models: string[];
   description: string;
+  steps: WorkflowStep[];
 };
 
 const FINISHED: FinishedWorkflow[] = [
@@ -33,6 +34,13 @@ const FINISHED: FinishedWorkflow[] = [
     credits: 18,
     models: ["Nano Banana Pro", "Seedance 2.0", "Sync 1.9"],
     description: "Selfie → balloon-head surreal portrait over NYC skyline → motion → lip-synced hook.",
+    steps: [
+      { node: "Character lock", model: "Nano Banana Pro", prompt: "Lock the subject's face and skin tone from the uploaded selfie. Keep identity exact." },
+      { node: "Image gen", model: "Nano Banana Pro", prompt: "Same subject as a giant glossy red balloon-head floating in front of the NYC skyline at golden hour. Wearing oversized varsity jacket, chunky gold chain. Surreal, hyperreal, 35mm." },
+      { node: "Motion", model: "Seedance 2.0", prompt: "Slow zoom-in on subject, gentle bob as balloon head sways, skyline parallax. 4 seconds, cinematic." },
+      { node: "Lipsync", model: "Sync 1.9", prompt: "Lipsync to attached vocal hook. Natural mouth shape over the balloon material." },
+      { node: "Final render", model: "—", prompt: "1080x1350, 24fps, mp4, color graded warm." },
+    ],
   },
   {
     id: "cops-chase",
@@ -43,6 +51,13 @@ const FINISHED: FinishedWorkflow[] = [
     credits: 22,
     models: ["Seedream 4.5", "Kling 3.0", "Sync 1.9"],
     description: "Subject sings into mic while two officers chase — golden-hour bokeh, full lip-sync.",
+    steps: [
+      { node: "Character lock", model: "Seedream 4.5", prompt: "Lock subject from selfie. Streetwear: black hoodie, distressed jeans, silver chain." },
+      { node: "Scene gen", model: "Seedream 4.5", prompt: "Subject sprinting down a Brooklyn street holding an SM7B mic, mid-vocal. Two NYPD officers chasing 10ft behind. Golden hour, anamorphic bokeh, low shutter motion blur. Cinematic, 35mm." },
+      { node: "Motion", model: "Kling 3.0", prompt: "Tracking shot beside subject, 6 seconds, slight handheld shake, officers gaining slowly." },
+      { node: "Lipsync", model: "Sync 1.9", prompt: "Sync subject's mouth to attached verse. Keep aggressive delivery, visible breath." },
+      { node: "Grade", model: "—", prompt: "Teal shadows, orange highlights, film grain, gate weave." },
+    ],
   },
   {
     id: "car-on-fire",
@@ -53,6 +68,13 @@ const FINISHED: FinishedWorkflow[] = [
     credits: 30,
     models: ["Full Body Gen", "Nano Banana Pro", "Seedance 2.0"],
     description: "Character + product (top + shorts) → editorial pose → desert night with burning car backdrop.",
+    steps: [
+      { node: "Character", model: "Full Body Gen", prompt: "Full-body model from selfie, 5'10, slim athletic build. Neutral standing pose for try-on." },
+      { node: "Product try-on", model: "Nano Banana Pro", prompt: "Dress subject in uploaded cropped tank + cargo shorts. Preserve fabric texture, logos, stitching." },
+      { node: "Scene composite", model: "Nano Banana Pro", prompt: "Place subject in Mojave desert at night, sedan engulfed in orange flames 15ft behind. Heat haze, ember sparks, key light from fire. Editorial, Vogue Italia tone." },
+      { node: "Motion", model: "Seedance 2.0", prompt: "Subject turns head slowly toward camera, fire flickers, embers drift up. 4 seconds." },
+      { node: "Render", model: "—", prompt: "4:5, 1440x1800, high contrast, deep shadows." },
+    ],
   },
   {
     id: "industrial-playground",
@@ -63,6 +85,14 @@ const FINISHED: FinishedWorkflow[] = [
     credits: 30,
     models: ["Character Lock", "Full Body Gen", "Image Gen"],
     description: "Two product items + style ref → laughing model interacting with giant colored shapes.",
+    steps: [
+      { node: "Character lock", model: "Character Lock", prompt: "Lock face + skin tone from selfie. Long curly hair, natural makeup." },
+      { node: "Try-on top", model: "Full Body Gen", prompt: "Dress subject in uploaded oversized knit sweater. Keep weave, color, drape exact." },
+      { node: "Try-on bottom", model: "Full Body Gen", prompt: "Add uploaded pleated mini skirt. Preserve pleats and hemline." },
+      { node: "Scene gen", model: "Image Gen", prompt: "Subject laughing while leaning on a 6ft inflatable primary-color cube inside a concrete industrial warehouse. Giant red sphere and yellow cone in background. Soft northern window light. Editorial." },
+      { node: "Pose variation", model: "Image Gen", prompt: "Generate 3 more poses: mid-laugh sitting on cube, walking past sphere, hand on cone." },
+      { node: "Render", model: "—", prompt: "4:5 lookbook set, color matched, neutral grade." },
+    ],
   },
   {
     id: "vinyl-library",
@@ -73,6 +103,14 @@ const FINISHED: FinishedWorkflow[] = [
     credits: 30,
     models: ["Character", "Full Body Gen", "Environment"],
     description: "Green leather jacket + brown wide-leg pants → curated vinyl-library editorial shoot.",
+    steps: [
+      { node: "Character", model: "Character", prompt: "Lock subject from selfie. Confident relaxed expression." },
+      { node: "Try-on jacket", model: "Full Body Gen", prompt: "Dress subject in uploaded forest-green leather moto jacket. Preserve grain, zippers, collar shape." },
+      { node: "Try-on pants", model: "Full Body Gen", prompt: "Add uploaded chocolate-brown wide-leg trousers. Preserve break at ankle." },
+      { node: "Environment", model: "Environment", prompt: "Place subject inside a warm-lit private vinyl listening library. Floor-to-ceiling oak shelves packed with records, mid-century chair, brass lamp. Subject flipping through a record crate, mid-action." },
+      { node: "Pose set", model: "Full Body Gen", prompt: "4 poses: pulling record from shelf, sitting reading sleeve, leaning on shelf, walking out frame." },
+      { node: "Render", model: "—", prompt: "4:5 editorial, warm tungsten grade, soft film grain." },
+    ],
   },
 ];
 
