@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { generatePerformanceShot, listGenerations, generateVideoFromImage, lipSyncVideo, generateSplitReality } from "@/lib/studio.functions";
 import { getMyProfile, createPaystackCheckout } from "@/lib/billing.functions";
 import { PLANS } from "@/lib/billing.plans";
+import { detectCurrency } from "@/lib/geo.functions";
 import demoSelfie from "@/assets/demo-selfie.jpg";
 import { RECIPES } from "@/lib/tutorials";
 import { MODEL_LIST, VIDEO_MODEL_LIST, getModelMeta } from "@/lib/models";
@@ -105,6 +106,9 @@ function StudioPage() {
   const splitFn = useServerFn(generateSplitReality);
   const profileFn = useServerFn(getMyProfile);
   const checkoutFn = useServerFn(createPaystackCheckout);
+  const detectCurrencyFn = useServerFn(detectCurrency);
+  const { data: geo } = useQuery({ queryKey: ["geo-currency"], queryFn: () => detectCurrencyFn(), staleTime: 60 * 60 * 1000 });
+  const currency = geo?.currency ?? "USD";
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -288,7 +292,7 @@ function StudioPage() {
   }, [user, demoUrl, recipeFired, genFn, model, qc]);
 
   const checkoutMut = useMutation({
-    mutationFn: async (plan: "starter" | "creator" | "studio") => checkoutFn({ data: { plan } }),
+    mutationFn: async (plan: "starter" | "creator" | "studio") => checkoutFn({ data: { plan, currency } }),
     onSuccess: (res) => {
       window.location.href = res.authorizationUrl;
     },
@@ -721,7 +725,7 @@ function StudioPage() {
                   >
                     <span className="text-xs uppercase tracking-wider text-muted-foreground">{k}</span>
                     <span className="text-lg font-semibold">{p.credits} <span className="text-xs font-normal text-muted-foreground">credits</span></span>
-                    <span className="text-xs text-muted-foreground">${p.usd}</span>
+                    <span className="text-xs text-muted-foreground">{p.prices[currency].display}</span>
                   </button>
                 );
               })}

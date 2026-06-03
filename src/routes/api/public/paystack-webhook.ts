@@ -25,7 +25,7 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
         const reference = event.data.reference;
         const { data: payment } = await supabaseAdmin
           .from("payments")
-          .select("id, user_id, credits_granted, status")
+          .select("id, user_id, credits_granted, status, currency")
           .eq("reference", reference)
           .maybeSingle();
         if (!payment) return new Response("not found", { status: 200 });
@@ -52,9 +52,12 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
               .eq("code", String(refCode).toLowerCase())
               .maybeSingle();
             if (aff) {
-              // Paystack amount is in the minor unit of the charged currency
-              // (cents for USD). Checkout charges USD, so cents → USD = /100.
-              const amountUsd = (Number((event.data as { amount?: number }).amount ?? 0) / 100) * (aff.commission_pct / 100);
+              // Paystack amount is in the minor unit of the charged currency.
+              // USD → cents (÷100). NGN → kobo (÷100, then ÷~1600 to normalize to USD).
+              const minor = Number((event.data as { amount?: number }).amount ?? 0);
+              const major = minor / 100;
+              const usdValue = payment.currency === "NGN" ? major / 1600 : major;
+              const amountUsd = usdValue * (aff.commission_pct / 100);
               await supabaseAdmin.from("affiliate_events").insert({
                 code: aff.code,
                 kind: "conversion",
