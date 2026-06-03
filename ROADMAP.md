@@ -2,7 +2,7 @@
 
 Living doc of where we are vs. what's left to be a complete SaaS. Update as we ship so we don't over-build.
 
-Last updated: 2026-06-01
+Last updated: 2026-06-03
 
 ---
 
