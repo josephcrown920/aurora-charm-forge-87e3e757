@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, CheckCircle2, X } from "lucide-react";
+import { Sparkles, CheckCircle2, X, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import w1 from "@/assets/workflow-img_6068.jpg.asset.json"; // Industrial Playground
 import w2 from "@/assets/workflow-img_6077.jpg.asset.json"; // Car On Fire
 import w3 from "@/assets/workflow-img_6078.jpg.asset.json"; // Fashion bookshelf
 import w4 from "@/assets/workflow-img_5814.jpg.asset.json"; // Cops chase
 import balloon from "@/assets/balloon-head.png.asset.json"; // NBA Josh balloon
 import type { Node, Edge } from "@xyflow/react";
+
+type WorkflowStep = { node: string; model: string; prompt: string };
 
 type FinishedWorkflow = {
   id: string;
