@@ -55,6 +55,7 @@ import { SplitRealityPlayer } from "@/components/canvas/SplitRealityPlayer";
 import { LiveJobsPanel } from "@/components/canvas/LiveJobsPanel";
 import { TrendingTemplatesMenu, type TemplateGraph } from "@/components/canvas/TrendingTemplatesMenu";
 import { AuroraAgentPanel } from "@/components/canvas/AuroraAgentPanel";
+import { FinishedWorkflowsGallery } from "@/components/canvas/FinishedWorkflowsGallery";
 
 
 export const Route = createFileRoute("/canvas")({
@@ -584,6 +585,7 @@ function CanvasPage() {
             <Sparkles className="size-3.5 mr-1" /> Aurora Agent
           </Button>
           <TrendingTemplatesMenu onPick={(g: TemplateGraph) => { setNodes(g.nodes); setEdges(g.edges); toast.success(`Loaded "${g.name}"`); }} />
+          <FinishedWorkflowsGallery onLoad={(id) => toast.success(`Opening "${id}" — drag nodes to remix`)} />
           <Button size="sm" variant="outline" onClick={() => addNode("input")} className="border-white/10 bg-white/5"><Plus className="size-3.5 mr-1" /> Image</Button>
           <Button size="sm" variant="outline" onClick={() => addNode("audio")} className="border-white/10 bg-white/5"><Music className="size-3.5 mr-1" /> Audio</Button>
           <Button size="sm" variant="outline" onClick={() => addNode("image")} className="border-white/10 bg-white/5"><Wand2 className="size-3.5 mr-1" /> Img gen</Button>
