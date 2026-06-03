@@ -251,6 +251,25 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
+function CopyButton({ value, label }: { value: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(value);
+        setCopied(true);
+        toast.success(label ? "All prompts copied" : "Prompt copied");
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 hover:bg-white/10 text-[10px] text-white/70"
+    >
+      {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+      {label ?? "Copy"}
+    </button>
+  );
+}
+
 // Exported so canvas can also surface these in TrendingTemplatesMenu if wanted.
 export type { FinishedWorkflow };
 export const FINISHED_WORKFLOWS = FINISHED;
