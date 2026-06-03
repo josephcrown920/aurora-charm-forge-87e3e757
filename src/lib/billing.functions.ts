@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { getRequest } from "@tanstack/react-start/server";
+import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { PLANS } from "./billing.plans";
 
@@ -38,8 +38,8 @@ export const createPaystackCheckout = createServerFn({ method: "POST" })
     if (!data.currency) {
       try {
         const country = (
-          (await import("@tanstack/react-start/server")).getRequestHeader("cf-ipcountry") ||
-          (await import("@tanstack/react-start/server")).getRequestHeader("x-vercel-ip-country") ||
+          getRequestHeader("cf-ipcountry") ||
+          getRequestHeader("x-vercel-ip-country") ||
           ""
         ).toUpperCase();
         if (country === "NG") currency = "NGN";
