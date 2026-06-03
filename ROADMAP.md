@@ -35,6 +35,8 @@ Last updated: 2026-06-03
 - [ ] **CLI** — `@aurora-studio/cli` npm package (landing section live; package not published yet)
 - [ ] **Lovable Emails** — transactional email scaffolding (decided: built-in, not external blaster)
 - [ ] **Motion clip → real video motion transfer** (currently stored as pose reference only)
+- [x] **Finished workflows gallery** — recipes + copyable prompts so customers can recreate (shipped 06-03)
+- [ ] **Paystack USD** — needs merchant-side enablement. Paystack does not show USD as a default currency in the dashboard; you have to request "Multi-currency / USD payouts" from Paystack support (support@paystack.com) and have it whitelisted on your business account. Until then, the init call will reject USD with `currency_not_supported`. Two options: (a) email Paystack to enable USD on your account, or (b) switch billing to NGN and convert on display.
 
 ---
 
