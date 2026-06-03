@@ -129,7 +129,7 @@ export function FinishedWorkflowsGallery({
           <Sparkles className="size-3.5 mr-1" /> Finished workflows
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl bg-[oklch(0.12_0.04_290)] border-white/10 text-white">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-[oklch(0.12_0.04_290)] border-white/10 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <CheckCircle2 className="size-5 text-emerald-400" />
