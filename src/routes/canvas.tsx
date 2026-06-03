@@ -53,7 +53,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SplitRealityPlayer } from "@/components/canvas/SplitRealityPlayer";
 import { LiveJobsPanel } from "@/components/canvas/LiveJobsPanel";
-import { TrendingTemplatesMenu, type TemplateGraph } from "@/components/canvas/TrendingTemplatesMenu";
+import { TrendingTemplatesMenu, type TemplateGraph, getTemplateById } from "@/components/canvas/TrendingTemplatesMenu";
 import { AuroraAgentPanel } from "@/components/canvas/AuroraAgentPanel";
 import { FinishedWorkflowsGallery } from "@/components/canvas/FinishedWorkflowsGallery";
 
@@ -342,6 +342,24 @@ function CanvasPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   useEffect(() => { if (!loading && !user) navigate({ to: "/auth" }); }, [user, loading, navigate]);
+
+  // Deep-link: /canvas?template=<id> auto-loads that template once.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = new URLSearchParams(window.location.search).get("template");
+    if (!id) return;
+    const g = getTemplateById(id);
+    if (g) {
+      setNodes(g.nodes);
+      setEdges(g.edges);
+      toast.success(`Loaded "${g.name}"`);
+      // Clear the param so a refresh doesn't keep resetting the canvas.
+      const url = new URL(window.location.href);
+      url.searchParams.delete("template");
+      window.history.replaceState({}, "", url.toString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
