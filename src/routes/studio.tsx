@@ -5,6 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { UploadSlot } from "@/components/studio/UploadSlot";
+import { TriedTestedShowcase } from "@/components/studio/TriedTestedShowcase";
+import tutorialStudioRefs from "@/assets/tutorial-studio-refs.jpg.asset.json";
+import tutorialStudioFinal from "@/assets/tutorial-studio-final.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Wand2, LogOut, Loader2, Download, Camera, Film, Mic2, Coins, Zap, LayoutDashboard, Shield, Workflow } from "lucide-react";
@@ -367,6 +370,18 @@ function StudioPage() {
             </h1>
             <p className="mt-1 text-xs text-muted-foreground">Drop references → write direction → generate. That's it.</p>
           </div>
+
+          <TriedTestedShowcase
+            title="See the recipe → see the result"
+            subtitle="Real references. Real render. This is what your shoot can look like."
+            refsImage={tutorialStudioRefs.url}
+            refsCaption="Selfie · Outfit (all black) · Scene (train tracks) · Prop (vintage mic)"
+            finalImage={tutorialStudioFinal.url}
+            finalCaption="Hyper-real composite · identity preserved · golden-hour grade"
+            prompt="Create a hyper-realistic composite using the provided reference images. Use the close-up selfie as the primary identity source, preserving exact facial features, skin tone, dreadlocks. Place the subject in the scene (desert train tracks at golden hour) wearing the outfit (black fuzzy crewneck sweater, black sweatpants). Pose: powerful, hands on hips, slight low angle, leaning into a vintage hanging silver microphone. Cinematic anamorphic 35mm, warm sunset grade, sharp focus on subject, shallow depth of field, 4K editorial."
+          />
+
+
 
           {/* Compact 5-slot reference row */}
           <div className="grid grid-cols-5 gap-2">

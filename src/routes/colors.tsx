@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, Palette, Wand2, ArrowLeft, Check, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { TriedTestedShowcase } from "@/components/studio/TriedTestedShowcase";
+import tutorialStudioRefs from "@/assets/tutorial-studio-refs.jpg.asset.json";
+import tutorialColorsBlueFinal from "@/assets/tutorial-colors-blue-final.jpg.asset.json";
 
 // Real performance reference photos shot on a hot-pink cyclorama.
 // Tinted at render-time to match the chosen color via a mix-blend overlay.
@@ -255,6 +258,19 @@ function ColorsStudio() {
             </h1>
             <p className="text-muted-foreground text-sm mt-1">Studio, indoor, rooftop, street — each scene previewed in your color.</p>
           </div>
+
+          <TriedTestedShowcase
+            accent="cyan"
+            title="Blue performance studio — tried & tested"
+            subtitle="One selfie + the royal-blue studio preset = this finished shot."
+            refsImage={tutorialStudioRefs.url}
+            refsCaption="Selfie · Outfit · Pose reference"
+            finalImage={tutorialColorsBlueFinal.url}
+            finalCaption="Royal-blue cyclorama · vintage mic · puffer jacket · cinematic rim light"
+            prompt="Wide editorial portrait of the subject on a seamless deep royal-blue cyclorama studio backdrop that floods the frame. Subject standing on a round blue platform, profile to camera, reaching toward a vintage silver microphone hanging from above. Outfit: bright orange puffer jacket, distressed black stacked jeans, neon green sneakers. Bold monochromatic blue ambient light, soft key from camera-right, subtle warm bounce on jacket. Preserve exact facial likeness, skin tone, dreadlocks. ARRI cinema look, 50mm, 4K, no text or logos."
+          />
+
+
 
           {/* Colors */}
           <div>
