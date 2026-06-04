@@ -38,6 +38,10 @@ export function BalloonLipsync() {
 
   const [playing, setPlaying] = useState(false);
   const [lineIdx, setLineIdx] = useState(0);
+  const [lyrics, setLyrics] = useState<Cue[]>(DEFAULT_LYRICS);
+  const [audioSrc, setAudioSrc] = useState<string>(audioAsset.url);
+  const [transcribing, setTranscribing] = useState(false);
+  const transcribeFn = useServerFn(transcribeAudio);
 
   const applyMouth = (open: number) => {
     if (mouthRef.current) {
