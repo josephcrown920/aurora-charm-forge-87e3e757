@@ -767,6 +767,10 @@ function StudioPage() {
             </div>
           )}
 
+          <HfAudioPanel onAudioReady={(url) => setAudioUrl(url)} />
+
+
+
           <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Coins className="size-4 text-primary" />
