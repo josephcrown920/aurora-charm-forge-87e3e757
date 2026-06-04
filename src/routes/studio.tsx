@@ -566,13 +566,23 @@ function StudioPage() {
             ) : latest?.result_image_url ? (
               <>
                 <img src={latest.result_image_url} alt="Latest shot" className="w-full h-full object-cover" />
-                <a
-                  href={latest.result_image_url}
-                  download
-                  className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
-                >
-                  <Download className="size-4" /> Save
-                </a>
+                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => latest?.id && shareMut.mutate(latest.id)}
+                    disabled={shareMut.isPending}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background disabled:opacity-50"
+                  >
+                    {shareMut.isPending ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />} Share
+                  </button>
+                  <a
+                    href={latest.result_image_url}
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
+                  >
+                    <Download className="size-4" /> Save
+                  </a>
+                </div>
               </>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground p-8 text-center">
