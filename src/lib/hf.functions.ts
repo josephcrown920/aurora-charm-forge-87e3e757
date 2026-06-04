@@ -15,15 +15,15 @@ export const transcribeAudio = createServerFn({ method: "POST" })
       base64: z.string().min(16).max(20_000_000),
       mime: z.string().max(64).optional(),
       model: z.string().max(120).default("openai/whisper-large-v3"),
+      timestamps: z.boolean().default(false),
     }).parse
   )
   .handler(async ({ data }) => {
-    // decode base64 → ArrayBuffer
     const bin = atob(data.base64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    const text = await hfSpeechToText(data.model, bytes.buffer);
-    return { text };
+    const { text, chunks } = await hfSpeechToText(data.model, bytes.buffer, { timestamps: data.timestamps });
+    return { text, chunks };
   });
 
 /**
