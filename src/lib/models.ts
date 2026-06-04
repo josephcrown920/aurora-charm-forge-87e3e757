@@ -83,6 +83,32 @@ export const MODEL_LIST: ModelMeta[] = [
     status: "preview",
     category: "image",
   },
+  {
+    value: "hf/flux-schnell",
+    endpoint: "black-forest-labs/FLUX.1-schnell",
+    label: "FLUX.1 Schnell",
+    short: "FLUX",
+    group: "Hugging Face",
+    icon: Cpu,
+    color: "text-sky-400",
+    bg: "bg-sky-500/15 border-sky-500/30",
+    tagline: "Open-source, fast, free tier via HF",
+    status: "live",
+    category: "image",
+  },
+  {
+    value: "hf/sdxl",
+    endpoint: "stabilityai/stable-diffusion-xl-base-1.0",
+    label: "SDXL Base",
+    short: "SDXL",
+    group: "Hugging Face",
+    icon: Cpu,
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/15 border-indigo-500/30",
+    tagline: "Stable Diffusion XL · classic open model",
+    status: "live",
+    category: "image",
+  },
 ];
 
 // VIDEO MODELS (selectable for image-to-video)
