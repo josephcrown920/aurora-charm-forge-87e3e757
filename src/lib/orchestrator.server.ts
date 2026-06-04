@@ -15,6 +15,7 @@
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { falRun } from "./fal.server";
+import { hfTextToImage } from "./hf.server";
 
 export type GenerateKind = "image" | "video" | "lipsync" | "upscale";
 
@@ -40,7 +41,7 @@ export type GenerateResult = {
 };
 
 type ProviderAdapter = {
-  name: "lovable" | "fal" | "replicate" | "runpod";
+  name: "lovable" | "fal" | "replicate" | "runpod" | "huggingface";
   supports: (req: GenerateRequest) => boolean;
   /** Estimated cost in USD per call — used for cost-aware routing. */
   estimateCost: (req: GenerateRequest) => number;
