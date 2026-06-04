@@ -58,6 +58,19 @@ function providers(): Provider[] {
           headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` },
         }),
     },
+    {
+      // Hugging Face's OpenAI-compatible router. Routes to whichever provider
+      // (Together, Fireworks, HF-hosted, etc.) is currently serving the model.
+      name: "huggingface",
+      enabled: !!process.env.HF_TOKEN,
+      model: "meta-llama/Llama-3.3-70B-Instruct",
+      make: () =>
+        createOpenAICompatible({
+          name: "huggingface",
+          baseURL: "https://router.huggingface.co/v1",
+          headers: { Authorization: `Bearer ${process.env.HF_TOKEN}` },
+        }),
+    },
   ];
 }
 
