@@ -325,6 +325,18 @@ function StudioPage() {
     <main className="min-h-screen relative" style={{ background: "var(--gradient-soft)" }}>
       <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-stage)" }} />
 
+      {user && (
+        <OnboardingModal
+          userId={user.id}
+          open={onboardOpen}
+          onOpenChange={setOnboardOpen}
+          onApply={({ selfieUrl, prompt: p }) => {
+            setSelfie(selfieUrl);
+            setPrompt(p);
+          }}
+        />
+      )}
+
       <header className="relative z-10 flex items-center justify-between px-6 md:px-10 py-5 border-b border-border/60 backdrop-blur-xl bg-background/40">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <span className="size-8 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
