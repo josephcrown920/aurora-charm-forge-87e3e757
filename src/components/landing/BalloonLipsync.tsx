@@ -290,6 +290,46 @@ export function BalloonLipsync() {
             <Volume2 className="size-3.5" /> Best with sound on
           </span>
 
+          {/* Upload your own audio → Whisper timed cues */}
+          <div className="mt-6 rounded-2xl border border-pink-300/20 bg-pink-500/5 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Mic2 className="size-4 text-pink-300" />
+              <p className="text-xs uppercase tracking-[0.2em] text-pink-200/80">
+                Your audio → Whisper timed cues
+              </p>
+            </div>
+            <p className="text-xs text-white/55 mb-3">
+              Drop an MP3/WAV. We transcribe it with Whisper and re-time the lyric overlay to your track.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium cursor-pointer border ${transcribing ? "border-white/10 bg-white/5 text-white/40" : "border-pink-300/40 bg-white/5 text-pink-100 hover:bg-white/10"}`}>
+                {transcribing ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+                {transcribing ? "Transcribing…" : "Upload audio"}
+                <input
+                  type="file"
+                  accept="audio/*"
+                  className="hidden"
+                  disabled={transcribing}
+                  onChange={onUploadAudio}
+                />
+              </label>
+              {lyrics !== DEFAULT_LYRICS && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLyrics(DEFAULT_LYRICS);
+                    setAudioSrc(audioAsset.url);
+                    setLineIdx(0);
+                    if (audioRef.current) audioRef.current.load();
+                  }}
+                  className="text-xs text-white/55 hover:text-white underline"
+                >
+                  Reset to demo hook
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-5">
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-3">Lyrics</p>
             <ol className="space-y-2">
@@ -300,6 +340,10 @@ export function BalloonLipsync() {
                     i === lineIdx ? "text-white font-semibold" : "text-white/45"
                   }`}
                 >
+                  <span className="text-white/30 tabular-nums mr-2">
+                    {String(Math.floor(l.t / 60)).padStart(1, "0")}:
+                    {String(Math.floor(l.t % 60)).padStart(2, "0")}
+                  </span>
                   {l.text}
                 </li>
               ))}
@@ -308,7 +352,7 @@ export function BalloonLipsync() {
 
           <audio
             ref={audioRef}
-            src={audioAsset.url}
+            src={audioSrc}
             preload="auto"
             onEnded={() => {
               setPlaying(false);
