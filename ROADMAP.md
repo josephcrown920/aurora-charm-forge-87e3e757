@@ -2,7 +2,7 @@
 
 Living doc of where we are vs. what's left to be a complete SaaS. Update as we ship so we don't over-build.
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 ---
 
@@ -45,7 +45,7 @@ Last updated: 2026-06-03
 1. **Publish the CLI** to npm so the install command on the landing page actually works
    - `aurora login`, `aurora generate`, `aurora workflows run <id>`
    - Reads `~/.aurora/config.json`, hits existing `/api/public/generate`
-2. **Onboarding flow** — first-run modal: pick a vibe → drop a selfie → first render in <60s
+2. **Onboarding flow** ✅ shipped 06-04 — first-run modal on /studio: pick vibe → drop selfie → prompt + selfie loaded into Studio
 3. **Email lifecycle** (Lovable Emails)
    - Welcome + 5 free credits
    - Render-complete notification
