@@ -98,11 +98,15 @@ export async function hfTextToImage(
 }
 
 // ─── Automatic speech recognition ────────────────────────────────────────────
+export type AsrChunk = { start: number; end: number; text: string };
 export async function hfSpeechToText(
   modelOrUrl: string,
-  audio: ArrayBuffer | Uint8Array
-): Promise<string> {
-  const res = await fetch(resolveUrl(modelOrUrl), {
+  audio: ArrayBuffer | Uint8Array,
+  opts: { timestamps?: boolean } = {}
+): Promise<{ text: string; chunks: AsrChunk[] }> {
+  const base = resolveUrl(modelOrUrl);
+  const url = opts.timestamps ? `${base}?return_timestamps=true` : base;
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token()}`,
@@ -116,8 +120,16 @@ export async function hfSpeechToText(
     const txt = await res.text().catch(() => "");
     throw new Error(`HF ${res.status}: ${txt.slice(0, 400)}`);
   }
-  const json = (await res.json()) as { text?: string };
-  return json.text ?? "";
+  const json = (await res.json()) as {
+    text?: string;
+    chunks?: Array<{ timestamp: [number, number]; text: string }>;
+  };
+  const chunks: AsrChunk[] = (json.chunks ?? []).map((c) => ({
+    start: c.timestamp?.[0] ?? 0,
+    end: c.timestamp?.[1] ?? 0,
+    text: (c.text ?? "").trim(),
+  }));
+  return { text: json.text ?? "", chunks };
 }
 
 // ─── Text-to-speech ──────────────────────────────────────────────────────────

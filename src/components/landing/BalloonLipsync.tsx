@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2 } from "lucide-react";
+import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2, Upload, Loader2, Mic2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import balloonAsset from "@/assets/balloon-head.png.asset.json";
 import audioAsset from "@/assets/the-one-hook.mp3.asset.json";
+import { transcribeAudio } from "@/lib/hf.functions";
 
 /**
  * Every Face Sings — drives a clear lip-sync mouth, upper/lower lips and
  * an EQ visualizer entirely from a synthetic syllable rhythm tied to the
- * audio.currentTime. This avoids CORS / Web-Audio analyser issues that
- * silently produce no animation on some hosts.
+ * audio.currentTime. Optional: upload your own audio and Whisper will
+ * generate timed lyric cues that sync to playback.
  */
 
 type Cue = { t: number; text: string };
 
-const LYRICS: Cue[] = [
+const DEFAULT_LYRICS: Cue[] = [
   { t: 0.0,  text: "Floatin' over the city, head in the clouds" },
   { t: 3.6,  text: "NBA Josh — they hearin' me loud" },
   { t: 7.4,  text: "Balloon vibes, sky-high, I'm proud" },
@@ -35,6 +38,10 @@ export function BalloonLipsync() {
 
   const [playing, setPlaying] = useState(false);
   const [lineIdx, setLineIdx] = useState(0);
+  const [lyrics, setLyrics] = useState<Cue[]>(DEFAULT_LYRICS);
+  const [audioSrc, setAudioSrc] = useState<string>(audioAsset.url);
+  const [transcribing, setTranscribing] = useState(false);
+  const transcribeFn = useServerFn(transcribeAudio);
 
   const applyMouth = (open: number) => {
     if (mouthRef.current) {
@@ -89,7 +96,7 @@ export function BalloonLipsync() {
 
     if (isPlaying) {
       let idx = 0;
-      for (let i = 0; i < LYRICS.length; i++) if (t >= LYRICS[i].t) idx = i;
+      for (let i = 0; i < lyrics.length; i++) if (t >= lyrics[i].t) idx = i;
       if (idx !== lineIdx) setLineIdx(idx);
     }
 
@@ -111,6 +118,60 @@ export function BalloonLipsync() {
       audio.pause();
       setPlaying(false);
       setLineIdx(0);
+    }
+  };
+
+  const onUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("Audio is too large (max 20MB).");
+      return;
+    }
+
+    // Swap in the user's audio immediately so they can play it.
+    const objectUrl = URL.createObjectURL(file);
+    setAudioSrc(objectUrl);
+    setLineIdx(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.load();
+    }
+    setPlaying(false);
+
+    setTranscribing(true);
+    try {
+      const buf = await file.arrayBuffer();
+      const u8 = new Uint8Array(buf);
+      let bin = "";
+      const chunk = 0x8000;
+      for (let i = 0; i < u8.length; i += chunk) {
+        bin += String.fromCharCode.apply(null, Array.from(u8.subarray(i, i + chunk)));
+      }
+      const base64 = btoa(bin);
+      const res = await transcribeFn({ data: { base64, mime: file.type, timestamps: true } });
+      const cues: Cue[] = (res.chunks ?? [])
+        .filter((c) => c.text && Number.isFinite(c.start))
+        .map((c) => ({ t: Math.max(0, c.start), text: c.text }));
+      if (cues.length > 0) {
+        setLyrics(cues);
+        toast.success(`Transcribed ${cues.length} timed cues`);
+      } else if (res.text) {
+        // Fallback: split the transcript evenly across the audio duration.
+        const dur = audioRef.current?.duration || 30;
+        const lines = res.text.split(/(?<=[.!?])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
+        const step = dur / Math.max(1, lines.length);
+        setLyrics(lines.map((text, i) => ({ t: i * step, text })));
+        toast.success("Transcribed — cues auto-spaced");
+      } else {
+        toast.error("No speech detected in audio");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Transcription failed";
+      toast.error(msg.includes("Unauthorized") ? "Sign in to transcribe your own audio" : msg);
+    } finally {
+      setTranscribing(false);
     }
   };
 
@@ -213,7 +274,7 @@ export function BalloonLipsync() {
               key={lineIdx}
               className="mx-auto max-w-md text-lg md:text-2xl font-bold text-white leading-snug animate-fade-in drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
             >
-              {LYRICS[lineIdx].text}
+              {lyrics[lineIdx].text}
             </p>
           </div>
 
@@ -283,16 +344,60 @@ export function BalloonLipsync() {
             <Volume2 className="size-3.5" /> Best with sound on
           </span>
 
+          {/* Upload your own audio → Whisper timed cues */}
+          <div className="mt-6 rounded-2xl border border-pink-300/20 bg-pink-500/5 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Mic2 className="size-4 text-pink-300" />
+              <p className="text-xs uppercase tracking-[0.2em] text-pink-200/80">
+                Your audio → Whisper timed cues
+              </p>
+            </div>
+            <p className="text-xs text-white/55 mb-3">
+              Drop an MP3/WAV. We transcribe it with Whisper and re-time the lyric overlay to your track.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium cursor-pointer border ${transcribing ? "border-white/10 bg-white/5 text-white/40" : "border-pink-300/40 bg-white/5 text-pink-100 hover:bg-white/10"}`}>
+                {transcribing ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+                {transcribing ? "Transcribing…" : "Upload audio"}
+                <input
+                  type="file"
+                  accept="audio/*"
+                  className="hidden"
+                  disabled={transcribing}
+                  onChange={onUploadAudio}
+                />
+              </label>
+              {lyrics !== DEFAULT_LYRICS && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLyrics(DEFAULT_LYRICS);
+                    setAudioSrc(audioAsset.url);
+                    setLineIdx(0);
+                    if (audioRef.current) audioRef.current.load();
+                  }}
+                  className="text-xs text-white/55 hover:text-white underline"
+                >
+                  Reset to demo hook
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-5">
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-3">Lyrics</p>
             <ol className="space-y-2">
-              {LYRICS.map((l, i) => (
+              {lyrics.map((l, i) => (
                 <li
                   key={i}
                   className={`text-sm md:text-base transition-colors ${
                     i === lineIdx ? "text-white font-semibold" : "text-white/45"
                   }`}
                 >
+                  <span className="text-white/30 tabular-nums mr-2">
+                    {String(Math.floor(l.t / 60)).padStart(1, "0")}:
+                    {String(Math.floor(l.t % 60)).padStart(2, "0")}
+                  </span>
                   {l.text}
                 </li>
               ))}
@@ -301,7 +406,7 @@ export function BalloonLipsync() {
 
           <audio
             ref={audioRef}
-            src={audioAsset.url}
+            src={audioSrc}
             preload="auto"
             onEnded={() => {
               setPlaying(false);
