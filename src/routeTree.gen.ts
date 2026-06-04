@@ -13,6 +13,7 @@ import { Route as WorkflowsRouteImport } from './routes/workflows'
 import { Route as UgcRouteImport } from './routes/ugc'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SplitRealityRouteImport } from './routes/split-reality'
+import { Route as SplitRealityRouteImport } from './routes/split-reality'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LipsyncRouteImport } from './routes/lipsync'
 import { Route as GiftsRouteImport } from './routes/gifts'
@@ -482,13 +483,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
