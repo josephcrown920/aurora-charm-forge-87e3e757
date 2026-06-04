@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2 } from "lucide-react";
+import { Play, Pause, Volume2, Sparkles, ArrowRight, Wand2, Upload, Loader2, Mic2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import balloonAsset from "@/assets/balloon-head.png.asset.json";
 import audioAsset from "@/assets/the-one-hook.mp3.asset.json";
+import { transcribeAudio } from "@/lib/hf.functions";
 
 /**
  * Every Face Sings — drives a clear lip-sync mouth, upper/lower lips and
  * an EQ visualizer entirely from a synthetic syllable rhythm tied to the
- * audio.currentTime. This avoids CORS / Web-Audio analyser issues that
- * silently produce no animation on some hosts.
+ * audio.currentTime. Optional: upload your own audio and Whisper will
+ * generate timed lyric cues that sync to playback.
  */
 
 type Cue = { t: number; text: string };
 
-const LYRICS: Cue[] = [
+const DEFAULT_LYRICS: Cue[] = [
   { t: 0.0,  text: "Floatin' over the city, head in the clouds" },
   { t: 3.6,  text: "NBA Josh — they hearin' me loud" },
   { t: 7.4,  text: "Balloon vibes, sky-high, I'm proud" },
