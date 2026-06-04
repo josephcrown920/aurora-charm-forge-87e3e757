@@ -1,11 +1,11 @@
-import { Banana, Sparkles, Flame, Zap, Film, Wand2, Cloud, Crown, Layers, Image as ImageIcon } from "lucide-react";
+import { Banana, Sparkles, Flame, Zap, Film, Wand2, Cloud, Crown, Layers, Image as ImageIcon, Cpu } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type ModelMeta = {
   value: string;
   label: string;
   short: string;
-  group: "Lovable AI" | "fal.ai";
+  group: "Lovable AI" | "fal.ai" | "Hugging Face";
   icon: LucideIcon;
   color: string;
   bg: string;
