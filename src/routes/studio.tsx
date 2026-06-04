@@ -123,6 +123,16 @@ function StudioPage() {
   const splitFn = useServerFn(generateSplitReality);
   const profileFn = useServerFn(getMyProfile);
   const checkoutFn = useServerFn(createPaystackCheckout);
+  const publishFn = useServerFn(publishGeneration);
+  const shareMut = useMutation({
+    mutationFn: async (id: string) => publishFn({ data: { id } }),
+    onSuccess: async (r) => {
+      const url = `${window.location.origin}${r.url}`;
+      try { await navigator.clipboard.writeText(url); toast.success("Public link copied", { description: url }); }
+      catch { toast.success("Published", { description: url }); }
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't publish"),
+  });
   const detectCurrencyFn = useServerFn(detectCurrency);
   const { data: geo } = useQuery({ queryKey: ["geo-currency"], queryFn: () => detectCurrencyFn(), staleTime: 60 * 60 * 1000 });
   const currency = geo?.currency ?? "USD";
