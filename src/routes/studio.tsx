@@ -31,6 +31,7 @@ import {
 import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
 import { publishGeneration } from "@/lib/share.functions";
 import { Share2 } from "lucide-react";
+import { saveAssetToDisk, isSplitRealityPrompt } from "@/lib/save";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
@@ -525,18 +526,12 @@ function StudioPage() {
             )}
           </Button>
 
-          <Button
-            disabled={splitMut.isPending}
-            onClick={() => splitMut.mutate()}
-            variant="outline"
-            className="w-full border-primary/40 text-foreground"
+          <Link
+            to="/split-reality"
+            className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-md border border-primary/40 bg-primary/5 hover:bg-primary/10 text-sm font-medium text-foreground no-underline"
           >
-            {splitMut.isPending ? (
-              <><Loader2 className="size-4 mr-2 animate-spin" /> Splitting reality…</>
-            ) : (
-              <><Sparkles className="size-4 mr-2 text-primary" /> Split Reality · ultra + cinematic · 2 credits · ~20–30s</>
-            )}
-          </Button>
+            <Sparkles className="size-4 text-primary" /> Split Reality — dedicated studio →
+          </Link>
 
           <Button
             disabled={demoMut.isPending || !demoUrl}
@@ -575,13 +570,13 @@ function StudioPage() {
                   >
                     {shareMut.isPending ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />} Share
                   </button>
-                  <a
-                    href={latest.result_image_url}
-                    download
+                  <button
+                    type="button"
+                    onClick={() => latest?.result_image_url && saveAssetToDisk(latest.result_image_url, `aurora-${latest.id.slice(0,8)}.png`)}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
                   >
                     <Download className="size-4" /> Save
-                  </a>
+                  </button>
                 </div>
               </>
             ) : (
