@@ -121,6 +121,60 @@ export function BalloonLipsync() {
     }
   };
 
+  const onUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("Audio is too large (max 20MB).");
+      return;
+    }
+
+    // Swap in the user's audio immediately so they can play it.
+    const objectUrl = URL.createObjectURL(file);
+    setAudioSrc(objectUrl);
+    setLineIdx(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.load();
+    }
+    setPlaying(false);
+
+    setTranscribing(true);
+    try {
+      const buf = await file.arrayBuffer();
+      const u8 = new Uint8Array(buf);
+      let bin = "";
+      const chunk = 0x8000;
+      for (let i = 0; i < u8.length; i += chunk) {
+        bin += String.fromCharCode.apply(null, Array.from(u8.subarray(i, i + chunk)));
+      }
+      const base64 = btoa(bin);
+      const res = await transcribeFn({ data: { base64, mime: file.type, timestamps: true } });
+      const cues: Cue[] = (res.chunks ?? [])
+        .filter((c) => c.text && Number.isFinite(c.start))
+        .map((c) => ({ t: Math.max(0, c.start), text: c.text }));
+      if (cues.length > 0) {
+        setLyrics(cues);
+        toast.success(`Transcribed ${cues.length} timed cues`);
+      } else if (res.text) {
+        // Fallback: split the transcript evenly across the audio duration.
+        const dur = audioRef.current?.duration || 30;
+        const lines = res.text.split(/(?<=[.!?])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
+        const step = dur / Math.max(1, lines.length);
+        setLyrics(lines.map((text, i) => ({ t: i * step, text })));
+        toast.success("Transcribed — cues auto-spaced");
+      } else {
+        toast.error("No speech detected in audio");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Transcription failed";
+      toast.error(msg.includes("Unauthorized") ? "Sign in to transcribe your own audio" : msg);
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
   // Always-on animation loop so idle breathing + bars are alive on mount.
   useEffect(() => {
     startedAtRef.current = performance.now();
