@@ -20,6 +20,7 @@ import demoSelfie from "@/assets/demo-selfie.jpg";
 import { RECIPES } from "@/lib/tutorials";
 import { MODEL_LIST, VIDEO_MODEL_LIST, getModelMeta } from "@/lib/models";
 import { ModelBadge } from "@/components/ModelBadge";
+import { OnboardingModal, shouldShowOnboarding } from "@/components/studio/OnboardingModal";
 import {
   Select,
   SelectContent,
@@ -98,9 +99,19 @@ function StudioPage() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [lipsyncModel, setLipsyncModel] = useState<"fal-ai/sync-lipsync/v2" | "fal-ai/wav2lip">("fal-ai/sync-lipsync/v2");
 
+  const [onboardOpen, setOnboardOpen] = useState(false);
+
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (user && shouldShowOnboarding()) {
+      // Defer so the page can mount first
+      const t = setTimeout(() => setOnboardOpen(true), 400);
+      return () => clearTimeout(t);
+    }
+  }, [user]);
 
   const genFn = useServerFn(generatePerformanceShot);
   const listFn = useServerFn(listGenerations);
