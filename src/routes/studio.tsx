@@ -526,18 +526,12 @@ function StudioPage() {
             )}
           </Button>
 
-          <Button
-            disabled={splitMut.isPending}
-            onClick={() => splitMut.mutate()}
-            variant="outline"
-            className="w-full border-primary/40 text-foreground"
+          <Link
+            to="/split-reality"
+            className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-md border border-primary/40 bg-primary/5 hover:bg-primary/10 text-sm font-medium text-foreground no-underline"
           >
-            {splitMut.isPending ? (
-              <><Loader2 className="size-4 mr-2 animate-spin" /> Splitting reality…</>
-            ) : (
-              <><Sparkles className="size-4 mr-2 text-primary" /> Split Reality · ultra + cinematic · 2 credits · ~20–30s</>
-            )}
-          </Button>
+            <Sparkles className="size-4 text-primary" /> Split Reality — dedicated studio →
+          </Link>
 
           <Button
             disabled={demoMut.isPending || !demoUrl}
