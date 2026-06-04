@@ -96,7 +96,7 @@ export function BalloonLipsync() {
 
     if (isPlaying) {
       let idx = 0;
-      for (let i = 0; i < LYRICS.length; i++) if (t >= LYRICS[i].t) idx = i;
+      for (let i = 0; i < lyrics.length; i++) if (t >= lyrics[i].t) idx = i;
       if (idx !== lineIdx) setLineIdx(idx);
     }
 
@@ -220,7 +220,7 @@ export function BalloonLipsync() {
               key={lineIdx}
               className="mx-auto max-w-md text-lg md:text-2xl font-bold text-white leading-snug animate-fade-in drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
             >
-              {LYRICS[lineIdx].text}
+              {lyrics[lineIdx].text}
             </p>
           </div>
 
@@ -293,7 +293,7 @@ export function BalloonLipsync() {
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-5">
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-3">Lyrics</p>
             <ol className="space-y-2">
-              {LYRICS.map((l, i) => (
+              {lyrics.map((l, i) => (
                 <li
                   key={i}
                   className={`text-sm md:text-base transition-colors ${
