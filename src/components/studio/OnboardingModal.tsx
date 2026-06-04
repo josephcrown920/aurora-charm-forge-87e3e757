@@ -93,14 +93,14 @@ export function OnboardingModal({ userId, open, onOpenChange, onApply }: Props) 
     }
   };
 
+  const sendEmail = useServerFn(triggerLifecycleEmail);
   const finish = () => {
     if (!selfieUrl) return;
     onApply({ selfieUrl, prompt: vibe.prompt, vibeName: vibe.name });
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
+    try { localStorage.setItem(STORAGE_KEY, "1"); } catch { /* ignore */ }
+    // Fire-and-forget lifecycle emails (deduped server-side)
+    void sendEmail({ data: { template: "signup_welcome" } }).catch(() => {});
+    void sendEmail({ data: { template: "onboarding_done" } }).catch(() => {});
     onOpenChange(false);
     toast.success(`Studio loaded with ${vibe.name}. Hit Generate.`, { duration: 5000 });
   };
