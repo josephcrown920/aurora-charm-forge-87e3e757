@@ -1,11 +1,11 @@
-import { Banana, Sparkles, Flame, Zap, Film, Wand2, Cloud, Crown, Layers, Image as ImageIcon } from "lucide-react";
+import { Banana, Sparkles, Flame, Zap, Film, Wand2, Cloud, Crown, Layers, Image as ImageIcon, Cpu } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type ModelMeta = {
   value: string;
   label: string;
   short: string;
-  group: "Lovable AI" | "fal.ai";
+  group: "Lovable AI" | "fal.ai" | "Hugging Face";
   icon: LucideIcon;
   color: string;
   bg: string;
@@ -81,6 +81,32 @@ export const MODEL_LIST: ModelMeta[] = [
     bg: "bg-pink-500/15 border-pink-500/30",
     tagline: "Refined cinematic edits, sharper",
     status: "preview",
+    category: "image",
+  },
+  {
+    value: "hf/flux-schnell",
+    endpoint: "black-forest-labs/FLUX.1-schnell",
+    label: "FLUX.1 Schnell",
+    short: "FLUX",
+    group: "Hugging Face",
+    icon: Cpu,
+    color: "text-sky-400",
+    bg: "bg-sky-500/15 border-sky-500/30",
+    tagline: "Open-source, fast, free tier via HF",
+    status: "live",
+    category: "image",
+  },
+  {
+    value: "hf/sdxl",
+    endpoint: "stabilityai/stable-diffusion-xl-base-1.0",
+    label: "SDXL Base",
+    short: "SDXL",
+    group: "Hugging Face",
+    icon: Cpu,
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/15 border-indigo-500/30",
+    tagline: "Stable Diffusion XL · classic open model",
+    status: "live",
     category: "image",
   },
 ];

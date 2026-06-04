@@ -15,6 +15,7 @@
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { falRun } from "./fal.server";
+import { hfTextToImage } from "./hf.server";
 
 export type GenerateKind = "image" | "video" | "lipsync" | "upscale";
 
@@ -40,7 +41,7 @@ export type GenerateResult = {
 };
 
 type ProviderAdapter = {
-  name: "lovable" | "fal" | "replicate" | "runpod";
+  name: "lovable" | "fal" | "replicate" | "runpod" | "huggingface";
   supports: (req: GenerateRequest) => boolean;
   /** Estimated cost in USD per call — used for cost-aware routing. */
   estimateCost: (req: GenerateRequest) => number;
@@ -237,9 +238,40 @@ const gpuWorker: ProviderAdapter = {
   },
 };
 
+// Hugging Face adapter — maps our HF model ids to inference endpoints,
+// generates bytes, uploads to the `studio` bucket, returns a public URL.
+const HF_ENDPOINTS: Record<string, { endpoint: string; kind: GenerateKind; cost: number }> = {
+  "hf/flux-schnell": { endpoint: "black-forest-labs/FLUX.1-schnell", kind: "image", cost: 0.003 },
+  "hf/sdxl": { endpoint: "stabilityai/stable-diffusion-xl-base-1.0", kind: "image", cost: 0.004 },
+};
+
+const huggingface: ProviderAdapter = {
+  name: "huggingface",
+  supports: (r) => {
+    if (!process.env.HF_TOKEN) return false;
+    if (!r.model) return false;
+    const m = HF_ENDPOINTS[r.model];
+    return !!m && m.kind === r.kind;
+  },
+  estimateCost: (r) => (r.model && HF_ENDPOINTS[r.model]?.cost) || 0.005,
+  async run(r) {
+    const m = r.model ? HF_ENDPOINTS[r.model] : null;
+    if (!m) throw new Error(`Unsupported HF model: ${r.model}`);
+    const { bytes, contentType } = await hfTextToImage(m.endpoint, r.prompt ?? "");
+    const ext = contentType.split("/")[1] || "png";
+    const path = `${r.userId ?? "system"}/hf/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from("studio")
+      .upload(path, new Uint8Array(bytes), { contentType, upsert: false });
+    if (error) throw new Error(`HF upload failed: ${error.message}`);
+    const { data } = supabaseAdmin.storage.from("studio").getPublicUrl(path);
+    return { url: data.publicUrl, endpoint: m.endpoint };
+  },
+};
+
 // Priority order per kind (managed providers first, GPU workers as overflow/fallback)
 const PRIORITY: Record<GenerateKind, ProviderAdapter[]> = {
-  image: [lovable, fal, gpuWorker, replicate],
+  image: [lovable, fal, huggingface, gpuWorker, replicate],
   video: [fal, gpuWorker, replicate],
   lipsync: [fal, gpuWorker, replicate],
   upscale: [fal, gpuWorker, replicate],
