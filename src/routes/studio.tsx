@@ -31,6 +31,7 @@ import {
 import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
 import { publishGeneration } from "@/lib/share.functions";
 import { Share2 } from "lucide-react";
+import { saveAssetToDisk, isSplitRealityPrompt } from "@/lib/save";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
