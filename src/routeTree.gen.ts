@@ -25,6 +25,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RTokenRouteImport } from './routes/r.$token'
 import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicGenerateRouteImport } from './routes/api/public/generate'
@@ -109,6 +110,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RTokenRoute = RTokenRouteImport.update({
+  id: '/r/$token',
+  path: '/r/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalSlugRoute = LegalSlugRouteImport.update({
   id: '/legal/$slug',
   path: '/legal/$slug',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
   '/legal/$slug': typeof LegalSlugRoute
+  '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
   '/legal/$slug': typeof LegalSlugRoute
+  '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
   '/legal/$slug': typeof LegalSlugRoute
+  '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/ugc'
     | '/workflows'
     | '/legal/$slug'
+    | '/r/$token'
     | '/api/public/generate'
     | '/api/public/paystack-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/ugc'
     | '/workflows'
     | '/legal/$slug'
+    | '/r/$token'
     | '/api/public/generate'
     | '/api/public/paystack-webhook'
   id:
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/ugc'
     | '/workflows'
     | '/legal/$slug'
+    | '/r/$token'
     | '/api/public/generate'
     | '/api/public/paystack-webhook'
   fileRoutesById: FileRoutesById
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   UgcRoute: typeof UgcRoute
   WorkflowsRoute: typeof WorkflowsRoute
   LegalSlugRoute: typeof LegalSlugRoute
+  RTokenRoute: typeof RTokenRoute
   ApiPublicGenerateRoute: typeof ApiPublicGenerateRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/$token': {
+      id: '/r/$token'
+      path: '/r/$token'
+      fullPath: '/r/$token'
+      preLoaderRoute: typeof RTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/$slug': {
       id: '/legal/$slug'
       path: '/legal/$slug'
@@ -434,6 +454,7 @@ const rootRouteChildren: RootRouteChildren = {
   UgcRoute: UgcRoute,
   WorkflowsRoute: WorkflowsRoute,
   LegalSlugRoute: LegalSlugRoute,
+  RTokenRoute: RTokenRoute,
   ApiPublicGenerateRoute: ApiPublicGenerateRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }

@@ -28,6 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
+import { publishGeneration } from "@/lib/share.functions";
+import { Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
@@ -120,6 +123,16 @@ function StudioPage() {
   const splitFn = useServerFn(generateSplitReality);
   const profileFn = useServerFn(getMyProfile);
   const checkoutFn = useServerFn(createPaystackCheckout);
+  const publishFn = useServerFn(publishGeneration);
+  const shareMut = useMutation({
+    mutationFn: async (id: string) => publishFn({ data: { id } }),
+    onSuccess: async (r) => {
+      const url = `${window.location.origin}${r.url}`;
+      try { await navigator.clipboard.writeText(url); toast.success("Public link copied", { description: url }); }
+      catch { toast.success("Published", { description: url }); }
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't publish"),
+  });
   const detectCurrencyFn = useServerFn(detectCurrency);
   const { data: geo } = useQuery({ queryKey: ["geo-currency"], queryFn: () => detectCurrencyFn(), staleTime: 60 * 60 * 1000 });
   const currency = geo?.currency ?? "USD";
@@ -553,13 +566,23 @@ function StudioPage() {
             ) : latest?.result_image_url ? (
               <>
                 <img src={latest.result_image_url} alt="Latest shot" className="w-full h-full object-cover" />
-                <a
-                  href={latest.result_image_url}
-                  download
-                  className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
-                >
-                  <Download className="size-4" /> Save
-                </a>
+                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => latest?.id && shareMut.mutate(latest.id)}
+                    disabled={shareMut.isPending}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background disabled:opacity-50"
+                  >
+                    {shareMut.isPending ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />} Share
+                  </button>
+                  <a
+                    href={latest.result_image_url}
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
+                  >
+                    <Download className="size-4" /> Save
+                  </a>
+                </div>
               </>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground p-8 text-center">
@@ -743,6 +766,10 @@ function StudioPage() {
               </Button>
             </div>
           )}
+
+          <HfAudioPanel onAudioReady={(url) => setAudioUrl(url)} />
+
+
 
           <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
             <div className="flex items-center gap-2">

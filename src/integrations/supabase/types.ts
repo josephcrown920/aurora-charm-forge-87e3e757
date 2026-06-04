@@ -134,6 +134,36 @@ export type Database = {
         }
         Relationships: []
       }
+      email_log: {
+        Row: {
+          error: string | null
+          id: string
+          sent_at: string
+          status: string
+          template: string
+          to_email: string
+          user_id: string | null
+        }
+        Insert: {
+          error?: string | null
+          id?: string
+          sent_at?: string
+          status?: string
+          template: string
+          to_email: string
+          user_id?: string | null
+        }
+        Update: {
+          error?: string | null
+          id?: string
+          sent_at?: string
+          status?: string
+          template?: string
+          to_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
@@ -173,6 +203,7 @@ export type Database = {
           id: string
           input_images: Json
           is_favorite: boolean
+          is_public: boolean
           kind: string
           mode: string
           model: string | null
@@ -180,6 +211,7 @@ export type Database = {
           prompt: string
           result_image_url: string | null
           result_video_url: string | null
+          share_token: string | null
           status: string
           tags: string[]
           user_id: string
@@ -192,6 +224,7 @@ export type Database = {
           id?: string
           input_images?: Json
           is_favorite?: boolean
+          is_public?: boolean
           kind?: string
           mode?: string
           model?: string | null
@@ -199,6 +232,7 @@ export type Database = {
           prompt: string
           result_image_url?: string | null
           result_video_url?: string | null
+          share_token?: string | null
           status?: string
           tags?: string[]
           user_id: string
@@ -211,6 +245,7 @@ export type Database = {
           id?: string
           input_images?: Json
           is_favorite?: boolean
+          is_public?: boolean
           kind?: string
           mode?: string
           model?: string | null
@@ -218,6 +253,7 @@ export type Database = {
           prompt?: string
           result_image_url?: string | null
           result_video_url?: string | null
+          share_token?: string | null
           status?: string
           tags?: string[]
           user_id?: string
