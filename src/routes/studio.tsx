@@ -570,13 +570,13 @@ function StudioPage() {
                   >
                     {shareMut.isPending ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />} Share
                   </button>
-                  <a
-                    href={latest.result_image_url}
-                    download
+                  <button
+                    type="button"
+                    onClick={() => latest?.result_image_url && saveAssetToDisk(latest.result_image_url, `aurora-${latest.id.slice(0,8)}.png`)}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/90 backdrop-blur text-sm font-medium hover:bg-background"
                   >
                     <Download className="size-4" /> Save
-                  </a>
+                  </button>
                 </div>
               </>
             ) : (
