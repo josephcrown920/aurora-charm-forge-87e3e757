@@ -28,6 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
+import { publishGeneration } from "@/lib/share.functions";
+import { Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
