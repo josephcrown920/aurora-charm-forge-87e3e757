@@ -30,12 +30,34 @@ Geo-aware: NGN for visitors detected in Nigeria (Paystack NGN), USD elsewhere (P
 
 Deep-link the Canvas with `?template=<id>` to auto-load a preset graph. IDs are defined in `src/components/canvas/TrendingTemplatesMenu.tsx` (`lipsync-preset`, `lipsync-blank`, `colors-preset`, `colors-blank`, plus the trending presets).
 
+## Secrets & Kling credentials
+
+All runtime secrets (Kling, fal.ai, Paystack, AI providers, etc.) live in **Lovable Cloud → Project Settings → Secrets** and are injected as `process.env.*` at runtime — never in `.env`, never in the client bundle. The committed `.env` only contains public `VITE_SUPABASE_*` values.
+
+**Kling specifically** uses two secrets — `KLING_ACCESS_KEY` and `KLING_SECRET_KEY` — to sign per-request JWTs. They are loaded **only** inside `*.server.ts` files or `createServerFn().handler()` blocks. Concrete call sites:
+
+| File | Role |
+| --- | --- |
+| `src/lib/fal.server.ts` | Reads `FAL_KEY` and submits Kling jobs via fal.ai gateway (`fal-ai/kling-video/v2.1/master/image-to-video`) |
+| `src/lib/orchestrator.server.ts` | Routes `kling-3.0` / `kling-3.0-omni` model keys to the Kling endpoint |
+| `src/lib/studio.functions.ts` | Server function the Studio page calls; handles Kling `endFrameUrl` motion control |
+| `src/lib/models.ts` | Public catalogue entries for `kling-3.0` and `kling-3.0-omni` |
+| `src/routes/studio.tsx` | UI surface exposing Kling end-frame field |
+| _future_ `src/lib/kling.server.ts` | Direct Kling JWT signer — the only file that reads `KLING_ACCESS_KEY` / `KLING_SECRET_KEY` |
+
+Full policy, rotation steps, and a pre-ship checklist: **[`docs/KLING_SECRETS.md`](docs/KLING_SECRETS.md)**.
+
+Copy [`.env.example`](.env.example) to a local `.env.local` for reference — it documents every variable name and its expected shape with **no real values**. `.gitignore` blocks `.env`, `.env.*` (except `.env.example`), and common Kling credential filenames.
+
 ## Documentation
 
+- [`docs/KLING_SECRETS.md`](docs/KLING_SECRETS.md) — Kling credential handling, rotation, and code locations
 - [`docs/ENV.md`](docs/ENV.md) — environment variables and secrets
 - [`docs/DATABASE.md`](docs/DATABASE.md) — schema, RLS, functions, storage
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — orchestrator, fallback chain, workers
 - [`ROADMAP.md`](ROADMAP.md) — what's shipped vs in-flight
+
+
 
 
 ## Key directories

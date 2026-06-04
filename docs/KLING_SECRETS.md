@@ -54,9 +54,30 @@ if (!accessKey || !secretKey) throw new Error("Kling credentials not configured"
 
 …and live in a `*.server.ts` file (e.g. `src/lib/kling.server.ts`) so Lovable's import protection blocks it from the browser bundle.
 
-## 5. Checklist before shipping
+## 5. Git hygiene
+
+`.gitignore` blocks all of these patterns so Kling credentials cannot be committed accidentally:
+
+```
+.env
+.env.*
+!.env.example
+*.env
+*.env.local
+secrets.json
+secrets.*.json
+kling.json
+kling.*.json
+**/kling-credentials*
+```
+
+The only env-shaped file allowed in git is [`.env.example`](../.env.example), which documents the variable names and expected formats with placeholder values only. If you ever need to share a real key, use Lovable Cloud → Secrets or a password manager — never paste it in chat, code, docs, or commit messages.
+
+## 6. Checklist before shipping
 
 - [ ] Secrets exist in Lovable Cloud → Secrets (`KLING_ACCESS_KEY`, `KLING_SECRET_KEY`)
-- [ ] No occurrence of either key in `git grep` / repo history
+- [ ] No occurrence of either key in `git grep` / repo history (`git log -p -S KLING_`)
 - [ ] All Kling calls happen in `*.server.ts` or inside a `createServerFn` handler
+- [ ] `.env.example` updated if a new Kling-related variable is introduced
 - [ ] Rotation reminder set (calendar / password manager)
+
