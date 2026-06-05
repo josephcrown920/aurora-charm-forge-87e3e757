@@ -13,15 +13,15 @@ import { track } from "@/lib/tracking";
 const META: Record<PlanKey, { name: string; tagline: string; features: string[]; icon: typeof Sparkles; highlight?: boolean }> = {
   starter: {
     name: "Starter", tagline: "Test-drive the studio.", icon: Sparkles,
-    features: ["80 credits (~16 images)", "All image models", "Lip-sync up to 8s", "Standard queue"],
+    features: ["80 Aurora (~16 images)", "All image models", "Lip-sync up to 8s", "Standard queue"],
   },
   creator: {
     name: "Creator", tagline: "Built for daily posting.", icon: Zap, highlight: true,
-    features: ["240 credits (~48 videos)", "All image + video models", "Priority queue", "Commercial license", "Gallery sharing"],
+    features: ["240 Aurora (~48 videos)", "All image + video models", "Priority queue", "Commercial license", "Gallery sharing"],
   },
   studio: {
     name: "Studio", tagline: "For agencies + power users.", icon: Crown,
-    features: ["640 credits (~130 videos)", "Every model, including Seedance Pro", "Top-priority queue", "Team sharing", "White-glove onboarding"],
+    features: ["640 Aurora (~130 videos)", "Every model, including Seedance Pro", "Top-priority queue", "Team sharing", "White-glove onboarding"],
   },
 };
 
