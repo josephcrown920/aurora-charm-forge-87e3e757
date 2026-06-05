@@ -16,9 +16,9 @@ export const Route = createFileRoute("/gifts")({
   head: () => ({
     meta: [
       { title: "Gift Cards — Aurora" },
-      { name: "description", content: "Gift Aurora credits to another creator, or redeem a gift card to top up your own balance." },
+      { name: "description", content: "Gift Aurora to another creator, or redeem a gift card to top up your own balance." },
       { property: "og:title", content: "Aurora Gift Cards" },
-      { property: "og:description", content: "Gift Aurora credits to a creator, or redeem a card on your account." },
+      { property: "og:description", content: "Gift Aurora to a creator, or redeem a card on your account." },
       { property: "og:url", content: "https://aurorastudiostar.lovable.app/gifts" },
     ],
     links: [{ rel: "canonical", href: "https://aurorastudiostar.lovable.app/gifts" }],
@@ -68,7 +68,7 @@ function GiftCardArt({
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold leading-none">{credits}</div>
-            <div className="text-[10px] uppercase tracking-wider opacity-80">credits</div>
+            <div className="text-[10px] uppercase tracking-wider opacity-80">Aurora</div>
           </div>
         </div>
         {note && <p className="text-xs italic opacity-90 line-clamp-2">"{note}"</p>}
@@ -103,7 +103,7 @@ function GiftsPage() {
   const redeemMut = useMutation({
     mutationFn: async () => redeemFn({ data: { code: redeemCode } }),
     onSuccess: (r) => {
-      toast.success(`+${r.credits} credits added`);
+      toast.success(`+${r.credits} Aurora added`);
       setRedeemCode("");
       qc.invalidateQueries({ queryKey: ["profile"] });
     },

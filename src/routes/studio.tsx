@@ -470,7 +470,7 @@ function StudioPage() {
           <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-card/40 px-3 py-2">
             <span className="inline-flex items-center gap-1.5">
               <Zap className="size-3.5 text-primary" />
-              Cost: <span className="text-foreground font-medium">1 credit</span>
+              Cost: <span className="text-foreground font-medium">1 Aurora</span>
               <span className="opacity-50">·</span>
               ETA: <span className="text-foreground font-medium">~10–20s</span>
             </span>
@@ -486,7 +486,7 @@ function StudioPage() {
             {mut.isPending ? (
               <><Loader2 className="size-5 mr-2 animate-spin" /> Staging the shoot…</>
             ) : (
-              <><Wand2 className="size-5 mr-2" /> Generate performance shot · 1 credit</>
+              <><Wand2 className="size-5 mr-2" /> Generate performance shot · 1 Aurora</>
             )}
           </Button>
 

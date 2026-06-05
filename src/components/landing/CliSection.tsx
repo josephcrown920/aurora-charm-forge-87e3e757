@@ -14,7 +14,7 @@ const LINES = [
   { p: "$", t: "aurora login", c: "text-emerald-300" },
   { p: ">", t: "Opening browser… signed in as josh@aurora.studio", c: "text-white/50" },
   { p: "$", t: "aurora generate --model seedance-2.0 --prompt 'desert chase' --duration 5", c: "text-emerald-300" },
-  { p: ">", t: "✓ Job queued · q_8f3b · 5 credits", c: "text-white/50" },
+  { p: ">", t: "✓ Job queued · q_8f3b · 5 Aurora", c: "text-white/50" },
   { p: ">", t: "✓ Rendering on H100 · 00:42", c: "text-white/50" },
   { p: ">", t: "✓ Saved → ~/aurora/renders/desert-chase.mp4", c: "text-cyan-300" },
 ];
