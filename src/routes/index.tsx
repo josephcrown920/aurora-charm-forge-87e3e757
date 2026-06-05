@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, BookOpen, Wand2 } from "lucide-react";
+import { Sparkles, ArrowRight, BookOpen, Wand2, Palette, Megaphone } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { trackAffiliateClick } from "@/lib/affiliate.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,10 +30,10 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Aurora Studio — A creative supercomputer for next-gen creators" },
-      { name: "description", content: "AI image, video, lip-sync, UGC ads, virtual try-on — all in one studio. Seedance, Kling, Seedream, Nano Banana Pro and Sync. Selfie in, campaign out." },
-      { property: "og:title", content: "Aurora Studio — A creative supercomputer" },
-      { property: "og:description", content: "Every major AI creative tool in one premium studio. Cinematic content from a single selfie." },
+      { title: "Aurora Studio — Image, video, canvas, UGC, motion, lip-sync, colors" },
+      { name: "description", content: "Seven AI creative tools in one studio: image generation, video generation, canvas, UGC ads factory, motion control, lip-sync, and the colors studio." },
+      { property: "og:title", content: "Aurora Studio — Seven tools, one studio" },
+      { property: "og:description", content: "Image, video, canvas, UGC ads, motion control, lip-sync and colors — every Aurora tool, one place." },
       { property: "og:url", content: "https://aurorastudiostar.lovable.app/" },
     ],
     links: [{ rel: "canonical", href: "https://aurorastudiostar.lovable.app/" }],
@@ -121,7 +121,13 @@ function Index() {
             <Link to="/canvas" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
               <Sparkles className="size-3.5" /> Canvas
             </Link>
-            <Link to="/lipsync" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
+            <Link to="/ugc" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
+              <Megaphone className="size-3.5" /> UGC
+            </Link>
+            <Link to="/colors" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
+              <Palette className="size-3.5" /> Colors
+            </Link>
+            <Link to="/lipsync" className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
               <Wand2 className="size-3.5" /> Lip Sync
             </Link>
             {user ? (

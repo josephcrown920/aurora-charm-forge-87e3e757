@@ -1,15 +1,14 @@
-import { Camera, Film, Wand2, Megaphone, Shirt, Activity, Workflow, Bot, Image as ImageIcon, CreditCard } from "lucide-react";
+import { Camera, Film, Wand2, Megaphone, Activity, Workflow, Image as ImageIcon, Palette, CreditCard } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 const SERVICES = [
-  { icon: ImageIcon, title: "AI Image Generation", desc: "Magazine-grade portraits from a selfie. Seedream 4.5, Nano Banana Pro, more.", to: "/studio" as const, accent: "from-violet-500/30 to-fuchsia-500/10" },
-  { icon: Film, title: "AI Video Generation", desc: "Cinematic 5–10s clips. Seedance 2.0 and Kling 3.0 in one canvas.", to: "/canvas" as const, accent: "from-indigo-500/30 to-violet-500/10" },
-  { icon: Wand2, title: "AI Lip-Sync Studio", desc: "Frame-accurate Sync 1.9 lip-sync. Music videos and UGC that don't look uncanny.", to: "/lipsync" as const, accent: "from-emerald-500/30 to-teal-500/10" },
-  { icon: Megaphone, title: "UGC Ad Creation", desc: "Scroll-stopping ad creatives from one selfie. Built for TikTok, Reels, Shorts.", to: "/ugc" as const, accent: "from-rose-500/30 to-pink-500/10" },
-  { icon: Shirt, title: "Virtual Try-On", desc: "Drop a product, drop a model. Get on-figure photography in seconds.", to: "/studio" as const, accent: "from-amber-500/30 to-orange-500/10" },
-  { icon: Activity, title: "Motion Transfer", desc: "Take a reference move, apply it to your character. Real dance, real choreography.", to: "/canvas" as const, accent: "from-cyan-500/30 to-blue-500/10" },
-  { icon: Workflow, title: "Workflow Canvas", desc: "Wire selfie, outfit, audio and prompt nodes. Save, share, re-run.", to: "/canvas" as const, accent: "from-fuchsia-500/30 to-purple-500/10" },
-  { icon: Bot, title: "AI Agent & Automation", desc: "Brief the agent in plain language. Get shot lists, prompts, full pipelines.", to: "/canvas" as const, accent: "from-pink-500/30 to-rose-500/10" },
+  { icon: ImageIcon, title: "Image Generation", desc: "Magazine-grade portraits from a selfie. Seedream 4.5, Nano Banana Pro.", to: "/studio" as const, accent: "from-violet-500/30 to-fuchsia-500/10" },
+  { icon: Film, title: "Video Generation", desc: "Cinematic 5–10s clips. Seedance 2.0 and Kling 3.0 in one canvas.", to: "/studio" as const, accent: "from-indigo-500/30 to-violet-500/10" },
+  { icon: Workflow, title: "Canvas", desc: "Wire selfie, outfit, audio and prompt nodes. Save, share, re-run.", to: "/canvas" as const, accent: "from-fuchsia-500/30 to-purple-500/10" },
+  { icon: Megaphone, title: "UGC Ads Factory", desc: "Pick an AI avatar, ship scroll-stopping TikTok/Reels ads in seconds.", to: "/ugc" as const, accent: "from-rose-500/30 to-pink-500/10" },
+  { icon: Activity, title: "Motion Control", desc: "Drive your character with a reference move. Real dance, real choreography.", to: "/canvas" as const, accent: "from-cyan-500/30 to-blue-500/10" },
+  { icon: Wand2, title: "Lip Sync", desc: "Frame-accurate Sync 1.9 lip-sync. Music videos and UGC that don't look uncanny.", to: "/lipsync" as const, accent: "from-emerald-500/30 to-teal-500/10" },
+  { icon: Palette, title: "Colors Studio", desc: "Pick a color, pick a studio. Pro mic, pro lighting, celebrity-grade portraits.", to: "/colors" as const, accent: "from-amber-500/30 to-orange-500/10" },
 ];
 
 export function ServicesGrid() {
@@ -17,9 +16,9 @@ export function ServicesGrid() {
     <section id="services" className="relative z-10 px-6 md:px-12 py-20">
       <div className="text-center max-w-2xl mx-auto mb-12">
         <p className="text-xs uppercase tracking-[0.2em] text-violet-300/80 mb-2">Our services</p>
-        <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">Every creative tool. One studio.</h2>
+        <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">Seven tools. One studio.</h2>
         <p className="text-white/65 mt-4">
-          From cinematic photos to fully produced ad creatives, Aurora replaces expensive shoots, video crews and a stack of AI subscriptions.
+          Image, video, canvas, UGC, motion, lip-sync and the colors studio — everything Aurora does, in one place. No subscriptions stack, no shoot day.
         </p>
       </div>
 
