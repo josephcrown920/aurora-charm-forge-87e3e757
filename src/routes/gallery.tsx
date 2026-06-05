@@ -4,8 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { listGallery, toggleFavorite } from "@/lib/studio.functions";
+import { deleteGeneration } from "@/lib/gallery.functions";
 import { ModelBadge } from "@/components/ModelBadge";
-import { Sparkles, Loader2, ArrowLeft, Star, Download, Film, Image as ImageIcon, Layers } from "lucide-react";
+import { Sparkles, Loader2, ArrowLeft, Star, Download, Film, Image as ImageIcon, Layers, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveAssetToDisk, isSplitRealityPrompt, splitRealityVariant } from "@/lib/save";
 
@@ -45,6 +46,18 @@ function GalleryPage() {
     mutationFn: async (v: { id: string; favorite: boolean }) => favFn({ data: v }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["gallery"] }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  const delFn = useServerFn(deleteGeneration);
+  const delMut = useMutation({
+    mutationFn: async (id: string) => delFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Deleted");
+      qc.invalidateQueries({ queryKey: ["gallery"] });
+      qc.invalidateQueries({ queryKey: ["gens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Delete failed"),
   });
 
   if (loading || !user) {
