@@ -16,9 +16,9 @@ export function ServicesGrid() {
     <section id="services" className="relative z-10 px-6 md:px-12 py-20">
       <div className="text-center max-w-2xl mx-auto mb-12">
         <p className="text-xs uppercase tracking-[0.2em] text-violet-300/80 mb-2">Our services</p>
-        <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">Every creative tool. One studio.</h2>
+        <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">Seven tools. One studio.</h2>
         <p className="text-white/65 mt-4">
-          From cinematic photos to fully produced ad creatives, Aurora replaces expensive shoots, video crews and a stack of AI subscriptions.
+          Image, video, canvas, UGC, motion, lip-sync and the colors studio — everything Aurora does, in one place. No subscriptions stack, no shoot day.
         </p>
       </div>
 
