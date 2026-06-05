@@ -46,13 +46,27 @@ export function TutorialModal({ trigger = 0 }: { trigger?: number }) {
 
         <div className="grid md:grid-cols-2">
           {/* Visual */}
-          <div className="relative aspect-square md:aspect-auto md:h-[560px] overflow-hidden">
-            <img
-              key={recipe.image}
-              src={recipe.image}
-              alt={recipe.title}
-              className="w-full h-full object-cover animate-fade-in"
-            />
+          <div className="relative aspect-square md:aspect-auto md:h-[560px] overflow-hidden bg-black">
+            {recipe.video ? (
+              <video
+                key={recipe.video}
+                src={recipe.video}
+                poster={recipe.image}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover animate-fade-in"
+              />
+            ) : (
+              <img
+                key={recipe.image}
+                src={recipe.image}
+                alt={recipe.title}
+                className="w-full h-full object-cover animate-fade-in"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/30" />
             <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-white/95 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur border border-white/15">
               <Sparkles className="size-3" /> {recipe.tag}
