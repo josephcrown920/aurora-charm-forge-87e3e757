@@ -65,10 +65,10 @@ export function PricingSection() {
       <div className="text-center max-w-2xl mx-auto mb-8">
         <p className="text-xs uppercase tracking-[0.2em] text-violet-300/80 mb-2">Pricing</p>
         <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">
-          Simple credits. <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-pink-200 bg-clip-text text-transparent">No subscriptions.</span>
+          Simple Aurora. <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-pink-200 bg-clip-text text-transparent">No subscriptions.</span>
         </h2>
         <p className="text-white/65 mt-3 text-sm md:text-base">
-          One credit ≈ one image. Videos and lip-sync from 5 credits. Credits never expire.
+          One Aurora ≈ one image. Videos and lip-sync from 5 Aurora. Aurora never expires.
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export function PricingSection() {
                   <span className="text-4xl md:text-5xl font-semibold tracking-tight">{price.display}</span>
                   <span className="text-xs text-white/50">one-time</span>
                 </div>
-                <p className="text-sm text-violet-200 mt-1">{p.credits} credits</p>
+                <p className="text-sm text-violet-200 mt-1">{p.credits} Aurora</p>
                 <p className="text-[11px] text-white/40">{perCreditDisplay(key, currency)}</p>
               </div>
               <ul className="space-y-2 text-sm text-white/80">
@@ -161,7 +161,7 @@ export function PricingSection() {
       </div>
 
       <p className="text-center text-xs text-white/40 mt-8">
-        Secure payments by Paystack · {currency === "NGN" ? "Naira billing for Nigeria" : "USD billing"} · 7-day refund on unused credits ·{" "}
+        Secure payments by Paystack · {currency === "NGN" ? "Naira billing for Nigeria" : "USD billing"} · 7-day refund on unused Aurora ·{" "}
         <Link to="/gifts" className="underline hover:text-white/70">Gift cards available</Link>
       </p>
     </section>
