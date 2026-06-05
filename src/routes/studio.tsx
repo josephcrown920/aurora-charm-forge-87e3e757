@@ -441,33 +441,6 @@ function StudioPage() {
             </div>
           </div>
 
-          {/* Tutorial recipes — visible reference photos from the prompt guides */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tutorial recipes</label>
-            <p className="text-xs text-muted-foreground">Tap to load a guided recipe and reference look.</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {RECIPES.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => { setPrompt(r.prompt); toast.message(`Loaded recipe: ${r.title}`); }}
-                  className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors bg-black"
-                >
-                  {r.video ? (
-                    <video src={r.video} poster={r.image} autoPlay loop muted playsInline preload="metadata" className="w-full h-full object-cover" />
-                  ) : (
-                    <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-1.5 left-1.5 right-1.5">
-                    <p className="text-[10px] uppercase tracking-wider text-white/70">{r.tag}</p>
-                    <p className="text-[11px] font-medium text-white leading-tight line-clamp-2">{r.title}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="space-y-2">
             <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Image model</label>
             <Select value={model} onValueChange={setModel}>

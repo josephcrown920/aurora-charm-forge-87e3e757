@@ -17,7 +17,6 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 
-import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
 
@@ -158,9 +157,6 @@ function Index() {
 
       {/* 5. Our services */}
       <ServicesGrid />
-
-      {/* 6. Trending Canvas workflows — preset + blank templates for Colors and Lip-sync */}
-      <TrendingWorkflows />
 
       {/* 7. Trust + Why us */}
       <TrustBar />

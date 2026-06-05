@@ -1,70 +1,100 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, Check, ImageIcon, MousePointerClick, Film, Play } from "lucide-react";
+import { ArrowRight, Sparkles, Check, ImageIcon, MousePointerClick, Film, Play, Terminal, Wand2 } from "lucide-react";
 import shot1 from "@/assets/showcase-1.jpg";
 import shot2 from "@/assets/showcase-2.jpg";
 import shot3 from "@/assets/showcase-3.jpg";
 import shot4 from "@/assets/showcase-4.jpg";
 import shot5 from "@/assets/showcase-5.jpg";
 import shot6 from "@/assets/showcase-6.jpg";
+import superA from "@/assets/super-shot-a.jpg";
+import superB from "@/assets/super-shot-b.jpg";
+import superC from "@/assets/super-shot-c.jpg";
 
-/* 1 ─ Supercomputer / "The whole team is one agent" — lime on charcoal */
+/* 1 ─ Supercomputer — a single prompt box that ships video, image, and edits */
 export function SupercomputerSection() {
+  const examples = [
+    "red-lit studio performance, hanging silver mic, 5s video",
+    "rooftop golden-hour cover, anamorphic flare, vertical",
+    "remove background, replace with neon blue cyclorama",
+  ];
+  const outputs = [
+    { src: superA, tag: "VIDEO · 5s",  label: "Red studio performance" },
+    { src: superB, tag: "EDIT",         label: "Neon cyc swap" },
+    { src: superC, tag: "IMAGE · 4K",  label: "Rooftop cover" },
+  ];
   return (
-    <section className="relative z-10 mx-4 md:mx-12 my-16 rounded-[32px] overflow-hidden border border-white/10 bg-gradient-to-br from-[#1a1f0a] via-[#0e1107] to-[#070908] animate-fade-in">
-      <div className="absolute inset-0 pointer-events-none opacity-60"
-        style={{ background: "radial-gradient(circle at 50% 0%, rgba(217,255,77,.22), transparent 55%)" }} />
-      <div className="relative px-6 md:px-16 py-16 md:py-24 text-center">
-        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5 text-[11px] uppercase tracking-widest text-white/80">
-          <span className="px-1.5 py-0.5 rounded bg-white/10 text-white">New</span> Supercomputer
-        </span>
-        <h2 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight text-white">
-          THE WHOLE TEAM
-          <span className="block text-[#d9ff4d]">IS ONE AGENT</span>
-        </h2>
-        <p className="mt-4 text-white/65 text-base md:text-lg">One agent. Your stack. Your timeline.</p>
+    <section className="relative z-10 mx-4 md:mx-12 my-16 rounded-[32px] overflow-hidden border border-white/10 bg-gradient-to-br from-[#0c0820] via-[#0a0618] to-[#050410] animate-fade-in">
+      <div className="absolute inset-0 pointer-events-none opacity-70"
+        style={{ background: "radial-gradient(circle at 50% 0%, rgba(167,139,250,.25), transparent 60%)" }} />
+      <div className="relative px-6 md:px-16 py-16 md:py-24">
+        <div className="text-center">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5 text-[11px] uppercase tracking-widest text-white/80">
+            <Terminal className="size-3" /> Supercomputer
+          </span>
+          <h2 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight text-white">
+            One prompt.
+            <span className="block bg-gradient-to-r from-violet-300 via-fuchsia-300 to-pink-200 bg-clip-text text-transparent">
+              Video, image, edit.
+            </span>
+          </h2>
+          <p className="mt-4 text-white/65 text-base md:text-lg max-w-xl mx-auto">
+            Type what you want — a music-video shot, a portrait, an edit on an existing frame.
+            Aurora picks the right model and ships it in seconds. No nodes, no presets, no learning curve.
+          </p>
+        </div>
 
-        <div className="mt-10 grid grid-cols-3 gap-3 md:gap-5 max-w-4xl mx-auto">
-          {/* Left tile — skatepark */}
-          <div className="rounded-2xl border border-white/10 bg-black/40 overflow-hidden p-3 text-left">
-            <p className="text-[10px] uppercase tracking-wider text-white/50 mb-2">atepark · 11 shots</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              <img src={shot1} alt="" className="aspect-square object-cover rounded-md" />
-              <img src={shot2} alt="" className="aspect-square object-cover rounded-md" />
-              <img src={shot3} alt="" className="aspect-square object-cover rounded-md" />
-              <img src={shot4} alt="" className="aspect-square object-cover rounded-md" />
+        {/* Prompt box */}
+        <div className="mt-10 max-w-2xl mx-auto">
+          <div className="rounded-2xl border border-violet-400/40 bg-black/50 backdrop-blur-xl shadow-[0_0_60px_-20px_rgba(167,139,250,0.6)] overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 text-[10px] uppercase tracking-widest text-white/40">
+              <span className="size-2 rounded-full bg-rose-400/70" />
+              <span className="size-2 rounded-full bg-amber-300/70" />
+              <span className="size-2 rounded-full bg-emerald-400/70" />
+              <span className="ml-2">aurora · prompt</span>
             </div>
-          </div>
-          {/* Center — Drift Moodboard */}
-          <div className="rounded-2xl border border-white/15 bg-[#161a08]/80 overflow-hidden p-3">
-            <p className="text-[12px] text-white/90 mb-2">Drift <span className="text-white/50">Moodboard</span></p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {[shot4, shot5, shot6, shot1, shot2, shot3].map((s, i) => (
-                <img key={i} src={s} alt="" className="aspect-square object-cover rounded-md" />
+            <div className="px-5 py-5 flex items-center gap-3">
+              <Wand2 className="size-4 text-violet-300 shrink-0" />
+              <span className="text-white/90 text-sm md:text-base font-mono leading-relaxed">
+                make me a red-lit studio performance, hanging silver mic
+                <span className="inline-block w-[2px] h-4 align-middle bg-violet-300 ml-0.5 animate-pulse" />
+              </span>
+            </div>
+            <div className="px-5 pb-4 flex flex-wrap gap-1.5">
+              {examples.map((e) => (
+                <span key={e} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/55">
+                  {e}
+                </span>
               ))}
             </div>
           </div>
-          {/* Right — TechUnfiltered */}
-          <div className="rounded-2xl border border-white/10 bg-black/40 overflow-hidden p-3 text-left relative">
-            <p className="text-[10px] text-white/80 leading-tight">TechUnfiltered</p>
-            <p className="text-[9px] text-white/40">480M subscribers</p>
-            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#d9ff4d] px-2 py-1 text-[10px] font-semibold text-black">
-              <span className="size-1.5 rounded-full bg-black animate-pulse" /> Analyzing hook
+        </div>
+
+        {/* Outputs */}
+        <div className="mt-8 grid grid-cols-3 gap-2 md:gap-4 max-w-3xl mx-auto">
+          {outputs.map((o) => (
+            <div key={o.label} className="rounded-2xl overflow-hidden border border-white/10 bg-black/40 group">
+              <div className="aspect-[4/5] relative">
+                <img src={o.src} alt={o.label} className="absolute inset-0 size-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                <span className="absolute top-2 left-2 text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-violet-500/80 text-white">
+                  {o.tag}
+                </span>
+                <p className="absolute bottom-2 left-2 right-2 text-[11px] text-white/90 font-medium leading-tight">
+                  {o.label}
+                </p>
+              </div>
             </div>
-            <img src={shot5} alt="" className="mt-2 w-full aspect-[4/3] object-cover rounded-md opacity-80" />
-          </div>
+          ))}
         </div>
 
-        <div className="mt-8">
-          <p className="text-white font-semibold">Creative</p>
-          <p className="text-white/55 text-sm">Mood, style, world-building</p>
+        <div className="mt-10 flex justify-center">
+          <Link
+            to="/canvas"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 py-3.5 text-sm font-semibold text-white no-underline shadow-xl shadow-violet-500/30 hover:opacity-95"
+          >
+            <Sparkles className="size-4" /> Open Supercomputer <ArrowRight className="size-4" />
+          </Link>
         </div>
-
-        <Link
-          to="/canvas"
-          className="mt-8 inline-flex w-full max-w-2xl mx-auto items-center justify-center gap-2 rounded-2xl bg-[#d9ff4d] px-6 py-4 text-base font-bold text-black hover:opacity-95 no-underline"
-        >
-          Try Supercomputer <ArrowRight className="size-5" />
-        </Link>
       </div>
     </section>
   );
