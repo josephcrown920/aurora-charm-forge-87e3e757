@@ -11,6 +11,7 @@ import {
   SETUP_KINDS,
   WORKFLOWS,
   buildColorPrompt,
+  describePerformance,
   type SetupKind,
 } from "@/lib/colors.presets";
 import { Button } from "@/components/ui/button";
@@ -143,9 +144,9 @@ function ColorsStudio() {
 
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
   const [outfitUrl, setOutfitUrl] = useState<string | null>(null);
-  const [color, setColor] = useState(COLOR_PRESETS[0].id);
-  const [kind, setKind] = useState<SetupKind>("studio");
-  const [setup, setSetup] = useState(SETUPS[0].id);
+  const [color, setColor] = useState(COLOR_PRESETS[1].id); // royal blue — matches tried & tested
+  const [kind, setKind] = useState<SetupKind>("performance");
+  const [setup, setSetup] = useState("performance");
   const [workflow, setWorkflow] = useState(WORKFLOWS[0].id);
   const [tripletColors, setTripletColors] = useState<string[]>([
     COLOR_PRESETS[0].id,
@@ -262,12 +263,12 @@ function ColorsStudio() {
           <TriedTestedShowcase
             accent="cyan"
             title="Blue performance studio — tried & tested"
-            subtitle="One selfie + the royal-blue studio preset = this finished shot."
+            subtitle="One selfie + the royal-blue performance preset = this finished shot."
             refsImage={tutorialStudioRefs.url}
             refsCaption="Selfie · Outfit · Pose reference"
             finalImage={tutorialColorsBlueFinal.url}
-            finalCaption="Royal-blue cyclorama · vintage mic · puffer jacket · cinematic rim light"
-            prompt="Wide editorial portrait of the subject on a seamless deep royal-blue cyclorama studio backdrop that floods the frame. Subject standing on a round blue platform, profile to camera, reaching toward a vintage silver microphone hanging from above. Outfit: bright orange puffer jacket, distressed black stacked jeans, neon green sneakers. Bold monochromatic blue ambient light, soft key from camera-right, subtle warm bounce on jacket. Preserve exact facial likeness, skin tone, dreadlocks. ARRI cinema look, 50mm, 4K, no text or logos."
+            finalCaption="Royal-blue cyclorama · hanging vintage mic · red jersey + black puffer vest · ARRI rim light"
+            prompt="Editorial music-video performance shot of the subject on a seamless deep royal-blue cyclorama studio — background and floor are one continuous royal-blue surface, no visible seams. Full-body side profile, leaning into an exact suspended vintage silver microphone hanging from a thin cable at chest level. Outfit: bright red performance jersey with graphic print under a black hooded puffer vest, distressed black stacked jeans, white chunky sneakers. ARRI softbox key from camera-left + softbox fill from camera-right, professional dual softbox stands visible at far frame edges, gentle floor shadow, clean cinematic rim light separating the subject from the cyclorama. Preserve exact facial likeness, red dreadlocks, sunglasses, skin tone, body proportions. ARRI Alexa look, 50mm, 4K photoreal, no text or logos."
           />
 
 
@@ -297,6 +298,12 @@ function ColorsStudio() {
               ))}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5">{selectedColor.name}</div>
+            {kind === "performance" && (
+              <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[11px] text-foreground/85">
+                <span className="uppercase tracking-wider text-[9px] text-primary mr-1.5">Staging</span>
+                {describePerformance(color)}
+              </div>
+            )}
           </div>
 
           {/* Scene kind tabs */}

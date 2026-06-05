@@ -1,13 +1,17 @@
 import shot1 from "@/assets/showcase-1.jpg";
 import shot3 from "@/assets/showcase-3.jpg";
 import shot5 from "@/assets/showcase-5.jpg";
+import urbanCutsVideo from "@/assets/video-josh-lowangle.mp4.asset.json";
 
 export type Recipe = {
   id: string;
   title: string;
   tag: string;
   blurb: string;
+  /** Poster image (always present — used as <video poster> when video is set). */
   image: string;
+  /** Optional CDN video URL — when present the tile renders a looping muted clip. */
+  video?: string;
   steps: string[];
   prompt: string;
 };
@@ -50,6 +54,8 @@ export const RECIPES: Recipe[] = [
     blurb:
       "Gritty urban storytelling — alley, subway, crosswalk. Wet pavement, anamorphic flares, ARRI color science. The look that prints on a music-video billboard.",
     image: shot5,
+    // Avatar clip — same subject, urban setting, low-angle cinematic.
+    video: urbanCutsVideo.url,
     steps: [
       "Selfie locks identity, outfit reference locks wardrobe.",
       "Pick an Urban preset (Alley, Subway, Crosswalk) or stack them.",

@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { UploadSlot } from "@/components/studio/UploadSlot";
 import { TriedTestedShowcase } from "@/components/studio/TriedTestedShowcase";
+import { BringItToLifePreview } from "@/components/studio/BringItToLifePreview";
 import tutorialStudioRefs from "@/assets/tutorial-studio-refs.jpg.asset.json";
 import tutorialStudioFinal from "@/assets/tutorial-studio-final.jpg.asset.json";
 import { Button } from "@/components/ui/button";
@@ -450,9 +451,13 @@ function StudioPage() {
                   key={r.id}
                   type="button"
                   onClick={() => { setPrompt(r.prompt); toast.message(`Loaded recipe: ${r.title}`); }}
-                  className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors"
+                  className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors bg-black"
                 >
-                  <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {r.video ? (
+                    <video src={r.video} poster={r.image} autoPlay loop muted playsInline preload="metadata" className="w-full h-full object-cover" />
+                  ) : (
+                    <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-1.5 left-1.5 right-1.5">
                     <p className="text-[10px] uppercase tracking-wider text-white/70">{r.tag}</p>
@@ -633,6 +638,8 @@ function StudioPage() {
                 <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Bring it to life</h3>
               </div>
               <p className="text-xs text-muted-foreground">Animate your latest shot. Pick a video model and a camera move — Kling supports an optional end-frame for true motion control.</p>
+
+              <BringItToLifePreview active={cameraMovement} onPick={setCameraMovement} />
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
