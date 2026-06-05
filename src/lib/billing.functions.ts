@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { PLANS } from "./billing.plans";
 
@@ -21,7 +21,7 @@ export const getMyProfile = createServerFn({ method: "GET" })
 
 const InitPaystackSchema = z.object({
   plan: z.enum(["starter", "creator", "studio"]),
-  currency: z.enum(["USD", "NGN"]).optional(),
+  currency: z.literal("USD").optional(),
 });
 
 export const createPaystackCheckout = createServerFn({ method: "POST" })
@@ -33,21 +33,9 @@ export const createPaystackCheckout = createServerFn({ method: "POST" })
     if (!key) throw new Error("Paystack not configured");
     const plan = PLANS[data.plan];
 
-    // Currency: explicit choice → param; otherwise sniff from edge geo headers.
-    let currency: "USD" | "NGN" = data.currency ?? "USD";
-    if (!data.currency) {
-      try {
-        const country = (
-          getRequestHeader("cf-ipcountry") ||
-          getRequestHeader("x-vercel-ip-country") ||
-          ""
-        ).toUpperCase();
-        if (country === "NG") currency = "NGN";
-      } catch {
-        // ignore — default USD
-      }
-    }
+    const currency = "USD" as const;
     const price = plan.prices[currency];
+
 
     const { data: profile } = await supabaseAdmin.from("profiles").select("email").eq("user_id", userId).maybeSingle();
     const email = profile?.email;

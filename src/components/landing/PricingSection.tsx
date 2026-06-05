@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
 import { Check, Loader2, Sparkles, Zap, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { createPaystackCheckout } from "@/lib/billing.functions";
-import { detectCurrency } from "@/lib/geo.functions";
-import { PLANS, perCreditDisplay, type Currency, type PlanKey } from "@/lib/billing.plans";
+import { PLANS, perCreditDisplay, type PlanKey } from "@/lib/billing.plans";
 import { useAuth } from "@/hooks/use-auth";
 import { track } from "@/lib/tracking";
 
@@ -31,18 +29,11 @@ export function PricingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const checkout = useServerFn(createPaystackCheckout);
-  const detectFn = useServerFn(detectCurrency);
   const [loadingPlan, setLoadingPlan] = useState<PlanKey | null>(null);
-  const [currency, setCurrency] = useState<Currency>("USD");
-  const [touched, setTouched] = useState(false);
-
-  const { data: geo } = useQuery({ queryKey: ["geo-currency"], queryFn: () => detectFn(), staleTime: 60 * 60 * 1000 });
-
-  useEffect(() => {
-    if (!touched && geo?.currency) setCurrency(geo.currency);
-  }, [geo, touched]);
+  const currency = "USD" as const;
 
   const onChoose = async (plan: PlanKey) => {
+
     void track("pricing_cta_click", { plan, currency });
     if (!user) {
       try { localStorage.setItem("aurora_intent_plan", plan); } catch {}
@@ -72,28 +63,8 @@ export function PricingSection() {
         </p>
       </div>
 
-      {/* Currency toggle */}
-      <div className="flex items-center justify-center gap-2 mb-8">
-        <div className="inline-flex p-1 rounded-full border border-white/10 bg-white/[0.04]">
-          {(["USD", "NGN"] as Currency[]).map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => { setTouched(true); setCurrency(c); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
-                currency === c ? "bg-white text-black" : "text-white/70 hover:text-white"
-              }`}
-            >
-              {c === "USD" ? "USD ($)" : "NGN (₦)"}
-            </button>
-          ))}
-        </div>
-        {geo?.country && (
-          <span className="text-[11px] text-white/40 ml-1">
-            Auto-detected: {geo.country}
-          </span>
-        )}
-      </div>
+      {/* USD-only billing */}
+
 
       <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
         {ORDER.map((key) => {
@@ -161,7 +132,7 @@ export function PricingSection() {
       </div>
 
       <p className="text-center text-xs text-white/40 mt-8">
-        Secure payments by Paystack · {currency === "NGN" ? "Naira billing for Nigeria" : "USD billing"} · 7-day refund on unused Aurora ·{" "}
+        Secure payments by Paystack · USD billing · 7-day refund on unused Aurora ·{" "}
         <Link to="/gifts" className="underline hover:text-white/70">Gift cards available</Link>
       </p>
     </section>

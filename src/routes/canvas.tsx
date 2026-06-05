@@ -52,7 +52,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SplitRealityPlayer } from "@/components/canvas/SplitRealityPlayer";
-import { LiveJobsPanel } from "@/components/canvas/LiveJobsPanel";
+
 import { TrendingTemplatesMenu, type TemplateGraph, getTemplateById } from "@/components/canvas/TrendingTemplatesMenu";
 import { AuroraAgentPanel } from "@/components/canvas/AuroraAgentPanel";
 import { FinishedWorkflowsGallery } from "@/components/canvas/FinishedWorkflowsGallery";
@@ -680,7 +680,7 @@ function CanvasPage() {
           </button>
         </div>
       </div>
-      <LiveJobsPanel />
+      
       <AuroraAgentPanel
         open={agentOpen}
         onClose={() => setAgentOpen(false)}
