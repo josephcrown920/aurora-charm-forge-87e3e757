@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
 import { Check, Loader2, Sparkles, Zap, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { createPaystackCheckout } from "@/lib/billing.functions";
-import { detectCurrency } from "@/lib/geo.functions";
-import { PLANS, perCreditDisplay, type Currency, type PlanKey } from "@/lib/billing.plans";
+import { PLANS, perCreditDisplay, type PlanKey } from "@/lib/billing.plans";
 import { useAuth } from "@/hooks/use-auth";
 import { track } from "@/lib/tracking";
 
@@ -31,18 +29,11 @@ export function PricingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const checkout = useServerFn(createPaystackCheckout);
-  const detectFn = useServerFn(detectCurrency);
   const [loadingPlan, setLoadingPlan] = useState<PlanKey | null>(null);
-  const [currency, setCurrency] = useState<Currency>("USD");
-  const [touched, setTouched] = useState(false);
-
-  const { data: geo } = useQuery({ queryKey: ["geo-currency"], queryFn: () => detectFn(), staleTime: 60 * 60 * 1000 });
-
-  useEffect(() => {
-    if (!touched && geo?.currency) setCurrency(geo.currency);
-  }, [geo, touched]);
+  const currency = "USD" as const;
 
   const onChoose = async (plan: PlanKey) => {
+
     void track("pricing_cta_click", { plan, currency });
     if (!user) {
       try { localStorage.setItem("aurora_intent_plan", plan); } catch {}
