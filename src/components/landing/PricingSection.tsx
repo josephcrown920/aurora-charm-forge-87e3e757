@@ -72,28 +72,8 @@ export function PricingSection() {
         </p>
       </div>
 
-      {/* Currency toggle */}
-      <div className="flex items-center justify-center gap-2 mb-8">
-        <div className="inline-flex p-1 rounded-full border border-white/10 bg-white/[0.04]">
-          {(["USD", "NGN"] as Currency[]).map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => { setTouched(true); setCurrency(c); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
-                currency === c ? "bg-white text-black" : "text-white/70 hover:text-white"
-              }`}
-            >
-              {c === "USD" ? "USD ($)" : "NGN (₦)"}
-            </button>
-          ))}
-        </div>
-        {geo?.country && (
-          <span className="text-[11px] text-white/40 ml-1">
-            Auto-detected: {geo.country}
-          </span>
-        )}
-      </div>
+      {/* USD-only billing */}
+
 
       <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
         {ORDER.map((key) => {
