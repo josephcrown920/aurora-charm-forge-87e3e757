@@ -7,24 +7,57 @@ export type ColorPreset = {
   swatch: string;
   promptName: string;
   glow: string;
+  /** Per-color performance staging so every swatch produces a different shot. */
+  performance: {
+    mic: "hanging" | "standing" | "handheld" | "boom";
+    pose: string;
+    energy: string;
+  };
 };
 
 export const COLOR_PRESETS: ColorPreset[] = [
-  { id: "hot-pink", name: "Hot Pink", swatch: "#ff2d8a", promptName: "vivid hot pink", glow: "from-pink-500/40 to-fuchsia-500/20" },
-  { id: "royal-blue", name: "Royal Blue", swatch: "#1e40af", promptName: "deep royal blue", glow: "from-blue-600/40 to-indigo-500/20" },
-  { id: "neon-green", name: "Neon Green", swatch: "#39ff14", promptName: "electric neon green", glow: "from-emerald-400/40 to-lime-400/20" },
-  { id: "sunset-orange", name: "Sunset Orange", swatch: "#ff6a00", promptName: "warm sunset orange", glow: "from-orange-500/40 to-amber-400/20" },
-  { id: "electric-purple", name: "Electric Purple", swatch: "#8b5cf6", promptName: "electric violet purple", glow: "from-violet-500/40 to-purple-500/20" },
-  { id: "cyber-yellow", name: "Cyber Yellow", swatch: "#facc15", promptName: "saturated cyber yellow", glow: "from-yellow-400/40 to-amber-300/20" },
-  { id: "crimson-red", name: "Crimson Red", swatch: "#dc2626", promptName: "deep crimson red", glow: "from-red-600/40 to-rose-500/20" },
-  { id: "ice-white", name: "Ice White", swatch: "#f8fafc", promptName: "pure monochrome white", glow: "from-slate-200/40 to-white/10" },
-  { id: "obsidian", name: "Obsidian Black", swatch: "#0a0a0a", promptName: "matte obsidian black", glow: "from-zinc-800/40 to-black/20" },
-  { id: "aqua", name: "Aqua Teal", swatch: "#06b6d4", promptName: "luminous aqua teal", glow: "from-cyan-400/40 to-teal-400/20" },
-  { id: "rose-gold", name: "Rose Gold", swatch: "#e8b4a0", promptName: "soft rose gold", glow: "from-rose-300/40 to-amber-200/20" },
-  { id: "lime-pop", name: "Lime Pop", swatch: "#a3e635", promptName: "fluorescent lime", glow: "from-lime-400/40 to-green-400/20" },
+  { id: "hot-pink", name: "Hot Pink", swatch: "#ff2d8a", promptName: "vivid hot pink", glow: "from-pink-500/40 to-fuchsia-500/20",
+    performance: { mic: "standing", pose: "three-quarter body facing camera-left, one hand resting on a tall chrome mic stand, head tilted up", energy: "confident, slow ballad delivery" } },
+  { id: "royal-blue", name: "Royal Blue", swatch: "#1e40af", promptName: "deep royal blue", glow: "from-blue-600/40 to-indigo-500/20",
+    performance: { mic: "hanging", pose: "full-body side profile, leaning into a vintage silver microphone hanging at chest level from above", energy: "calm composed power" } },
+  { id: "neon-green", name: "Neon Green", swatch: "#39ff14", promptName: "electric neon green", glow: "from-emerald-400/40 to-lime-400/20",
+    performance: { mic: "boom", pose: "head tilted back, eyes closed, screaming into an overhead boom mic, arms loose at sides", energy: "raw cathartic shout" } },
+  { id: "sunset-orange", name: "Sunset Orange", swatch: "#ff6a00", promptName: "warm sunset orange", glow: "from-orange-500/40 to-amber-400/20",
+    performance: { mic: "handheld", pose: "mid-stride across the frame, handheld dynamic SM58 close to mouth, free hand pointing at the lens", energy: "hyped, mid-verse" } },
+  { id: "electric-purple", name: "Electric Purple", swatch: "#8b5cf6", promptName: "electric violet purple", glow: "from-violet-500/40 to-purple-500/20",
+    performance: { mic: "standing", pose: "eyes closed, both hands wrapped around the mic on a vintage stand, body slightly swaying", energy: "lost in the song, reverb-soaked" } },
+  { id: "cyber-yellow", name: "Cyber Yellow", swatch: "#facc15", promptName: "saturated cyber yellow", glow: "from-yellow-400/40 to-amber-300/20",
+    performance: { mic: "handheld", pose: "frozen mid-jump with both feet off the ground, handheld mic in one hand", energy: "explosive hype moment" } },
+  { id: "crimson-red", name: "Crimson Red", swatch: "#dc2626", promptName: "deep crimson red", glow: "from-red-600/40 to-rose-500/20",
+    performance: { mic: "hanging", pose: "back three-quarters to camera, turning over the shoulder toward a hanging vintage mic", energy: "slow brooding turn" } },
+  { id: "ice-white", name: "Ice White", swatch: "#f8fafc", promptName: "pure monochrome white", glow: "from-slate-200/40 to-white/10",
+    performance: { mic: "boom", pose: "standing centered with hands clasped near the chest, overhead boom mic just visible at top of frame", energy: "still, gospel-prayer stillness" } },
+  { id: "obsidian", name: "Obsidian Black", swatch: "#0a0a0a", promptName: "matte obsidian black", glow: "from-zinc-800/40 to-black/20",
+    performance: { mic: "standing", pose: "lone figure under a single hard spotlight, standing mic with windscreen, silhouette edge-lit", energy: "noir, smoky club mood" } },
+  { id: "aqua", name: "Aqua Teal", swatch: "#06b6d4", promptName: "luminous aqua teal", glow: "from-cyan-400/40 to-teal-400/20",
+    performance: { mic: "hanging", pose: "low-angle hero shot looking up, chin slightly raised, hanging mic descending into frame", energy: "anthemic hero pose" } },
+  { id: "rose-gold", name: "Rose Gold", swatch: "#e8b4a0", promptName: "soft rose gold", glow: "from-rose-300/40 to-amber-200/20",
+    performance: { mic: "standing", pose: "seated on a tall barstool, vintage standing mic at mouth height, legs crossed", energy: "intimate acoustic ballad" } },
+  { id: "lime-pop", name: "Lime Pop", swatch: "#a3e635", promptName: "fluorescent lime", glow: "from-lime-400/40 to-green-400/20",
+    performance: { mic: "handheld", pose: "leaning back away from camera with handheld mic raised overhead, free hand on hip", energy: "swagger, lean-back flex" } },
 ];
 
-export type SetupKind = "studio" | "indoor" | "outdoor" | "street";
+const MIC_DETAIL: Record<ColorPreset["performance"]["mic"], string> = {
+  hanging: "an exact suspended vintage silver studio microphone hanging from a thin cable from above the frame, photoreal shape, size, material, cable",
+  standing: "a vintage chrome microphone on a tall floor stand, photoreal Shure-style capsule with windscreen, sturdy weighted base",
+  handheld: "a handheld dynamic stage microphone (Shure SM58 type) gripped tightly with the XLR cable trailing out of frame",
+  boom: "a long overhead boom-arm microphone descending into the top of frame, professional shock-mount, blimp windscreen",
+};
+
+export const SETUP_KINDS: { id: SetupKind; label: string }[] = [
+  { id: "performance", label: "Performance" },
+  { id: "studio", label: "Studio" },
+  { id: "indoor", label: "Indoor" },
+  { id: "outdoor", label: "Outdoor" },
+  { id: "street", label: "Street" },
+];
+
+export type SetupKind = "performance" | "studio" | "indoor" | "outdoor" | "street";
 
 export type Setup = {
   id: string;
@@ -37,6 +70,19 @@ export type Setup = {
 };
 
 export const SETUPS: Setup[] = [
+  // PERFORMANCE — per-color staging (mic + pose change per swatch).
+  {
+    id: "performance",
+    name: "Performance · Per-color staging",
+    description: "Each color has its own mic style, pose, and energy. Hanging mic, standing mic, handheld or boom.",
+    kind: "performance",
+    preview: (c) => `radial-gradient(ellipse at 50% 65%, ${c}ee 0%, ${c}88 40%, ${c}22 100%)`,
+    // Placeholder — the real prompt is composed in buildPerformancePrompt(colorId)
+    // because it depends on the per-color mic/pose config, not just the color name.
+    prompt: (color) =>
+      `Editorial performance shot on a seamless ${color} cyclorama. Preserve facial likeness. 4K cinematic.`,
+  },
+
   // STUDIO
   {
     id: "wide",
@@ -163,13 +209,6 @@ export const SETUPS: Setup[] = [
   },
 ];
 
-export const SETUP_KINDS: { id: SetupKind; label: string }[] = [
-  { id: "studio", label: "Studio" },
-  { id: "indoor", label: "Indoor" },
-  { id: "outdoor", label: "Outdoor" },
-  { id: "street", label: "Street" },
-];
-
 export type Workflow = {
   id: string;
   name: string;
@@ -182,8 +221,28 @@ export const WORKFLOWS: Workflow[] = [
   { id: "all-setups", name: "One Color · All Setups", steps: ["Pick 1 color", "Run every setup", "Compare looks"] },
 ];
 
+/** Per-color performance prompt — every swatch produces a different mic + pose + energy. */
+export function buildPerformancePrompt(colorId: string): string {
+  const c = COLOR_PRESETS.find((x) => x.id === colorId) ?? COLOR_PRESETS[0];
+  const { mic, pose, energy } = c.performance;
+  return `Editorial music-video performance shot of the subject on a seamless ${c.promptName} cyclorama — background and floor are one continuous ${c.promptName} surface, no visible seams. Subject standing on a circular performance platform matching the ${c.promptName} tone, slightly elevated with a subtle reflective sheen and soft shadow. Pose: ${pose}. Energy: ${energy}. Microphone: ${MIC_DETAIL[mic]}. Lighting: bold monochromatic ${c.promptName} ambient wash with a soft key from camera-right and a clean rim light separating the subject from the background. Preserve exact facial likeness, beard, skin tone, hairstyle, body proportions, and outfit from the reference photos. Ultra-realistic skin texture with natural pores, sharp clothing detail, gentle floor shadow, high-end music-video aesthetic, ARRI Alexa look, 50mm, 4K photoreal, no text or logos.`;
+}
+
 export function buildColorPrompt(colorId: string, setupId: string): string {
+  if (setupId === "performance") return buildPerformancePrompt(colorId);
   const c = COLOR_PRESETS.find((x) => x.id === colorId) ?? COLOR_PRESETS[0];
   const s = SETUPS.find((x) => x.id === setupId) ?? SETUPS[0];
   return s.prompt(c.promptName);
+}
+
+/** Short human label describing the current performance staging for the UI. */
+export function describePerformance(colorId: string): string {
+  const c = COLOR_PRESETS.find((x) => x.id === colorId) ?? COLOR_PRESETS[0];
+  const micLabel: Record<ColorPreset["performance"]["mic"], string> = {
+    hanging: "hanging vintage mic",
+    standing: "standing chrome mic",
+    handheld: "handheld dynamic mic",
+    boom: "overhead boom mic",
+  };
+  return `${c.name} · ${micLabel[c.performance.mic]} · ${c.performance.energy}`;
 }
