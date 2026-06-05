@@ -1,6 +1,4 @@
 import { useRef } from "react";
-import closeup from "@/assets/video-josh-closeup.mp4.asset.json";
-import lowangle from "@/assets/video-josh-lowangle.mp4.asset.json";
 import profile from "@/assets/video-josh-profile.mp4.asset.json";
 import lipsync from "@/../public/videos/lipsync-performance.mp4.asset.json";
 import { Play } from "lucide-react";
@@ -13,11 +11,10 @@ type PreviewClip = {
   url: string;
 };
 
+// Close-up + low-angle clips removed pending user-supplied footage.
 const CLIPS: PreviewClip[] = [
-  { label: "Static · locked off",  cameraValue: "static",    url: lipsync.url },
-  { label: "Push in · close-up",   cameraValue: "push_in",   url: closeup.url },
-  { label: "Low angle · hero",     cameraValue: "tilt_up",   url: lowangle.url },
-  { label: "Side profile pan",     cameraValue: "pan_left",  url: profile.url },
+  { label: "Static · locked off", cameraValue: "static",   url: lipsync.url },
+  { label: "Side profile pan",    cameraValue: "pan_left", url: profile.url },
 ];
 
 /**
