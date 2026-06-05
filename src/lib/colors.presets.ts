@@ -49,6 +49,8 @@ const MIC_DETAIL: Record<ColorPreset["performance"]["mic"], string> = {
   boom: "a long overhead boom-arm microphone descending into the top of frame, professional shock-mount, blimp windscreen",
 };
 
+export type SetupKind = "performance" | "studio" | "indoor" | "outdoor" | "street";
+
 export const SETUP_KINDS: { id: SetupKind; label: string }[] = [
   { id: "performance", label: "Performance" },
   { id: "studio", label: "Studio" },
@@ -56,8 +58,6 @@ export const SETUP_KINDS: { id: SetupKind; label: string }[] = [
   { id: "outdoor", label: "Outdoor" },
   { id: "street", label: "Street" },
 ];
-
-export type SetupKind = "performance" | "studio" | "indoor" | "outdoor" | "street";
 
 export type Setup = {
   id: string;
