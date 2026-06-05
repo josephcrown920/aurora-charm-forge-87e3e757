@@ -52,7 +52,7 @@ export function StickyCreditsBar() {
         </span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white truncate">
-            First credit pack — extra 25% credits free.
+            First Aurora pack — extra 25% Aurora free.
           </p>
           <p className="text-[11px] text-white/80 truncate font-mono">
             Ends in {fmt(remaining)} · code applied automatically
