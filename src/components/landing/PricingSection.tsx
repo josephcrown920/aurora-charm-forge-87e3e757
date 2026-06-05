@@ -141,7 +141,7 @@ export function PricingSection() {
       </div>
 
       <p className="text-center text-xs text-white/40 mt-8">
-        Secure payments by Paystack · {currency === "NGN" ? "Naira billing for Nigeria" : "USD billing"} · 7-day refund on unused Aurora ·{" "}
+        Secure payments by Paystack · USD billing · 7-day refund on unused Aurora ·{" "}
         <Link to="/gifts" className="underline hover:text-white/70">Gift cards available</Link>
       </p>
     </section>
