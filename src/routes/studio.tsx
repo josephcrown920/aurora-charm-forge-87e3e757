@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Wand2, LogOut, Loader2, Download, Camera, Film, Mic2, Coins, Zap, LayoutDashboard, Shield, Workflow } from "lucide-react";
 import { toast } from "sonner";
-import { generatePerformanceShot, listGenerations, generateVideoFromImage, lipSyncVideo, generateSplitReality } from "@/lib/studio.functions";
+import { generatePerformanceShot, listGenerations, generateVideoFromImage, lipSyncVideo } from "@/lib/studio.functions";
 import { getMyProfile, createPaystackCheckout } from "@/lib/billing.functions";
 import { PLANS } from "@/lib/billing.plans";
 import { detectCurrency } from "@/lib/geo.functions";
@@ -31,7 +31,7 @@ import {
 import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
 import { publishGeneration } from "@/lib/share.functions";
 import { Share2 } from "lucide-react";
-import { saveAssetToDisk, isSplitRealityPrompt } from "@/lib/save";
+import { saveAssetToDisk } from "@/lib/save";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
@@ -121,7 +121,6 @@ function StudioPage() {
   const listFn = useServerFn(listGenerations);
   const videoFn = useServerFn(generateVideoFromImage);
   const lipSyncFn = useServerFn(lipSyncVideo);
-  const splitFn = useServerFn(generateSplitReality);
   const profileFn = useServerFn(getMyProfile);
   const checkoutFn = useServerFn(createPaystackCheckout);
   const publishFn = useServerFn(publishGeneration);
@@ -175,19 +174,6 @@ function StudioPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
 
-  const splitMut = useMutation({
-    mutationFn: async () => {
-      const imageUrls = [selfie, outfit, scene, prop].filter((x): x is string => !!x);
-      if (imageUrls.length === 0) throw new Error("Add at least one reference image");
-      return splitFn({ data: { imageUrls, basePrompt: prompt } });
-    },
-    onSuccess: () => {
-      toast.success("Split reality ready — ultra + cinematic");
-      qc.invalidateQueries({ queryKey: ["gens"] });
-      qc.invalidateQueries({ queryKey: ["profile"] });
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
-  });
 
 
   const reangleMut = useMutation({

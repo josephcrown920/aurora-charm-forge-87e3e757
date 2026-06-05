@@ -5,8 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { listGallery, toggleFavorite } from "@/lib/studio.functions";
 import { ModelBadge } from "@/components/ModelBadge";
-import { Sparkles, Loader2, ArrowLeft, Star, Download, Film, Image as ImageIcon } from "lucide-react";
+import { Sparkles, Loader2, ArrowLeft, Star, Download, Film, Image as ImageIcon, Layers } from "lucide-react";
 import { toast } from "sonner";
+import { saveAssetToDisk, isSplitRealityPrompt, splitRealityVariant } from "@/lib/save";
 
 export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
@@ -134,22 +135,27 @@ function GalleryPage() {
                   >
                     <Star className={`size-3.5 ${g.is_favorite ? "fill-current" : ""}`} />
                   </button>
-                  <a
-                    href={url}
-                    download
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => saveAssetToDisk(url, `aurora-${g.id.slice(0,8)}.${g.result_video_url ? "mp4" : "png"}`)}
                     className="size-8 rounded-full bg-background/70 backdrop-blur-md border border-border hover:bg-background flex items-center justify-center"
                     title="Download"
                   >
                     <Download className="size-3.5" />
-                  </a>
+                  </button>
                 </div>
-                {g.is_favorite && (
-                  <div className="absolute top-2 left-2 size-7 rounded-full bg-amber-500/40 border border-amber-400 backdrop-blur-md flex items-center justify-center">
-                    <Star className="size-3.5 fill-current text-amber-100" />
-                  </div>
-                )}
+                <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                  {g.is_favorite && (
+                    <div className="size-7 rounded-full bg-amber-500/40 border border-amber-400 backdrop-blur-md flex items-center justify-center">
+                      <Star className="size-3.5 fill-current text-amber-100" />
+                    </div>
+                  )}
+                  {isSplitRealityPrompt(g.prompt) && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/85 text-primary-foreground text-[9px] font-semibold uppercase tracking-widest shadow">
+                      <Layers className="size-2.5" /> Split{splitRealityVariant(g.prompt) ? ` · ${splitRealityVariant(g.prompt)}` : ""}
+                    </span>
+                  )}
+                </div>
                 <div className="p-2 space-y-1">
                   <div className="flex items-center justify-between gap-1">
                     <ModelBadge model={g.model} size="xs" />
