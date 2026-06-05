@@ -680,7 +680,7 @@ function CanvasPage() {
           </button>
         </div>
       </div>
-      <LiveJobsPanel />
+      
       <AuroraAgentPanel
         open={agentOpen}
         onClose={() => setAgentOpen(false)}
