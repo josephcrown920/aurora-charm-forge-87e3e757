@@ -17,12 +17,11 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 
-import { TrendingWorkflows } from "@/components/landing/TrendingWorkflows";
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
 
 const FAQ_ITEMS = [
-  { q: "How do credits work?", a: "1 credit ≈ 1 image. Videos cost 5 credits (5s) or 10 credits (10s). Lip-sync is 1 credit per second. Credits never expire and roll across all models." },
+  { q: "How does Aurora work?", a: "1 Aurora ≈ 1 image. Videos cost 5 Aurora (5s) or 10 Aurora (10s). Lip-sync is 1 Aurora per second. Aurora never expires and rolls across all models." },
   { q: "Can I use the results commercially?", a: "Yes. Every paid plan includes a full commercial license for the outputs you generate — ads, music videos, UGC, client deliverables. You own the renders." },
   { q: "Which models are included?", a: "All of them. Seedance 2.0, Kling 3.0, Nano Banana Pro, Seedream 4.5, Sync 1.9 lip-sync, and every new model we ship." },
 ];
@@ -158,9 +157,6 @@ function Index() {
 
       {/* 5. Our services */}
       <ServicesGrid />
-
-      {/* 6. Trending Canvas workflows — preset + blank templates for Colors and Lip-sync */}
-      <TrendingWorkflows />
 
       {/* 7. Trust + Why us */}
       <TrustBar />

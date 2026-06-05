@@ -349,7 +349,7 @@ function StudioPage() {
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/60 text-sm">
             <Coins className="size-3.5 text-primary" />
             <span className="font-medium">{profile?.credits ?? "—"}</span>
-            <span className="text-muted-foreground text-xs">credits</span>
+            <span className="text-muted-foreground text-xs">Aurora</span>
           </div>
           <span className="text-sm text-muted-foreground hidden md:inline">
             Hi, <span className="text-foreground font-medium">{profile?.display_name || user.email?.split("@")[0]}</span> 👋
@@ -441,33 +441,6 @@ function StudioPage() {
             </div>
           </div>
 
-          {/* Tutorial recipes — visible reference photos from the prompt guides */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tutorial recipes</label>
-            <p className="text-xs text-muted-foreground">Tap to load a guided recipe and reference look.</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {RECIPES.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => { setPrompt(r.prompt); toast.message(`Loaded recipe: ${r.title}`); }}
-                  className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-colors bg-black"
-                >
-                  {r.video ? (
-                    <video src={r.video} poster={r.image} autoPlay loop muted playsInline preload="metadata" className="w-full h-full object-cover" />
-                  ) : (
-                    <img src={r.image} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-1.5 left-1.5 right-1.5">
-                    <p className="text-[10px] uppercase tracking-wider text-white/70">{r.tag}</p>
-                    <p className="text-[11px] font-medium text-white leading-tight line-clamp-2">{r.title}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="space-y-2">
             <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Image model</label>
             <Select value={model} onValueChange={setModel}>
@@ -497,7 +470,7 @@ function StudioPage() {
           <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-card/40 px-3 py-2">
             <span className="inline-flex items-center gap-1.5">
               <Zap className="size-3.5 text-primary" />
-              Cost: <span className="text-foreground font-medium">1 credit</span>
+              Cost: <span className="text-foreground font-medium">1 Aurora</span>
               <span className="opacity-50">·</span>
               ETA: <span className="text-foreground font-medium">~10–20s</span>
             </span>
@@ -513,7 +486,7 @@ function StudioPage() {
             {mut.isPending ? (
               <><Loader2 className="size-5 mr-2 animate-spin" /> Staging the shoot…</>
             ) : (
-              <><Wand2 className="size-5 mr-2" /> Generate performance shot · 1 credit</>
+              <><Wand2 className="size-5 mr-2" /> Generate performance shot · 1 Aurora</>
             )}
           </Button>
 
@@ -699,14 +672,14 @@ function StudioPage() {
               <div className="flex items-center justify-between text-xs text-muted-foreground rounded-xl border border-border bg-background/40 px-3 py-2">
                 <span className="inline-flex items-center gap-1.5">
                   <Zap className="size-3.5 text-primary" />
-                  Cost: <span className="text-foreground font-medium">5 credits</span>
+                  Cost: <span className="text-foreground font-medium">5 Aurora</span>
                   <span className="opacity-50">·</span>
                   ETA: <span className="text-foreground font-medium">~60–180s</span>
                 </span>
                 <span className="opacity-70">{videoModel.startsWith("kling") ? "Kling 3.0" : "Seedance 2.0"}</span>
               </div>
               <Button disabled={videoMut.isPending} onClick={() => videoMut.mutate()} variant="secondary" className="w-full">
-                {videoMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Rendering video…</> : <><Film className="size-4 mr-2" /> Generate video · 5 credits</>}
+                {videoMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Rendering video…</> : <><Film className="size-4 mr-2" /> Generate video · 5 Aurora</>}
               </Button>
 
               {latestVideo?.result_video_url && (
@@ -750,7 +723,7 @@ function StudioPage() {
                 onChange={setAudioUrl}
               />
               <Button disabled={lipSyncMut.isPending || !audioUrl} onClick={() => lipSyncMut.mutate()} variant="secondary" className="w-full">
-                {lipSyncMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Syncing lips…</> : <><Mic2 className="size-4 mr-2" /> Lip sync video · 3 credits</>}
+                {lipSyncMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Syncing lips…</> : <><Mic2 className="size-4 mr-2" /> Lip sync video · 3 Aurora</>}
               </Button>
             </div>
           )}
@@ -762,9 +735,9 @@ function StudioPage() {
           <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Coins className="size-4 text-primary" />
-              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Buy credits</h3>
+              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Buy Aurora</h3>
             </div>
-            <p className="text-xs text-muted-foreground">1 credit per image · 5 per video · 3 per lip-sync. Secure checkout via Paystack.</p>
+            <p className="text-xs text-muted-foreground">1 Aurora per image · 5 per video · 3 per lip-sync. Secure checkout via Paystack.</p>
             <div className="grid grid-cols-3 gap-2">
               {(Object.keys(PLANS) as Array<"starter" | "creator" | "studio">).map((k) => {
                 const p = PLANS[k];
@@ -777,7 +750,7 @@ function StudioPage() {
                     className="flex flex-col items-start gap-1 rounded-xl border border-border bg-background/60 hover:border-primary/40 hover:bg-accent transition-colors p-3 text-left disabled:opacity-50"
                   >
                     <span className="text-xs uppercase tracking-wider text-muted-foreground">{k}</span>
-                    <span className="text-lg font-semibold">{p.credits} <span className="text-xs font-normal text-muted-foreground">credits</span></span>
+                    <span className="text-lg font-semibold">{p.credits} <span className="text-xs font-normal text-muted-foreground">Aurora</span></span>
                     <span className="text-xs text-muted-foreground">{p.prices[currency].display}</span>
                   </button>
                 );

@@ -30,13 +30,13 @@ export function LeadCapture() {
       <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-violet-600/15 via-fuchsia-600/10 to-emerald-600/10 p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs text-violet-200 border border-violet-400/30 bg-violet-500/10 px-3 py-1 rounded-full mb-3">
-            <Gift className="size-3" /> Early access · 10 free credits
+            <Gift className="size-3" /> Early access · 10 free Aurora
           </span>
           <h3 className="text-2xl md:text-3xl font-semibold leading-tight">
             Get on the list. Get the gift.
           </h3>
           <p className="text-white/70 mt-2 text-sm md:text-base">
-            New models, recipes, and shoots in your inbox weekly. Subscribers get a 10-credit head start the moment they sign in.
+            New models, recipes, and shoots in your inbox weekly. Subscribers get a 10-Aurora head start the moment they sign in.
           </p>
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-white/60">
             <Link to="/gifts" className="inline-flex items-center gap-1 hover:text-white">
@@ -68,7 +68,7 @@ export function LeadCapture() {
           >
             {state === "loading" && <><Loader2 className="size-4 animate-spin" /> Subscribing…</>}
             {state === "done" && <><Check className="size-4" /> You're in</>}
-            {state === "idle" && <>Reserve my credits <ArrowRight className="size-4" /></>}
+            {state === "idle" && <>Reserve my Aurora <ArrowRight className="size-4" /></>}
           </button>
           <p className="text-[10px] text-white/40">By subscribing you agree to our terms. Unsubscribe anytime.</p>
         </form>

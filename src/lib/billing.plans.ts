@@ -40,6 +40,6 @@ export type PlanKey = keyof typeof PLANS;
 
 export function perCreditDisplay(plan: PlanKey, currency: Currency): string {
   const p = PLANS[plan];
-  if (currency === "USD") return `$${(p.usd / p.credits).toFixed(3)} / credit`;
-  return `₦${Math.round(p.ngn / p.credits)} / credit`;
+  if (currency === "USD") return `$${(p.usd / p.credits).toFixed(3)} / Aurora`;
+  return `₦${Math.round(p.ngn / p.credits)} / Aurora`;
 }

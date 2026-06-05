@@ -83,7 +83,7 @@ export function CanvasShowcase() {
             />
             <div className="p-3 bg-black/60 backdrop-blur-sm border-t border-white/10">
               <p className="text-xs font-semibold text-white">Performance Studio · finished</p>
-              <p className="text-[10px] text-emerald-300/90 mt-0.5">Selfie → cinematic stage performance · 11 credits</p>
+              <p className="text-[10px] text-emerald-300/90 mt-0.5">Selfie → cinematic stage performance · 11 Aurora</p>
             </div>
           </div>
 
