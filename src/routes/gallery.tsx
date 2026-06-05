@@ -156,6 +156,17 @@ function GalleryPage() {
                   >
                     <Download className="size-3.5" />
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm("Delete this generation permanently?")) delMut.mutate(g.id);
+                    }}
+                    disabled={delMut.isPending}
+                    className="size-8 rounded-full bg-background/70 backdrop-blur-md border border-border hover:bg-destructive hover:text-destructive-foreground hover:border-destructive flex items-center justify-center disabled:opacity-50"
+                    title="Delete"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
                 </div>
                 <div className="absolute top-2 left-2 flex flex-col gap-1.5">
                   {g.is_favorite && (
