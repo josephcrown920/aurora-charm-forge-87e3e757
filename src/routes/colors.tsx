@@ -298,6 +298,12 @@ function ColorsStudio() {
               ))}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5">{selectedColor.name}</div>
+            {kind === "performance" && (
+              <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[11px] text-foreground/85">
+                <span className="uppercase tracking-wider text-[9px] text-primary mr-1.5">Staging</span>
+                {describePerformance(color)}
+              </div>
+            )}
           </div>
 
           {/* Scene kind tabs */}
