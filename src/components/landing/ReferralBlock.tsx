@@ -11,7 +11,7 @@ export function ReferralBlock() {
           </span>
           <h3 className="text-2xl font-semibold mt-3 leading-tight">Send Aurora to a creator you love.</h3>
           <p className="text-white/65 text-sm mt-2">
-            Buy a $10, $30 or $80 gift card. They get instant credits, a beautiful unboxing page, and a head start on their next shoot.
+            Buy a $10, $30 or $80 gift card. They get instant Aurora, a beautiful unboxing page, and a head start on their next shoot.
           </p>
           <Link
             to="/gifts"
@@ -27,7 +27,7 @@ export function ReferralBlock() {
           </span>
           <h3 className="text-2xl font-semibold mt-3 leading-tight">Share Aurora. Earn 20% for life.</h3>
           <p className="text-white/65 text-sm mt-2">
-            Get your link in 30 seconds. Every credit pack your audience buys pays you 20% — recurring, no cap, paid monthly.
+            Get your link in 30 seconds. Every Aurora pack your audience buys pays you 20% — recurring, no cap, paid monthly.
           </p>
           <Link
             to="/affiliate"
