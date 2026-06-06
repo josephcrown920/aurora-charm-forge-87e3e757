@@ -172,7 +172,7 @@ export const LIPSYNC_MODEL: ModelMeta = {
   endpoint: "fal-ai/sync-lipsync/v2",
   label: "Sync 1.9 Lipsync",
   short: "Sync",
-  group: "Replicate",
+  group: "Sync",
   icon: Wand2,
   color: "text-emerald-400",
   bg: "bg-emerald-500/15 border-emerald-500/30",
