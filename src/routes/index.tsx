@@ -16,6 +16,7 @@ import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CliSection } from "@/components/landing/CliSection";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
+import { CanvasWorkflowShowcase } from "@/components/landing/CanvasWorkflowShowcase";
 
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
@@ -163,6 +164,9 @@ function Index() {
 
       {/* 5. Our services */}
       <ServicesGrid />
+
+      {/* 6. Canvas + finished workflows + UGC Factory */}
+      <CanvasWorkflowShowcase />
 
       {/* 7. Trust + Why us */}
       <TrustBar />
