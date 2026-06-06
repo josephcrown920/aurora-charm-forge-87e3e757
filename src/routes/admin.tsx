@@ -60,6 +60,9 @@ function AdminPage() {
     return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="size-6 animate-spin text-primary" /></div>;
   }
 
+  if (!unlocked) return <AdminGate onUnlocked={() => setUnlocked(true)} />;
+
+
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
