@@ -5,7 +5,7 @@ export type ModelMeta = {
   value: string;
   label: string;
   short: string;
-  group: "Lovable AI" | "fal.ai" | "Hugging Face";
+  group: "Lovable AI" | "Replicate" | "Hugging Face" | "Sync";
   icon: LucideIcon;
   color: string;
   bg: string;
