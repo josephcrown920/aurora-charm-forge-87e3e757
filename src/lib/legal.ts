@@ -26,7 +26,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
         heading: "1. The service",
         body: [
           "Aurora Studio is an AI creative studio that turns reference photos and prompts into stylised photos and short videos.",
-          "We orchestrate third-party AI providers (Google, OpenAI, fal.ai, Replicate and others). Their outputs may vary and are not guaranteed to be accurate, safe, or fit for any particular purpose.",
+          "We orchestrate third-party AI providers (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net and others). Their outputs may vary and are not guaranteed to be accurate, safe, or fit for any particular purpose.",
         ],
       },
       {
@@ -112,7 +112,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
       {
         heading: "Who we share it with",
         body: [
-          "AI providers — your prompts and reference URLs are sent to the AI model you select (Google Gemini, OpenAI, fal.ai, Replicate, etc.) only to fulfil that generation.",
+          "AI providers — your prompts and reference URLs are sent to the AI model you select (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net) only to fulfil that generation.",
           "Payment processor — Paystack receives the data required to process payments.",
           "Infrastructure — our hosting and database providers process data on our behalf under data processing agreements.",
           "We never sell your data. We never share it with advertisers.",
