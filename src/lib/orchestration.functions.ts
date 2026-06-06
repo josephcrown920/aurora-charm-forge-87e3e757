@@ -1,0 +1,76 @@
+import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+// ─── Provider health (which keys are configured) ─────────────────────────────
+// Mirrors the priority chains in src/lib/orchestrator.server.ts.
+
+type ProviderRow = {
+  id: string;
+  name: string;
+  kind: "image" | "video" | "lipsync" | "inference";
+  envKey: string;
+  configured: boolean;
+  free: boolean;
+  notes?: string;
+};
+
+export const orchestrationHealth = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    // Admin gate
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles").select("role").eq("user_id", context.userId);
+    const isAdmin = roles?.some((r) => r.role === "admin");
+    if (!isAdmin) throw new Error("Forbidden");
+
+    const has = (k: string) => Boolean(process.env[k]);
+
+    const providers: ProviderRow[] = [
+      // image
+      { id: "lovable", name: "Lovable AI (Gemini)", kind: "image", envKey: "LOVABLE_API_KEY", configured: has("LOVABLE_API_KEY"), free: true, notes: "google/gemini-2.5-flash-image" },
+      { id: "replicate-image", name: "Replicate", kind: "image", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "seedream-4 · flux-schnell" },
+      { id: "hf", name: "HuggingFace Inference", kind: "image", envKey: "HF_TOKEN", configured: has("HF_TOKEN"), free: true, notes: "flux-schnell · sdxl" },
+      // video
+      { id: "replicate-video", name: "Replicate", kind: "video", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "kling-v2.1 · seedance-1-pro/lite" },
+      // lipsync
+      { id: "sync", name: "Sync.so", kind: "lipsync", envKey: "SYNC_API_KEY", configured: has("SYNC_API_KEY"), free: false, notes: "lipsync-2 (primary)" },
+      { id: "replicate-lipsync", name: "Replicate", kind: "lipsync", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "sync-1.6.0 · wav2lip (fallback)" },
+      // inference (text)
+      { id: "lovable-text", name: "Lovable AI Gateway", kind: "inference", envKey: "LOVABLE_API_KEY", configured: has("LOVABLE_API_KEY"), free: true, notes: "gemini-2.5-flash · claude · gpt" },
+    ];
+
+    // GPU workers (admin-registered) — always last in every chain
+    const { data: workers } = await supabaseAdmin
+      .from("gpu_workers")
+      .select("id,name,status,capabilities,in_flight,max_concurrency,last_heartbeat,priority")
+      .order("priority", { ascending: true });
+
+    // Recent provider activity (last 200 calls, last 24h)
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: logs } = await supabaseAdmin
+      .from("provider_logs")
+      .select("provider,endpoint,kind,status,latency_ms,cost_usd,created_at")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    // Aggregate stats per provider
+    const stats: Record<string, { ok: number; err: number; avgMs: number; cost: number }> = {};
+    for (const l of logs ?? []) {
+      const s = stats[l.provider] ??= { ok: 0, err: 0, avgMs: 0, cost: 0 };
+      if (l.status === "ok") s.ok++; else s.err++;
+      s.avgMs = (s.avgMs * (s.ok + s.err - 1) + (l.latency_ms ?? 0)) / (s.ok + s.err);
+      s.cost += Number(l.cost_usd ?? 0);
+    }
+
+    const summary = {
+      total: providers.length,
+      configured: providers.filter((p) => p.configured).length,
+      missing: providers.filter((p) => !p.configured).length,
+      workers: workers?.length ?? 0,
+      activeWorkers: workers?.filter((w) => w.status === "active").length ?? 0,
+    };
+
+    return { providers, workers: workers ?? [], stats, summary, recent: (logs ?? []).slice(0, 50) };
+  });
