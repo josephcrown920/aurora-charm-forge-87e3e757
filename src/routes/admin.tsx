@@ -29,6 +29,7 @@ function AdminPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [unlocked, setUnlocked] = useState<boolean>(() => hasAdminToken());
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -40,9 +41,10 @@ function AdminPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => overviewFn(),
-    enabled: !!user,
+    enabled: !!user && unlocked,
     refetchInterval: 30_000,
   });
+
 
   const [tab, setTab] = useState<"gens" | "users" | "payments" | "workers">("gens");
   const [grantUser, setGrantUser] = useState("");
