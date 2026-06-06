@@ -222,12 +222,14 @@ export function getModelMeta(value?: string | null): ModelMeta {
   };
 }
 
-export function resolveImageEndpoint(value: string): { endpoint: string; provider: "lovable" | "fal" } {
+export function resolveImageEndpoint(value: string): { endpoint: string; provider: "lovable" | "replicate" | "huggingface" } {
   const m = ALL[value];
   if (m && m.category === "image") {
-    return { endpoint: m.endpoint, provider: m.group === "Lovable AI" ? "lovable" : "fal" };
+    const provider =
+      m.group === "Lovable AI" ? "lovable" :
+      m.group === "Hugging Face" ? "huggingface" : "replicate";
+    return { endpoint: m.endpoint, provider };
   }
-  // fallback
   return { endpoint: "google/gemini-2.5-flash-image", provider: "lovable" };
 }
 
