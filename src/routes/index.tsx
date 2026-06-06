@@ -14,7 +14,7 @@ import { HeroContactForm } from "@/components/landing/HeroContactForm";
 import { ServicesGrid } from "@/components/landing/ServicesGrid";
 import { WhyUs } from "@/components/landing/WhyUs";
 import { FinalCTA } from "@/components/landing/FinalCTA";
-import { CanvasShowcase } from "@/components/landing/CanvasShowcase";
+import { CliSection } from "@/components/landing/CliSection";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
@@ -155,8 +155,8 @@ function Index() {
       {/* 2. Balloon head lip-sync visualizer (with template CTAs) */}
       <BalloonLipsync />
 
-      {/* 3. Canvas showcase */}
-      <CanvasShowcase />
+      {/* 3. Published CLI */}
+      <CliSection />
 
       {/* 4. Supercomputer / product hero */}
       <SupercomputerSection />
