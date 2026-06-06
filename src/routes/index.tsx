@@ -165,6 +165,9 @@ function Index() {
       {/* 5. Our services */}
       <ServicesGrid />
 
+      {/* 6. Canvas + finished workflows + UGC Factory */}
+      <CanvasWorkflowShowcase />
+
       {/* 7. Trust + Why us */}
       <TrustBar />
       <WhyUs />
