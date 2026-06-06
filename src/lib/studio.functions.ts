@@ -383,15 +383,15 @@ export const lipSyncVideo = createServerFn({ method: "POST" })
     if (insErr || !row) throw new Error(insErr?.message || "Insert failed");
     await chargeCredits(userId, COST_LIPSYNC, "lipsync", row.id);
     try {
-      const payload: Record<string, unknown> = {
-        video_url: data.videoUrl,
-        audio_url: data.audioUrl,
-      };
-      if (model === "fal-ai/sync-lipsync/v2") payload.sync_mode = "cut_off";
-      const out = await falRun<{ video: { url: string } }>(model, payload, 300_000);
-      const url = out.video?.url;
-      if (!url) throw new Error("Lip-sync model returned no video");
-      const { bytes, mime } = await fetchToBytes(url);
+      const out = await orchestrate({
+        kind: "lipsync",
+        model,
+        videoUrl: data.videoUrl,
+        audioUrl: data.audioUrl,
+        userId,
+        refId: row.id,
+      });
+      const { bytes, mime } = await fetchToBytes(out.url);
       const path = `${userId}/videos/${row.id}.mp4`;
       const { error: upErr } = await supabase.storage
         .from("studio")
