@@ -192,6 +192,21 @@ const VideoSchema = z.object({
   endFrameUrl: z.string().url().optional().nullable(),
 });
 
+const CAMERA_HINTS: Record<string, string> = {
+  static: "locked-off static camera, no movement",
+  zoom_in: "slow smooth dolly zoom in toward the subject",
+  zoom_out: "slow smooth dolly zoom out away from the subject",
+  pan_left: "smooth horizontal camera pan to the left",
+  pan_right: "smooth horizontal camera pan to the right",
+  tilt_up: "smooth vertical camera tilt upward",
+  tilt_down: "smooth vertical camera tilt downward",
+  orbit_cw: "cinematic orbit camera moving clockwise around the subject",
+  orbit_ccw: "cinematic orbit camera moving counter-clockwise around the subject",
+  push_in: "fast confident push-in toward the subject's face",
+  pull_out: "graceful pull-out reveal away from the subject",
+};
+
+
 export const generateVideoFromImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => VideoSchema.parse(input))
