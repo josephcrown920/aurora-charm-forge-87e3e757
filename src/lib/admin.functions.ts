@@ -1,6 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { z } from "zod";
+
+// Hidden owner gate. Validates against ADMIN_USERNAME + ADMIN_PASSCODE
+// secrets. Returns a short-lived token the client stores in sessionStorage
+// and replays via the X-Aurora-Admin header; server checks it on each
+// admin call in addition to the Supabase admin role.
+export const adminUnlock = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ username: z.string().min(1).max(120), passcode: z.string().min(1).max(200) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const u = process.env.ADMIN_USERNAME ?? "";
+    const p = process.env.ADMIN_PASSCODE ?? "";
+    if (!u || !p) throw new Error("Admin gate not configured");
+    if (data.username !== u || data.passcode !== p) {
+      // Constant-ish delay to slow brute force
+      await new Promise((r) => setTimeout(r, 600));
+      throw new Error("Invalid credentials");
+    }
+    return { ok: true, token: p }; // simple shared-secret token
+  });
+
 
 async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin

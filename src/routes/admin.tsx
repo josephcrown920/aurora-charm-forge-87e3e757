@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { AdminGate, hasAdminToken } from "@/components/AdminGate";
+
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -27,6 +29,7 @@ function AdminPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [unlocked, setUnlocked] = useState<boolean>(() => hasAdminToken());
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -38,9 +41,10 @@ function AdminPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => overviewFn(),
-    enabled: !!user,
+    enabled: !!user && unlocked,
     refetchInterval: 30_000,
   });
+
 
   const [tab, setTab] = useState<"gens" | "users" | "payments" | "workers">("gens");
   const [grantUser, setGrantUser] = useState("");
@@ -55,6 +59,9 @@ function AdminPage() {
   if (loading || !user) {
     return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="size-6 animate-spin text-primary" /></div>;
   }
+
+  if (!unlocked) return <AdminGate onUnlocked={() => setUnlocked(true)} />;
+
 
   if (error) {
     return (
