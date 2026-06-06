@@ -28,6 +28,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RTokenRouteImport } from './routes/r.$token'
 import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
+import { Route as AdminOrchestrationRouteImport } from './routes/admin.orchestration'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicGenerateRouteImport } from './routes/api/public/generate'
 
@@ -126,6 +127,11 @@ const LegalSlugRoute = LegalSlugRouteImport.update({
   path: '/legal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrchestrationRoute = AdminOrchestrationRouteImport.update({
+  id: '/orchestration',
+  path: '/orchestration',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack-webhook',
@@ -140,7 +146,7 @@ const ApiPublicGenerateRoute = ApiPublicGenerateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
+  '/admin/orchestration': typeof AdminOrchestrationRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
@@ -163,7 +170,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
+  '/admin/orchestration': typeof AdminOrchestrationRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
@@ -187,7 +195,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
   '/canvas': typeof CanvasRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/ugc': typeof UgcRoute
   '/workflows': typeof WorkflowsRoute
+  '/admin/orchestration': typeof AdminOrchestrationRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/r/$token': typeof RTokenRoute
   '/api/public/generate': typeof ApiPublicGenerateRoute
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/ugc'
     | '/workflows'
+    | '/admin/orchestration'
     | '/legal/$slug'
     | '/r/$token'
     | '/api/public/generate'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/ugc'
     | '/workflows'
+    | '/admin/orchestration'
     | '/legal/$slug'
     | '/r/$token'
     | '/api/public/generate'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/ugc'
     | '/workflows'
+    | '/admin/orchestration'
     | '/legal/$slug'
     | '/r/$token'
     | '/api/public/generate'
@@ -282,7 +294,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AffiliateRoute: typeof AffiliateRoute
   AuthRoute: typeof AuthRoute
   CanvasRoute: typeof CanvasRoute
@@ -439,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orchestration': {
+      id: '/admin/orchestration'
+      path: '/orchestration'
+      fullPath: '/admin/orchestration'
+      preLoaderRoute: typeof AdminOrchestrationRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/public/paystack-webhook': {
       id: '/api/public/paystack-webhook'
       path: '/api/public/paystack-webhook'
@@ -456,9 +475,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminOrchestrationRoute: typeof AdminOrchestrationRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminOrchestrationRoute: AdminOrchestrationRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AffiliateRoute: AffiliateRoute,
   AuthRoute: AuthRoute,
   CanvasRoute: CanvasRoute,

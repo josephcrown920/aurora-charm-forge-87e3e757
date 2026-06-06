@@ -91,6 +91,7 @@ function AdminPage() {
           <span className="ml-2 text-xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-500 flex items-center gap-1"><Shield className="size-3" /> Admin</span>
         </Link>
         <div className="flex items-center gap-3">
+          <Link to="/admin/orchestration" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"><Activity className="size-3.5" /> Orchestration</Link>
           <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">My dashboard</Link>
           <Link to="/studio" className="text-sm text-muted-foreground hover:text-foreground">Studio</Link>
           <Button variant="ghost" size="sm" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</Button>
