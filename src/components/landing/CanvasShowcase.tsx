@@ -23,7 +23,7 @@ export function CanvasShowcase() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-300/40 bg-cyan-400/10 text-cyan-200 text-[11px] uppercase tracking-widest">
-            <Sparkles className="size-3" /> Live workflow · Finished render
+            <Sparkles className="size-3" /> Finished render
           </span>
           <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-white">
             One selfie. Four nodes. <span className="text-cyan-300">A cinematic shot.</span>
