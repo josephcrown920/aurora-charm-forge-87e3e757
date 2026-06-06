@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
-import { falRun, fetchToBytes } from "./fal.server";
+import { orchestrate } from "./orchestrator.server";
+import { fetchToBytes } from "./replicate.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const COST_IMAGE = 1;
@@ -141,24 +142,20 @@ export const generatePerformanceShot = createServerFn({ method: "POST" })
         mime = m[1];
         ext = mime.split("/")[1]?.split("+")[0] || "png";
         bytes = Buffer.from(m[2], "base64");
-      } else if (data.model.startsWith("fal-ai/seedream") || data.model.startsWith("seedream")) {
-        const out = await falRun<{ images: Array<{ url: string }> }>(
-          "fal-ai/bytedance/seedream/v4/edit",
-          {
-            prompt: data.prompt,
-            image_urls: data.imageUrls,
-            num_images: 1,
-            image_size: { width: 1024, height: 1280 },
-          },
-        );
-        const url = out.images?.[0]?.url;
-        if (!url) throw new Error("Seedream returned no image");
-        const got = await fetchToBytes(url);
+      } else {
+        // Route everything else (Seedream, FLUX, etc) through the orchestrator.
+        const out = await orchestrate({
+          kind: "image",
+          model: data.model,
+          prompt: data.prompt,
+          imageUrls: data.imageUrls,
+          userId,
+          refId: row.id,
+        });
+        const got = await fetchToBytes(out.url);
         bytes = got.bytes;
         mime = got.mime || "image/png";
         ext = mime.split("/")[1]?.split("+")[0] || "png";
-      } else {
-        throw new Error(`Unsupported model: ${data.model}`);
       }
 
       const path = `${userId}/results/${row.id}.${ext}`;
@@ -195,13 +192,6 @@ const VideoSchema = z.object({
   endFrameUrl: z.string().url().optional().nullable(),
 });
 
-const VIDEO_ENDPOINTS: Record<string, string> = {
-  "seedance-2.0": "fal-ai/bytedance/seedance/v1/pro/image-to-video",
-  "seedance-2.0-fast": "fal-ai/bytedance/seedance/v1/pro/image-to-video",
-  "kling-3.0": "fal-ai/kling-video/v2.1/master/image-to-video",
-  "kling-3.0-omni": "fal-ai/kling-video/v2.1/master/image-to-video",
-};
-
 const CAMERA_HINTS: Record<string, string> = {
   static: "locked-off static camera, no movement",
   zoom_in: "slow smooth dolly zoom in toward the subject",
@@ -216,13 +206,12 @@ const CAMERA_HINTS: Record<string, string> = {
   pull_out: "graceful pull-out reveal away from the subject",
 };
 
+
 export const generateVideoFromImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => VideoSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const endpoint = VIDEO_ENDPOINTS[data.modelKey] ?? VIDEO_ENDPOINTS["seedance-2.0"];
-    const isKling = data.modelKey.startsWith("kling");
 
     const cameraHint = data.cameraMovement ? CAMERA_HINTS[data.cameraMovement] : null;
     const fullPrompt = cameraHint ? `${data.prompt}. Camera: ${cameraHint}.` : data.prompt;
@@ -242,22 +231,18 @@ export const generateVideoFromImage = createServerFn({ method: "POST" })
     if (insErr || !row) throw new Error(insErr?.message || "Insert failed");
     await chargeCredits(userId, COST_VIDEO, "video_generation", row.id);
     try {
-      const payload: Record<string, unknown> = {
+      const out = await orchestrate({
+        kind: "video",
+        model: data.modelKey,
         prompt: fullPrompt,
-        image_url: data.imageUrl,
-        duration: String(data.duration),
+        imageUrls: data.endFrameUrl ? [data.imageUrl, data.endFrameUrl] : [data.imageUrl],
+        duration: data.duration,
         resolution: data.resolution,
-      };
-      // Kling supports an end / tail frame for start→end interpolation
-      if (isKling && data.endFrameUrl) {
-        payload.tail_image_url = data.endFrameUrl;
-      }
-      const out = await falRun<{ video: { url: string } }>(endpoint, payload, 300_000);
-      const url = out.video?.url;
-      if (!url) throw new Error("Video model returned no video");
-      const { bytes, mime } = await fetchToBytes(url);
-      const ext = "mp4";
-      const path = `${userId}/videos/${row.id}.${ext}`;
+        userId,
+        refId: row.id,
+      });
+      const { bytes, mime } = await fetchToBytes(out.url);
+      const path = `${userId}/videos/${row.id}.mp4`;
       const { error: upErr } = await supabase.storage
         .from("studio")
         .upload(path, bytes, { contentType: mime || "video/mp4", upsert: true });
@@ -398,15 +383,15 @@ export const lipSyncVideo = createServerFn({ method: "POST" })
     if (insErr || !row) throw new Error(insErr?.message || "Insert failed");
     await chargeCredits(userId, COST_LIPSYNC, "lipsync", row.id);
     try {
-      const payload: Record<string, unknown> = {
-        video_url: data.videoUrl,
-        audio_url: data.audioUrl,
-      };
-      if (model === "fal-ai/sync-lipsync/v2") payload.sync_mode = "cut_off";
-      const out = await falRun<{ video: { url: string } }>(model, payload, 300_000);
-      const url = out.video?.url;
-      if (!url) throw new Error("Lip-sync model returned no video");
-      const { bytes, mime } = await fetchToBytes(url);
+      const out = await orchestrate({
+        kind: "lipsync",
+        model,
+        videoUrl: data.videoUrl,
+        audioUrl: data.audioUrl,
+        userId,
+        refId: row.id,
+      });
+      const { bytes, mime } = await fetchToBytes(out.url);
       const path = `${userId}/videos/${row.id}.mp4`;
       const { error: upErr } = await supabase.storage
         .from("studio")

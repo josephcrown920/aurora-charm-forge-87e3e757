@@ -5,7 +5,7 @@ export type ModelMeta = {
   value: string;
   label: string;
   short: string;
-  group: "Lovable AI" | "fal.ai" | "Hugging Face";
+  group: "Lovable AI" | "Replicate" | "Hugging Face" | "Sync";
   icon: LucideIcon;
   color: string;
   bg: string;
@@ -62,7 +62,7 @@ export const MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/bytedance/seedream/v4/edit",
     label: "Seedream 4",
     short: "Seedream",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Flame,
     color: "text-rose-400",
     bg: "bg-rose-500/15 border-rose-500/30",
@@ -75,7 +75,7 @@ export const MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/bytedance/seedream/v4/edit",
     label: "Seedream 4.5",
     short: "Seedream 4.5",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Flame,
     color: "text-pink-400",
     bg: "bg-pink-500/15 border-pink-500/30",
@@ -118,7 +118,7 @@ export const VIDEO_MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/bytedance/seedance/v1/pro/image-to-video",
     label: "Seedance 2.0",
     short: "Seedance 2.0",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Film,
     color: "text-violet-400",
     bg: "bg-violet-500/15 border-violet-500/30",
@@ -131,7 +131,7 @@ export const VIDEO_MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/bytedance/seedance/v1/pro/image-to-video",
     label: "Seedance 2.0 Fast",
     short: "Seedance Fast",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Film,
     color: "text-violet-300",
     bg: "bg-violet-500/10 border-violet-500/25",
@@ -144,7 +144,7 @@ export const VIDEO_MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/kling-video/v2.1/master/image-to-video",
     label: "Kling 3.0",
     short: "Kling 3.0",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Cloud,
     color: "text-cyan-400",
     bg: "bg-cyan-500/15 border-cyan-500/30",
@@ -157,7 +157,7 @@ export const VIDEO_MODEL_LIST: ModelMeta[] = [
     endpoint: "fal-ai/kling-video/v2.1/master/image-to-video",
     label: "Kling 3.0 Omni",
     short: "Kling Omni",
-    group: "fal.ai",
+    group: "Replicate",
     icon: Layers,
     color: "text-teal-400",
     bg: "bg-teal-500/15 border-teal-500/30",
@@ -172,7 +172,7 @@ export const LIPSYNC_MODEL: ModelMeta = {
   endpoint: "fal-ai/sync-lipsync/v2",
   label: "Sync 1.9 Lipsync",
   short: "Sync",
-  group: "fal.ai",
+  group: "Sync",
   icon: Wand2,
   color: "text-emerald-400",
   bg: "bg-emerald-500/15 border-emerald-500/30",
@@ -186,7 +186,7 @@ export const WAV2LIP_MODEL: ModelMeta = {
   endpoint: "fal-ai/wav2lip",
   label: "Wav2Lip",
   short: "Wav2Lip",
-  group: "fal.ai",
+  group: "Replicate",
   icon: Wand2,
   color: "text-lime-400",
   bg: "bg-lime-500/15 border-lime-500/30",
@@ -222,12 +222,14 @@ export function getModelMeta(value?: string | null): ModelMeta {
   };
 }
 
-export function resolveImageEndpoint(value: string): { endpoint: string; provider: "lovable" | "fal" } {
+export function resolveImageEndpoint(value: string): { endpoint: string; provider: "lovable" | "replicate" | "huggingface" } {
   const m = ALL[value];
   if (m && m.category === "image") {
-    return { endpoint: m.endpoint, provider: m.group === "Lovable AI" ? "lovable" : "fal" };
+    const provider =
+      m.group === "Lovable AI" ? "lovable" :
+      m.group === "Hugging Face" ? "huggingface" : "replicate";
+    return { endpoint: m.endpoint, provider };
   }
-  // fallback
   return { endpoint: "google/gemini-2.5-flash-image", provider: "lovable" };
 }
 
