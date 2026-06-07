@@ -163,9 +163,13 @@ function StudioPage() {
 
   const mut = useMutation({
     mutationFn: async () => {
-      const imageUrls = [selfie, outfit, scene, prop].filter((x): x is string => !!x);
+      // `motion` is a pose-reference image; pipe it into imageUrls so the model actually sees it.
+      const imageUrls = [selfie, outfit, scene, prop, motion].filter((x): x is string => !!x);
       if (imageUrls.length === 0) throw new Error("Add at least one reference image");
-      return genFn({ data: { prompt, imageUrls, motionVideoUrl: motion ?? null, model } });
+      const promptWithPose = motion
+        ? `${prompt}\n\nUse the final reference image as a POSE / BODY-LANGUAGE reference only — match the stance, gesture and camera angle. Do NOT copy its outfit, lighting or background.`
+        : prompt;
+      return genFn({ data: { prompt: promptWithPose, imageUrls, motionVideoUrl: null, model } });
     },
     onSuccess: () => {
       toast.success("Shot ready");
