@@ -169,6 +169,10 @@ function Index() {
       {/* 6. Canvas + finished workflows + UGC Factory */}
       <CanvasWorkflowShowcase />
 
+      {/* 6b. Colors Studio teaser */}
+      <ColorsTeaser />
+
+
       {/* 7. Trust + Why us */}
       <TrustBar />
       <WhyUs />
