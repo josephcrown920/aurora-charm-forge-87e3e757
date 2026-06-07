@@ -419,13 +419,12 @@ function StudioPage() {
             <UploadSlot userId={user.id} label="Prop" hint="Mic / car" value={prop} onChange={setProp} />
             <UploadSlot
               userId={user.id}
-              label="Motion"
-              hint="Pose clip"
-              accept="video/*"
-              kind="video"
+              label="Pose"
+              hint="Reference photo"
               value={motion}
               onChange={setMotion}
             />
+
           </div>
 
           <div className="space-y-2">
