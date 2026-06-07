@@ -19,6 +19,7 @@ import { Sparkles, Loader2, Palette, Wand2, ArrowLeft, Check, ImagePlus, X } fro
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { TriedTestedShowcase } from "@/components/studio/TriedTestedShowcase";
+import { ColorsShotsGallery } from "@/components/studio/ColorsShotsGallery";
 import tutorialStudioRefs from "@/assets/tutorial-studio-refs.jpg.asset.json";
 import tutorialColorsBlueFinal from "@/assets/tutorial-colors-blue-final.jpg.asset.json";
 
