@@ -17,6 +17,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { CliSection } from "@/components/landing/CliSection";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 import { CanvasWorkflowShowcase } from "@/components/landing/CanvasWorkflowShowcase";
+import { ColorsTeaser } from "@/components/landing/ColorsTeaser";
 
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
@@ -167,6 +168,10 @@ function Index() {
 
       {/* 6. Canvas + finished workflows + UGC Factory */}
       <CanvasWorkflowShowcase />
+
+      {/* 6b. Colors Studio teaser */}
+      <ColorsTeaser />
+
 
       {/* 7. Trust + Why us */}
       <TrustBar />
