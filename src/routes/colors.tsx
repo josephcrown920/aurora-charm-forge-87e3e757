@@ -271,6 +271,11 @@ function ColorsStudio() {
             prompt="Editorial music-video performance shot of the subject on a seamless deep royal-blue cyclorama studio — background and floor are one continuous royal-blue surface, no visible seams. Full-body side profile, leaning into an exact suspended vintage silver microphone hanging from a thin cable at chest level. Outfit: bright red performance jersey with graphic print under a black hooded puffer vest, distressed black stacked jeans, white chunky sneakers. ARRI softbox key from camera-left + softbox fill from camera-right, professional dual softbox stands visible at far frame edges, gentle floor shadow, clean cinematic rim light separating the subject from the cyclorama. Preserve exact facial likeness, red dreadlocks, sunglasses, skin tone, body proportions. ARRI Alexa look, 50mm, 4K photoreal, no text or logos."
           />
 
+          {/* Real shoots gallery — apply these looks to your selfie */}
+          <ColorsShotsGallery />
+
+
+
 
 
           {/* Colors */}
