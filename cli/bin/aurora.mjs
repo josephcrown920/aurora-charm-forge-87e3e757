@@ -1,119 +1,176 @@
 #!/usr/bin/env node
-// Aurora Studio CLI — minimal, dependency-free.
-// Talks to the public API at https://aurorastudiostar.lovable.app/api/public/*
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import readline from "readline";
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { homedir } from "node:os";
-import { createInterface } from "node:readline/promises";
-import { stdin, stdout, argv, exit, env } from "node:process";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONFIG_DIR = path.join(process.env.HOME || process.env.USERPROFILE || "/tmp", ".aurora");
+const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
+const API_BASE = process.env.AURORA_API_BASE || "https://aurorastudiostar.lovable.app";
 
-const API_BASE = env.AURORA_API_BASE || "https://aurorastudiostar.lovable.app";
-const CFG_DIR = join(homedir(), ".aurora");
-const CFG_FILE = join(CFG_DIR, "config.json");
-const VERSION = "0.1.0";
-
-function readConfig() {
-  try { return JSON.parse(readFileSync(CFG_FILE, "utf8")); } catch { return {}; }
-}
-function writeConfig(c) {
-  mkdirSync(CFG_DIR, { recursive: true });
-  writeFileSync(CFG_FILE, JSON.stringify(c, null, 2));
-}
-function color(s, c) {
-  const codes = { pink: 35, cyan: 36, gray: 90, green: 32, red: 31, bold: 1 };
-  return `\x1b[${codes[c] || 0}m${s}\x1b[0m`;
-}
-
-async function prompt(q) {
-  const rl = createInterface({ input: stdin, output: stdout });
-  const a = await rl.question(q);
-  rl.close();
-  return a.trim();
-}
-
-async function cmdLogin() {
-  console.log(color("\n  Aurora Studio CLI", "pink"));
-  console.log(color("  Get your API key at " + API_BASE + "/dashboard\n", "gray"));
-  const key = await prompt("API key: ");
-  if (!key) { console.error(color("No key provided.", "red")); exit(1); }
-  writeConfig({ ...readConfig(), apiKey: key });
-  console.log(color("✓ Saved to " + CFG_FILE, "green"));
-}
-
-async function cmdGenerate(args) {
-  const cfg = readConfig();
-  if (!cfg.apiKey) { console.error(color("Run 'aurora login' first.", "red")); exit(1); }
-  const promptIdx = args.indexOf("--prompt");
-  const outIdx = args.indexOf("--out");
-  if (promptIdx < 0) { console.error(color("Usage: aurora generate --prompt \"...\" [--out file.png]", "red")); exit(1); }
-  const p = args[promptIdx + 1];
-  const out = outIdx > 0 ? args[outIdx + 1] : "aurora-output.png";
-
-  console.log(color("→ Generating...", "cyan"));
-  const res = await fetch(`${API_BASE}/api/public/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${cfg.apiKey}` },
-    body: JSON.stringify({ prompt: p }),
-  });
-  if (!res.ok) {
-    console.error(color(`✗ HTTP ${res.status}: ${await res.text()}`, "red"));
-    exit(1);
+function ensureConfigDir() {
+  if (!fs.existsSync(CONFIG_DIR)) {
+    fs.mkdirSync(CONFIG_DIR, { recursive: true });
   }
-  const { url } = await res.json();
-  if (!url) { console.error(color("✗ No image URL returned.", "red")); exit(1); }
-  const img = await fetch(url);
-  const buf = Buffer.from(await img.arrayBuffer());
-  mkdirSync(dirname(out) || ".", { recursive: true });
-  writeFileSync(out, buf);
-  console.log(color(`✓ Saved ${out}  (${(buf.length / 1024).toFixed(0)} KB)`, "green"));
-  console.log(color(`  Hosted: ${url}`, "gray"));
 }
 
-function cmdHelp() {
+function getConfig() {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
+    }
+  } catch {}
+  return { apiKey: null };
+}
+
+function saveConfig(config) {
+  ensureConfigDir();
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+}
+
+function rl() {
+  return readline.createInterface({ input: process.stdin, output: process.stdout });
+}
+
+async function prompt(question) {
+  const interface = rl();
+  return new Promise((resolve) => {
+    interface.question(question, (answer) => {
+      interface.close();
+      resolve(answer);
+    });
+  });
+}
+
+async function login() {
+  console.log("\n🎬 Aurora Studio CLI Login\n");
+  console.log(`Open your dashboard to get an API key:\n  ${API_BASE}/dashboard\n`);
+  const apiKey = await prompt("Paste your API key: ");
+  if (!apiKey.trim()) {
+    console.error("❌ API key required");
+    process.exit(1);
+  }
+  saveConfig({ apiKey: apiKey.trim() });
+  console.log("✅ API key saved to " + CONFIG_FILE);
+}
+
+async function generate() {
+  const config = getConfig();
+  if (!config.apiKey) {
+    console.error("❌ Not logged in. Run: aurora login");
+    process.exit(1);
+  }
+
+  const argv = process.argv.slice(2);
+  let prompt = "";
+  let outFile = "aurora-shot.png";
+
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--prompt" && argv[i + 1]) {
+      prompt = argv[i + 1];
+      i++;
+    } else if (argv[i] === "--out" && argv[i + 1]) {
+      outFile = argv[i + 1];
+      i++;
+    }
+  }
+
+  if (!prompt) {
+    console.error("❌ --prompt required");
+    process.exit(1);
+  }
+
+  console.log("\n📸 Generating...");
+  try {
+    const res = await fetch(`${API_BASE}/api/public/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.apiKey}`,
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`❌ ${res.status}: ${err}`);
+      process.exit(1);
+    }
+
+    const json = await res.json();
+    const imageUrl = json.resultUrl || json.url;
+    if (!imageUrl) {
+      console.error("❌ No image returned");
+      process.exit(1);
+    }
+
+    const imgRes = await fetch(imageUrl);
+    if (!imgRes.ok) throw new Error("Failed to fetch image");
+    const buf = await imgRes.arrayBuffer();
+    fs.writeFileSync(outFile, Buffer.from(buf));
+    console.log(`✅ Saved to ${outFile}`);
+  } catch (e) {
+    console.error("❌ Generate failed:", e.message);
+    process.exit(1);
+  }
+}
+
+async function whoami() {
+  const config = getConfig();
+  if (config.apiKey) {
+    console.log(`✅ Logged in (API key: ${config.apiKey.slice(0, 8)}...)`);
+  } else {
+    console.log("❌ Not logged in");
+  }
+}
+
+function version() {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8"));
+  console.log(pkg.version);
+}
+
+function help() {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8"));
   console.log(`
-${color("Aurora Studio CLI", "pink")} ${color("v" + VERSION, "gray")}
+🎬 Aurora Studio CLI v${pkg.version}
 
-${color("Commands:", "bold")}
-  aurora login                              Save your API key
-  aurora generate --prompt "..." [--out f]  Render a cinematic shot
-  aurora whoami                             Show current account
-  aurora version                            Print version
-  aurora help                               Show this help
+Usage:
+  aurora login                         Login with API key
+  aurora generate --prompt "..."      Generate image
+  aurora generate --prompt "..." --out file.png
+  aurora whoami                        Show current account
+  aurora version                       Print version
+  aurora help                          Show this help
 
-${color("Environment:", "bold")}
-  AURORA_API_BASE   Override the API (default: https://aurorastudiostar.lovable.app)
+Environment:
+  AURORA_API_BASE                    Override API base (default: aurorastudiostar.lovable.app)
 
-${color("Docs:", "bold")}  https://aurorastudiostar.lovable.app/docs/cli
+Get an API key: ${API_BASE}/dashboard
 `);
 }
 
-async function cmdWhoami() {
-  const cfg = readConfig();
-  if (!cfg.apiKey) { console.log(color("Not logged in. Run 'aurora login'.", "gray")); return; }
-  const res = await fetch(`${API_BASE}/api/public/whoami`, {
-    headers: { Authorization: `Bearer ${cfg.apiKey}` },
-  });
-  if (!res.ok) { console.error(color(`HTTP ${res.status}`, "red")); return; }
-  console.log(await res.text());
-}
+const cmd = process.argv[2];
 
-const [, , cmd, ...rest] = argv;
-try {
-  switch (cmd) {
-    case "login": await cmdLogin(); break;
-    case "generate": await cmdGenerate(rest); break;
-    case "whoami": await cmdWhoami(); break;
-    case "version":
-    case "--version":
-    case "-v": console.log(VERSION); break;
-    case "help":
-    case "--help":
-    case "-h":
-    case undefined: cmdHelp(); break;
-    default: console.error(color(`Unknown command: ${cmd}`, "red")); cmdHelp(); exit(1);
-  }
-} catch (e) {
-  console.error(color(`✗ ${e.message || e}`, "red"));
-  exit(1);
+switch (cmd) {
+  case "login":
+    await login();
+    break;
+  case "generate":
+    await generate();
+    break;
+  case "whoami":
+    await whoami();
+    break;
+  case "version":
+    version();
+    break;
+  case "help":
+  case "-h":
+  case "--help":
+    help();
+    break;
+  default:
+    console.log(`aurora: unknown command '${cmd || "(none)"}'\\nRun: aurora help`);
+    process.exit(1);
 }
