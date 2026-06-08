@@ -163,13 +163,21 @@ function StudioPage() {
 
   const mut = useMutation({
     mutationFn: async () => {
-      // `motion` is a pose-reference image; pipe it into imageUrls so the model actually sees it.
-      const imageUrls = [selfie, outfit, scene, prop, motion].filter((x): x is string => !!x);
-      if (imageUrls.length === 0) throw new Error("Add at least one reference image");
-      const promptWithPose = motion
-        ? `${prompt}\n\nUse the final reference image as a POSE / BODY-LANGUAGE reference only — match the stance, gesture and camera angle. Do NOT copy its outfit, lighting or background.`
-        : prompt;
-      return genFn({ data: { prompt: promptWithPose, imageUrls, motionVideoUrl: null, model } });
+      // Build labeled reference list so Gemini knows which slot each image is.
+      // When a pose is provided we strip outfit/lighting cues from the pose ref
+      // via the prompt; ordering doesn't matter as long as labels are clear.
+      const refs: { url: string; label: string }[] = [];
+      if (selfie) refs.push({ url: selfie, label: "Identity (face / skin / hair)" });
+      if (outfit) refs.push({ url: outfit, label: "Outfit (wardrobe only)" });
+      if (scene) refs.push({ url: scene, label: "Scene / environment" });
+      if (prop) refs.push({ url: prop, label: "Prop (mic / vehicle / object)" });
+      if (motion) refs.push({ url: motion, label: "POSE reference — copy stance, gesture, camera angle ONLY. Ignore its outfit, face and background." });
+      if (refs.length === 0) throw new Error("Add at least one reference image");
+      const labelBlock = refs
+        .map((r, i) => `Image ${i + 1}: ${r.label}`)
+        .join("\n");
+      const fullPrompt = `${prompt}\n\nReference images (in order):\n${labelBlock}`;
+      return genFn({ data: { prompt: fullPrompt, imageUrls: refs.map((r) => r.url), motionVideoUrl: null, model } });
     },
     onSuccess: () => {
       toast.success("Shot ready");

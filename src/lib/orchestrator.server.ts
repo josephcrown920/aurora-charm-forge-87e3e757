@@ -7,7 +7,7 @@
 //   - gpuWorker   → admin-registered HTTP workers (RunPod / vast / salad / self-hosted)
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { replicateRun, pickReplicateUrl } from "./replicate.server";
+import { replicateRun, pickReplicateUrl, getReplicateKey } from "./replicate.server";
 import { syncLipsync } from "./sync.server";
 import { hfTextToImage } from "./hf.server";
 
@@ -100,7 +100,7 @@ const REPLICATE_MAP: Record<string, { slug: string; kind: GenerateKind; cost: nu
 const replicate: ProviderAdapter = {
   name: "replicate",
   supports: (r) => {
-    if (!process.env.REPLICATE_API_KEY) return false;
+    if (!getReplicateKey()) return false;
     if (!r.model) return false;
     const m = REPLICATE_MAP[r.model];
     return !!m && m.kind === r.kind;
@@ -262,9 +262,15 @@ async function log(opts: {
 }
 
 export async function orchestrate(req: GenerateRequest): Promise<GenerateResult> {
-  const adapters = PRIORITY[req.kind].filter((a) => a.supports(req) && isHealthy(a.name));
+  const all = PRIORITY[req.kind];
+  const adapters = all.filter((a) => a.supports(req) && isHealthy(a.name));
   if (adapters.length === 0) {
-    throw new Error(`No healthy provider for kind=${req.kind} model=${req.model ?? "?"}`);
+    const reasons = all.map((a) => {
+      if (!a.supports(req)) return `${a.name}: missing config/key for model "${req.model ?? "?"}"`;
+      if (!isHealthy(a.name)) return `${a.name}: cooling down after recent failure`;
+      return `${a.name}: ok`;
+    }).join("; ");
+    throw new Error(`No provider available for ${req.kind} → ${reasons}`);
   }
   let lastErr: Error | null = null;
   for (const adapter of adapters) {
