@@ -1,10 +1,10 @@
 {
   "name": "aurora-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Aurora Studio CLI — generate cinematic music-video shots from your terminal.",
   "keywords": ["aurora", "ai", "image-generation", "video", "music-video", "lip-sync"],
   "homepage": "https://aurorastudiostar.lovable.app",
-  "bugs": "https://aurorastudiostar.lovable.app/contact",
+  "bugs": "https://github.com/josephcrown920/aurora-charm-forge-87e3e757/issues",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aurora-studio/cli.git"
+    "url": "https://github.com/josephcrown920/aurora-charm-forge-87e3e757.git"
   },
   "publishConfig": {
     "access": "public"
