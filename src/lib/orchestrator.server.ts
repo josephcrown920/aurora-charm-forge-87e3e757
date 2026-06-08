@@ -7,7 +7,7 @@
 //   - gpuWorker   → admin-registered HTTP workers (RunPod / vast / salad / self-hosted)
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { replicateRun, pickReplicateUrl } from "./replicate.server";
+import { replicateRun, pickReplicateUrl, getReplicateKey } from "./replicate.server";
 import { syncLipsync } from "./sync.server";
 import { hfTextToImage } from "./hf.server";
 
