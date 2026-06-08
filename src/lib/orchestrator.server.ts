@@ -100,7 +100,7 @@ const REPLICATE_MAP: Record<string, { slug: string; kind: GenerateKind; cost: nu
 const replicate: ProviderAdapter = {
   name: "replicate",
   supports: (r) => {
-    if (!process.env.REPLICATE_API_KEY) return false;
+    if (!getReplicateKey()) return false;
     if (!r.model) return false;
     const m = REPLICATE_MAP[r.model];
     return !!m && m.kind === r.kind;
