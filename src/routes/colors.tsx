@@ -218,6 +218,28 @@ function ColorsStudio() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
 
+  const allColorsMut = useMutation({
+    mutationFn: async () => {
+      // Run sequentially in batches of 3 so we don't slam the gateway.
+      const results: unknown[] = [];
+      const ids = COLOR_PRESETS.map((c) => c.id);
+      for (let i = 0; i < ids.length; i += 3) {
+        const batch = ids.slice(i, i + 3);
+        // eslint-disable-next-line no-await-in-loop
+        const res = await Promise.all(batch.map((c) => fire(c, setup)));
+        results.push(...res);
+        toast.message(`Rendered ${Math.min(i + 3, ids.length)}/${ids.length}`);
+      }
+      return results;
+    },
+    onSuccess: () => {
+      toast.success(`All ${COLOR_PRESETS.length} colors rendered`);
+      qc.invalidateQueries({ queryKey: ["color-gens"] });
+      qc.invalidateQueries({ queryKey: ["gens"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Bulk render failed"),
+  });
+
   if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
