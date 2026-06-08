@@ -263,7 +263,7 @@ export const generateVideoFromImage = createServerFn({ method: "POST" })
 
 
 
-// ─── Split Reality ─────────────────────────────────────────────────────────
+// ─── Split Reality ────────────────────────────────────────────────────────
 // Runs two image generations in parallel from the same input: ultra-realism + cinematic vision.
 const SplitRealitySchema = z.object({
   imageUrls: z.array(z.string().url()).min(1).max(3),
@@ -271,10 +271,10 @@ const SplitRealitySchema = z.object({
 });
 
 const ULTRA_REALISM_PROMPT =
-  "Ultra-realistic mirror-selfie style photograph of the subject, taken on a modern smartphone. Preserve exact facial likeness, skin tone, beard, hairstyle, body proportions and outfit. Natural indoor lighting, subtle window reflections, realistic skin texture with visible pores, natural lens distortion, sharp focus on the face, casual confident pose. Documentary photographic realism, 4K, no styling artifacts, no text or logos.";
+  "Ultra-realistic mirror-selfie style photograph of the subject, taken on a modern smartphone. Preserve exact facial likeness, skin tone, beard, hairstyle, body proportions and outfit. Natural i[...]";
 
 const CINEMATIC_VISION_PROMPT =
-  "Dramatic cinematic close-up portrait of the subject, anamorphic lens look, intense emotional expression, mid-action (yelling or singing), windswept hair, moody overcast sky in background, desaturated film color grade with subtle teal/charcoal palette. Preserve exact facial likeness. Shallow depth of field, motion in the hair, painterly lighting, shot on ARRI Alexa, film grain, 4K cinematic still.";
+  "Dramatic cinematic close-up portrait of the subject, anamorphic lens look, intense emotional expression, mid-action (yelling or singing), windswept hair, moody overcast sky in background, desa[...]";
 
 export const generateSplitReality = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -367,6 +367,15 @@ export const lipSyncVideo = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const model = data.model;
+    
+    // Validate audio URL is accessible before charging credits
+    try {
+      const audioRes = await fetch(data.audioUrl, { method: "HEAD", signal: AbortSignal.timeout(5000) });
+      if (!audioRes.ok) throw new Error(`Audio URL returned ${audioRes.status}`);
+    } catch (e) {
+      throw new Error(`Audio validation failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+
     const { data: row, error: insErr } = await supabase
       .from("generations")
       .insert({
