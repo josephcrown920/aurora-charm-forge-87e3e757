@@ -463,17 +463,19 @@ function CanvasPage() {
             } });
             resolved.set(id, { url: res.resultUrl, kind: "image" });
             update(id, { status: "done", url: res.resultUrl });
-          } else if (n.data.kind === "video") {
-            if (images.length === 0) throw new Error("Video node needs an image upstream");
-            const res = await vidFn({ data: {
-              imageUrl: images[0],
-              prompt: n.data.prompt ?? "natural movement",
-              duration: 5,
-              resolution: "720p",
-              modelKey: n.data.model ?? VIDEO_MODEL_LIST[0].value,
-              cameraMovement: n.data.cameraMovement ?? "static",
-              endFrameUrl: null,
-            } });
+          } } else if (n.data.kind === "video") {
+  if (images.length === 0) throw new Error("Video node needs an image upstream");
+  // If we have multiple images (e.g., from split), use second as end frame for motion control
+  const endFrame = images.length > 1 ? images[1] : null;
+  const res = await vidFn({ data: {
+    imageUrl: images[0],
+    prompt: n.data.prompt ?? "natural movement",
+    duration: 5,
+    resolution: "720p",
+    modelKey: n.data.model ?? VIDEO_MODEL_LIST[0].value,
+    cameraMovement: n.data.cameraMovement ?? "static",
+    endFrameUrl: endFrame,  // ✅ Pass end frame if available
+  } });
             resolved.set(id, { url: res.videoUrl, kind: "video" });
             update(id, { status: "done", url: res.videoUrl });
           } else if (n.data.kind === "split") {
