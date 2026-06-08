@@ -5,11 +5,22 @@
 
 const GATEWAY = "https://connector-gateway.lovable.dev/replicate/v1";
 
+/** Replicate connector key. Accept either the secret-tool name or the
+ *  auto-injected connector name so this works regardless of how the project
+ *  linked Replicate. */
+export function getReplicateKey(): string | undefined {
+  return (
+    process.env.LOVABLE_CONNECTOR_REPLICATE_API_KEY ||
+    process.env.REPLICATE_API_KEY ||
+    undefined
+  );
+}
+
 function authHeaders(): Record<string, string> {
   const lov = process.env.LOVABLE_API_KEY;
-  const rep = process.env.REPLICATE_API_KEY;
+  const rep = getReplicateKey();
   if (!lov) throw new Error("LOVABLE_API_KEY missing");
-  if (!rep) throw new Error("REPLICATE_API_KEY missing (link Replicate connector)");
+  if (!rep) throw new Error("Replicate connector not linked (REPLICATE_API_KEY missing)");
   return {
     Authorization: `Bearer ${lov}`,
     "X-Connection-Api-Key": rep,
