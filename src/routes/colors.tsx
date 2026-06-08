@@ -482,6 +482,19 @@ function ColorsStudio() {
                 {allSetupsMut.isPending ? <><Loader2 className="size-4 mr-2 animate-spin" /> Shooting all…</> : <><Wand2 className="size-4 mr-2" /> Generate all {filteredSetups.length} setups</>}
               </Button>
             )}
+            {/* Always-available bulk action: render the chosen setup across every color. */}
+            <Button
+              disabled={allColorsMut.isPending || refs.length === 0}
+              onClick={() => allColorsMut.mutate()}
+              variant="outline"
+              className="w-full h-11 border-primary/40"
+            >
+              {allColorsMut.isPending ? (
+                <><Loader2 className="size-4 mr-2 animate-spin" /> Rendering {COLOR_PRESETS.length} colors…</>
+              ) : (
+                <><Palette className="size-4 mr-2" /> Render ALL {COLOR_PRESETS.length} colors · {COLOR_PRESETS.length} Aurora</>
+              )}
+            </Button>
           </div>
         </section>
 
