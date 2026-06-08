@@ -41,7 +41,7 @@ type ProviderAdapter = {
   run: (req: GenerateRequest) => Promise<{ url: string; endpoint: string }>;
 };
 
-// ─── Health tracking ─────────────────────────────────────────────────────────
+// ─── Health tracking ───────────────────────────────────────────────────────
 const HEALTH = new Map<string, { failures: number; cooldownUntil: number }>();
 function isHealthy(p: string) {
   const h = HEALTH.get(p);
@@ -55,7 +55,7 @@ function markFailure(p: string) {
 }
 function markSuccess(p: string) { HEALTH.set(p, { failures: 0, cooldownUntil: 0 }); }
 
-// ─── Lovable (Gemini) ────────────────────────────────────────────────────────
+// ─── Lovable (Gemini) ───────────────────────────────────────────────────────
 const lovable: ProviderAdapter = {
   name: "lovable",
   supports: (r) => r.kind === "image",
@@ -80,7 +80,7 @@ const lovable: ProviderAdapter = {
   },
 };
 
-// ─── Replicate ───────────────────────────────────────────────────────────────
+// ─── Replicate ─────────────────────────────────────────────────────────
 // Map our model keys → Replicate official model slugs (owner/name).
 const REPLICATE_MAP: Record<string, { slug: string; kind: GenerateKind; cost: number }> = {
   // images
@@ -120,8 +120,16 @@ const replicate: ProviderAdapter = {
       }
     } else if (m.kind === "video") {
       if (r.imageUrls?.[0]) {
-        if (m.slug.startsWith("bytedance/seedance")) input.image = r.imageUrls[0];
-        else input.start_image = r.imageUrls[0]; // kling
+        if (m.slug.startsWith("bytedance/seedance")) {
+          input.image = r.imageUrls[0];
+        } else if (m.slug.startsWith("kwaivgi/kling")) {
+          // Kling: start_image is required, end_image is optional for motion control
+          input.start_image = r.imageUrls[0];
+          // If we have a second image URL (end frame), pass it as end_image for motion control
+          if (r.imageUrls[1]) {
+            input.end_image = r.imageUrls[1];
+          }
+        }
       }
       if (r.duration) input.duration = r.duration;
       if (m.slug.startsWith("kwaivgi/kling")) {
@@ -139,19 +147,26 @@ const replicate: ProviderAdapter = {
   },
 };
 
-// ─── Sync.so direct ──────────────────────────────────────────────────────────
+// ─── Sync.so direct ───────────────────────────────────────────────────────
 const sync: ProviderAdapter = {
   name: "sync",
   supports: (r) => r.kind === "lipsync" && !!process.env.SYNC_API_KEY,
   estimateCost: () => 0.25,
   async run(r) {
     if (!r.videoUrl || !r.audioUrl) throw new Error("sync: video+audio required");
+    // Validate audio URL is accessible before attempting sync
+    try {
+      const audioRes = await fetch(r.audioUrl, { method: "HEAD", signal: AbortSignal.timeout(5000) });
+      if (!audioRes.ok) throw new Error(`Audio URL returned ${audioRes.status}`);
+    } catch (e) {
+      throw new Error(`Audio validation failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
     const url = await syncLipsync({ videoUrl: r.videoUrl, audioUrl: r.audioUrl, model: "lipsync-2" });
     return { url, endpoint: "sync:lipsync-2" };
   },
 };
 
-// ─── Hugging Face ────────────────────────────────────────────────────────────
+// ─── Hugging Face ────────────────────────────────────────────────────────
 const HF_ENDPOINTS: Record<string, { endpoint: string; kind: GenerateKind; cost: number }> = {
   "hf/flux-schnell": { endpoint: "black-forest-labs/FLUX.1-schnell", kind: "image", cost: 0.003 },
   "hf/sdxl":         { endpoint: "stabilityai/stable-diffusion-xl-base-1.0", kind: "image", cost: 0.004 },
@@ -180,7 +195,7 @@ const huggingface: ProviderAdapter = {
   },
 };
 
-// ─── GPU worker pool ─────────────────────────────────────────────────────────
+// ─── GPU worker pool ───────────────────────────────────────────────────────
 const gpuWorker: ProviderAdapter = {
   name: "runpod",
   supports: (r) => ["image", "video", "lipsync", "upscale"].includes(r.kind),
