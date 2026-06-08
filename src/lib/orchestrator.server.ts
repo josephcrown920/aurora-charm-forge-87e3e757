@@ -262,9 +262,15 @@ async function log(opts: {
 }
 
 export async function orchestrate(req: GenerateRequest): Promise<GenerateResult> {
-  const adapters = PRIORITY[req.kind].filter((a) => a.supports(req) && isHealthy(a.name));
+  const all = PRIORITY[req.kind];
+  const adapters = all.filter((a) => a.supports(req) && isHealthy(a.name));
   if (adapters.length === 0) {
-    throw new Error(`No healthy provider for kind=${req.kind} model=${req.model ?? "?"}`);
+    const reasons = all.map((a) => {
+      if (!a.supports(req)) return `${a.name}: missing config/key for model "${req.model ?? "?"}"`;
+      if (!isHealthy(a.name)) return `${a.name}: cooling down after recent failure`;
+      return `${a.name}: ok`;
+    }).join("; ");
+    throw new Error(`No provider available for ${req.kind} → ${reasons}`);
   }
   let lastErr: Error | null = null;
   for (const adapter of adapters) {
