@@ -5,15 +5,17 @@ const SYNC_BASE = "https://api.sync.so/v2";
 
 function syncKey(): string {
   const k = process.env.SYNC_API_KEY;
-  if (!k) throw new Error("SYNC_API_KEY missing");
+  if (!k) throw new Error("SYNC_API_KEY missing (add it in Project Settings → Secrets)");
   return k;
 }
 
-type CreateResp = { id: string; status: string };
+type CreateResp = { id?: string; status?: string; error?: string };
 type PollResp = {
   id: string;
-  status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELED";
+  status: string;
   outputUrl?: string | null;
+  output_url?: string | null;
+  output?: string | { url?: string } | null;
   error?: string | null;
 };
 
@@ -38,6 +40,9 @@ export async function syncLipsync(
     throw new Error(`Sync create failed (${create.status}): ${t.slice(0, 300)}`);
   }
   const c = (await create.json()) as CreateResp;
+  if (!c.id) {
+    throw new Error(`Sync returned no job id: ${JSON.stringify(c).slice(0, 200)}`);
+  }
 
   const started = Date.now();
   let delay = 2000;
@@ -52,10 +57,21 @@ export async function syncLipsync(
       throw new Error(`Sync poll failed (${poll.status}): ${t.slice(0, 200)}`);
     }
     const j = (await poll.json()) as PollResp;
-    if (j.status === "COMPLETED" && j.outputUrl) return j.outputUrl;
-    if (j.status === "FAILED" || j.status === "CANCELED") {
-      throw new Error(`Sync ${j.status}: ${j.error ?? "no error"}`);
+    const status = String(j.status ?? "").toUpperCase();
+    const url =
+      j.outputUrl ||
+      j.output_url ||
+      (typeof j.output === "string" ? j.output : j.output?.url) ||
+      null;
+    if (status === "COMPLETED" && url) return url;
+    if (
+      status === "FAILED" ||
+      status === "CANCELED" ||
+      status === "REJECTED" ||
+      status === "ERROR"
+    ) {
+      throw new Error(`Sync ${status}: ${j.error ?? "no error detail"}`);
     }
   }
-  throw new Error("Sync timeout");
+  throw new Error("Sync timeout — try a shorter clip");
 }
