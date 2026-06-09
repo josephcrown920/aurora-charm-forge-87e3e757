@@ -28,7 +28,7 @@ export function DemoReels() {
           >
             <div className="relative aspect-video bg-black">
               <video
-                src={splitDemo.url}
+                src={splitDemoUrl}
                 autoPlay
                 muted
                 loop
@@ -54,7 +54,7 @@ export function DemoReels() {
           >
             <div className="relative aspect-video bg-black">
               <video
-                src={lipsyncDemo.url}
+                src={lipsyncDemoUrl}
                 autoPlay
                 muted
                 loop
