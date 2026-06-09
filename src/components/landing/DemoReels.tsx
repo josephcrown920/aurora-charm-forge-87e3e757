@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Film, Mic2, ArrowRight } from "lucide-react";
-import splitDemo from "../../../public/videos/split-reality-demo.mp4.asset.json";
-import lipsyncDemo from "../../../public/videos/lipsync-demo.mp4.asset.json";
+
+// Hosted demo reels (Lovable Assets CDN pointers).
+const splitDemoUrl = "/__l5e/assets-v1/70b70ffc-33b6-401c-a920-1236691ceed2/split-reality-demo.mp4";
+const lipsyncDemoUrl = "/__l5e/assets-v1/aaa2d495-a0e7-436e-b1e4-1bc6836b4bb4/lipsync-demo.mp4";
 
 export function DemoReels() {
   return (
