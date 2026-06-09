@@ -14,6 +14,7 @@ import { Route as UgcRouteImport } from './routes/ugc'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SplitRealityRouteImport } from './routes/split-reality'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as MotionRouteImport } from './routes/motion'
 import { Route as LipsyncRouteImport } from './routes/lipsync'
 import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -55,6 +56,11 @@ const SplitRealityRoute = SplitRealityRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotionRoute = MotionRouteImport.update({
+  id: '/motion',
+  path: '/motion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LipsyncRoute = LipsyncRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/gifts': typeof GiftsRoute
   '/lipsync': typeof LipsyncRoute
+  '/motion': typeof MotionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/split-reality': typeof SplitRealityRoute
   '/studio': typeof StudioRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/gifts': typeof GiftsRoute
   '/lipsync': typeof LipsyncRoute
+  '/motion': typeof MotionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/split-reality': typeof SplitRealityRoute
   '/studio': typeof StudioRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/gifts': typeof GiftsRoute
   '/lipsync': typeof LipsyncRoute
+  '/motion': typeof MotionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/split-reality': typeof SplitRealityRoute
   '/studio': typeof StudioRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/gifts'
     | '/lipsync'
+    | '/motion'
     | '/sitemap.xml'
     | '/split-reality'
     | '/studio'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/gifts'
     | '/lipsync'
+    | '/motion'
     | '/sitemap.xml'
     | '/split-reality'
     | '/studio'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/gifts'
     | '/lipsync'
+    | '/motion'
     | '/sitemap.xml'
     | '/split-reality'
     | '/studio'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   GiftsRoute: typeof GiftsRoute
   LipsyncRoute: typeof LipsyncRoute
+  MotionRoute: typeof MotionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SplitRealityRoute: typeof SplitRealityRoute
   StudioRoute: typeof StudioRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motion': {
+      id: '/motion'
+      path: '/motion'
+      fullPath: '/motion'
+      preLoaderRoute: typeof MotionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lipsync': {
@@ -498,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   GiftsRoute: GiftsRoute,
   LipsyncRoute: LipsyncRoute,
+  MotionRoute: MotionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SplitRealityRoute: SplitRealityRoute,
   StudioRoute: StudioRoute,
@@ -511,13 +532,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
