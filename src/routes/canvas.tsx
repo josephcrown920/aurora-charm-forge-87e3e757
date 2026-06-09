@@ -463,7 +463,7 @@ function CanvasPage() {
             } });
             resolved.set(id, { url: res.resultUrl, kind: "image" });
             update(id, { status: "done", url: res.resultUrl });
-          } } else if (n.data.kind === "video") {
+          } else if (n.data.kind === "video") {
   if (images.length === 0) throw new Error("Video node needs an image upstream");
   // If we have multiple images (e.g., from split), use second as end frame for motion control
   const endFrame = images.length > 1 ? images[1] : null;
