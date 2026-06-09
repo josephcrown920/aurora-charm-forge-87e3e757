@@ -372,6 +372,9 @@ function StudioPage() {
           <Link to="/canvas" className="text-xs sm:text-sm px-2.5 py-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 inline-flex items-center gap-1.5">
             <Workflow className="size-3.5" /> Canvas
           </Link>
+          <Link to="/motion" className="text-xs sm:text-sm px-2.5 py-1.5 rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/20 inline-flex items-center gap-1.5">
+            <Film className="size-3.5" /> Motion
+          </Link>
           <Link to="/colors" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Colors</Link>
           <Link to="/gallery" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Gallery</Link>
           <Link to="/gifts" className="text-sm text-muted-foreground hover:text-foreground hidden md:inline-flex items-center gap-1.5">Gifts</Link>
