@@ -18,6 +18,7 @@ import { CliSection } from "@/components/landing/CliSection";
 import { BalloonLipsync } from "@/components/landing/BalloonLipsync";
 import { CanvasWorkflowShowcase } from "@/components/landing/CanvasWorkflowShowcase";
 import { ColorsTeaser } from "@/components/landing/ColorsTeaser";
+import { DemoReels } from "@/components/landing/DemoReels";
 
 import { SupercomputerSection } from "@/components/landing/ScreenshotSections";
 import { track } from "@/lib/tracking";
@@ -174,6 +175,10 @@ function Index() {
 
       {/* 6b. Colors Studio teaser */}
       <ColorsTeaser />
+
+      {/* 6c. Real demo reels — video gen + lip sync */}
+      <DemoReels />
+
 
 
       {/* 7. Trust + Why us */}
