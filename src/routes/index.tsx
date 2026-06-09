@@ -129,6 +129,9 @@ function Index() {
             <Link to="/colors" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
               <Palette className="size-3.5" /> Colors
             </Link>
+            <Link to="/motion" className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
+              <Wand2 className="size-3.5" /> Motion
+            </Link>
             <Link to="/lipsync" className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full text-white/80 hover:text-white hover:bg-white/5 no-underline">
               <Wand2 className="size-3.5" /> Lip Sync
             </Link>
