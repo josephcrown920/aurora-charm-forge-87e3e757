@@ -565,6 +565,70 @@ function StudioPage() {
             )}
           </div>
 
+          {/* Per-step pipeline status + retry */}
+          {(mut.isPending || mut.isError || videoMut.isPending || videoMut.isError || lipSyncMut.isPending || lipSyncMut.isError || latest || latestVideo) && (
+            <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-xl p-3 space-y-2">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">Pipeline</div>
+              {[
+                {
+                  label: "Image",
+                  state: mut.isPending ? "running" : mut.isError ? "error" : latest?.result_image_url ? "ok" : "idle",
+                  error: mut.error instanceof Error ? mut.error.message : null,
+                  canRetry: mut.isError,
+                  onRetry: () => mut.mutate(),
+                },
+                {
+                  label: "Video",
+                  state: videoMut.isPending ? "running" : videoMut.isError ? "error" : latestVideo?.result_video_url ? "ok" : "idle",
+                  error: videoMut.error instanceof Error ? videoMut.error.message : null,
+                  canRetry: videoMut.isError && !!latest?.result_image_url,
+                  onRetry: () => videoMut.mutate(),
+                },
+                {
+                  label: "Lip sync",
+                  state: lipSyncMut.isPending ? "running" : lipSyncMut.isError ? "error" : "idle",
+                  error: lipSyncMut.error instanceof Error ? lipSyncMut.error.message : null,
+                  canRetry: lipSyncMut.isError && !!audioUrl,
+                  onRetry: () => lipSyncMut.mutate(),
+                },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs ${
+                    s.state === "ok" ? "border-emerald-500/40 bg-emerald-500/10" :
+                    s.state === "running" ? "border-primary/40 bg-primary/10" :
+                    s.state === "error" ? "border-destructive/50 bg-destructive/10" :
+                    "border-border bg-background/40"
+                  }`}
+                >
+                  <span className={`mt-1 size-2 rounded-full ${
+                    s.state === "ok" ? "bg-emerald-400" :
+                    s.state === "running" ? "bg-primary animate-pulse" :
+                    s.state === "error" ? "bg-destructive" : "bg-muted-foreground/40"
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground flex items-center gap-2">
+                      {s.label}
+                      <span className="text-[10px] text-muted-foreground uppercase">
+                        {s.state === "running" ? "Running…" : s.state}
+                      </span>
+                    </div>
+                    {s.error && <div className="text-destructive/90 text-[11px] truncate" title={s.error}>{s.error}</div>}
+                  </div>
+                  {s.canRetry && (
+                    <button
+                      type="button"
+                      onClick={s.onRetry}
+                      className="shrink-0 text-[11px] px-2 py-1 rounded-md border border-border bg-background/80 hover:border-primary/40"
+                    >
+                      Retry this step
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           {history && history.items.length > 0 && (
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Recent shoots</h3>
