@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BringItToLifePreview } from "@/components/studio/BringItToLifePreview";
+import { ConnectReplicateBanner } from "@/components/ConnectReplicateBanner";
 
 export const Route = createFileRoute("/motion")({
   component: MotionStudio,
@@ -206,6 +207,8 @@ function MotionStudio() {
           <Link to="/lipsync" className="text-muted-foreground hover:text-foreground">Lip Sync</Link>
         </div>
       </header>
+      <ConnectReplicateBanner />
+
 
       <div className="max-w-7xl mx-auto p-5 md:p-10 grid lg:grid-cols-[1fr_1fr] gap-8">
         <section className="space-y-5">

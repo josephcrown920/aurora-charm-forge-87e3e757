@@ -33,6 +33,7 @@ import { HfAudioPanel } from "@/components/studio/HfAudioPanel";
 import { publishGeneration } from "@/lib/share.functions";
 import { Share2 } from "lucide-react";
 import { saveAssetToDisk } from "@/lib/save";
+import { ConnectReplicateBanner } from "@/components/ConnectReplicateBanner";
 
 export const Route = createFileRoute("/studio")({
   component: StudioPage,
@@ -337,6 +338,8 @@ function StudioPage() {
   return (
     <main className="min-h-screen relative" style={{ background: "var(--gradient-soft)" }}>
       <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-stage)" }} />
+      <ConnectReplicateBanner />
+
 
       {user && (
         <OnboardingModal
