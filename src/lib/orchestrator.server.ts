@@ -35,7 +35,7 @@ export type GenerateResult = {
 };
 
 type ProviderAdapter = {
-  name: "lovable" | "replicate" | "huggingface" | "sync" | "runpod";
+  name: "lovable" | "gemini" | "replicate" | "huggingface" | "sync" | "runpod";
   supports: (req: GenerateRequest) => boolean;
   estimateCost: (req: GenerateRequest) => number;
   run: (req: GenerateRequest) => Promise<{ url: string; endpoint: string }>;
