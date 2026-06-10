@@ -1,12 +1,14 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { Sparkles, LogIn } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -31,6 +33,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && session) navigate({ to: "/studio" });
@@ -74,6 +77,31 @@ function AuthPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setGoogleBusy(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/studio`,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      if (result.redirected) {
+        // Browser will redirect automatically
+        return;
+      }
+
+      toast.success("Signed in with Google!");
+      navigate({ to: "/studio" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+    } finally {
+      setGoogleBusy(false);
+    }
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center px-4 bg-[var(--gradient-soft)] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-stage)" }} />
@@ -91,7 +119,14 @@ function AuthPage() {
           {mode === "signup" && (
             <div className="space-y-2">
               <Label htmlFor="name">What should we call you?</Label>
-              <Input id="name" type="text" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your first name or stage name" />
+              <Input
+                id="name"
+                type="text"
+                required
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Your first name or stage name"
+              />
             </div>
           )}
           <div className="space-y-2">
@@ -100,7 +135,14 @@ function AuthPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              id="password"
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           <Button type="submit" disabled={busy} className="w-full h-11 text-base font-medium" style={{ background: "var(--gradient-hero)" }}>
             {busy ? "Working…" : mode === "signup" ? "Create account" : "Sign in"}
@@ -111,6 +153,15 @@ function AuthPage() {
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">or</span>
           <span className="h-px flex-1 bg-border" />
         </div>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={googleBusy}
+          onClick={handleGoogleSignIn}
+          className="mt-3 w-full h-11"
+        >
+          {googleBusy ? "Signing in..." : <><LogIn className="mr-2 size-4" /> Continue with Google</>}
+        </Button>
         <Button
           type="button"
           variant="outline"
@@ -140,8 +191,14 @@ function AuthPage() {
         </button>
         <p className="mt-6 text-[11px] text-center text-muted-foreground">
           By continuing you agree to our{" "}
-          <Link to="/legal/$slug" params={{ slug: "terms" }} className="underline">Terms</Link> and{" "}
-          <Link to="/legal/$slug" params={{ slug: "privacy" }} className="underline">Privacy Policy</Link>.
+          <Link to="/legal/$slug" params={{ slug: "terms" }} className="underline">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link to="/legal/$slug" params={{ slug: "privacy" }} className="underline">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </main>

@@ -1,6 +1,6 @@
 // Versioned legal documents. Bump the version when content changes — it
 // invalidates prior acceptances for that document.
-export const LEGAL_VERSION = "2026-05-25";
+export const LEGAL_VERSION = "2026-06-10";
 export const COMPANY = {
   name: "Aurora Studio",
   product: "Aurora",
@@ -26,7 +26,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
         heading: "1. The service",
         body: [
           "Aurora Studio is an AI creative studio that turns reference photos and prompts into stylised photos and short videos.",
-          "We orchestrate third-party AI providers (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net and others). Their outputs may vary and are not guaranteed to be accurate, safe, or fit for any particular purpose.",
+          "We orchestrate third-party AI providers (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net, HeyGen and others). Their outputs may vary and are not guaranteed to be accurate, safe, or fit for any particular purpose.",
         ],
       },
       {
@@ -61,14 +61,14 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
       {
         heading: "6. Disclaimers",
         body: [
-          "Aurora is provided “as is” and “as available” without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.",
+          "Aurora is provided \"as is\" and \"as available\" without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.",
           "AI outputs may be inaccurate, offensive, or harmful. You are responsible for reviewing outputs before relying on or publishing them.",
         ],
       },
       {
         heading: "7. Limitation of liability",
         body: [
-          "To the maximum extent permitted by law, Aurora and its operators will not be liable for any indirect, incidental, consequential, special, or exemplary damages. Our aggregate liability for any claim is limited to the greater of (a) the amount you paid us in the 3 months before the claim, or (b) USD $50.",
+          "To the maximum extent permitted by law, Aurora and its operators will not be liable for any indirect, incidental, consequential, special, or exemplary damages. Our aggregate liability for any claim arising out of or relating to this agreement is limited to the amount you paid Aurora in the 12 months preceding the claim.",
         ],
       },
       {
@@ -98,6 +98,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
           "Generations — prompts, model used, output URLs, credit cost, status. Used to display your gallery and support refunds / debugging.",
           "Payments — handled by Paystack. We store the reference, amount, status and credits granted, never your full card number.",
           "Product analytics — page views, button clicks, generation events, session id. Used to improve the product. We do not track you across third-party sites.",
+          "Webhooks — if you register a webhook, we store the URL and delivery logs for debugging.",
         ],
       },
       {
@@ -106,13 +107,13 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
           "To provide the service (generate images and videos, show your gallery, take payments).",
           "To enforce safety and our acceptable-use policy.",
           "To debug failures, monitor provider health, and prevent abuse.",
-          "To send transactional emails (receipts, security alerts). We do not send marketing without your explicit consent.",
+          "To send transactional emails (receipts, security alerts, generation notifications). We do not send marketing without your explicit consent.",
         ],
       },
       {
         heading: "Who we share it with",
         body: [
-          "AI providers — your prompts and reference URLs are sent to the AI model you select (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net) only to fulfil that generation.",
+          "AI providers — your prompts and reference URLs are sent to the AI model you select (Google Gemini, Replicate, Hugging Face, Sync.so, Inference.net, HeyGen) only to fulfil that generation.",
           "Payment processor — Paystack receives the data required to process payments.",
           "Infrastructure — our hosting and database providers process data on our behalf under data processing agreements.",
           "We never sell your data. We never share it with advertisers.",
@@ -130,6 +131,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
         body: [
           "Generations and uploads are kept until you delete them or delete your account. Backups roll off within 30 days.",
           "Payment records are retained for 7 years for tax compliance.",
+          "Email logs are kept for 90 days then purged.",
         ],
       },
       {
@@ -212,7 +214,7 @@ export const LEGAL: Record<LegalDoc["slug"], LegalDoc> = {
         heading: "Never generate",
         body: [
           "Sexual content involving minors — zero tolerance, reported to NCMEC and law enforcement.",
-          "Non-consensual intimate imagery (so-called “deepfake nudes”) of any real person.",
+          "Non-consensual intimate imagery (so-called \"deepfake nudes\") of any real person.",
           "Content that impersonates a real, identifiable person without their explicit consent — especially public figures in contexts that could be mistaken for reality.",
           "Content that promotes terrorism, mass violence, self-harm, or illegal activity.",
           "Content that targets people with slurs or hatred based on race, religion, gender, sexuality, disability or national origin.",

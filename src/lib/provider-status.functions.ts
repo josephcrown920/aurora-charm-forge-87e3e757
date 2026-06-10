@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 
 /**
- * Public, unauthenticated check of which provider keys are configured on the
- * server. Used by UI banners (e.g. "Connect Replicate") and the orchestration
- * dashboard. Returns booleans only — never the secret values.
+ * Public check of which provider keys are configured on the server.
+ * Used by UI banners (e.g. "Connect Replicate") and the orchestration dashboard.
+ * Returns booleans only — never the secret values.
  */
 export const providerStatus = createServerFn({ method: "GET" }).handler(async () => {
   const has = (k: string) => Boolean(process.env[k]);
@@ -19,5 +19,6 @@ export const providerStatus = createServerFn({ method: "GET" }).handler(async ()
     huggingface: has("HF_TOKEN"),
     sync: has("SYNC_API_KEY"),
     kling: has("KLING_ACCESS_KEY") && has("KLING_SECRET_KEY"),
+    heygen: has("HEYGEN_API_KEY"),
   };
 });
