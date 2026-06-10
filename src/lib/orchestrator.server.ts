@@ -286,8 +286,12 @@ const gpuWorker: ProviderAdapter = {
 };
 
 // ─── Priority chain per kind ─────────────────────────────────────────────────
+// Order matters: cheapest/free direct providers first, Lovable AI credits LAST.
+// Replicate is preferred for video/lipsync because it's the only one with the
+// full model catalogue. Gemini direct (GEMINI_API_KEY) and HuggingFace are
+// free-tier image providers tried before Lovable's metered credits.
 const PRIORITY: Record<GenerateKind, ProviderAdapter[]> = {
-  image:   [lovable, replicate, huggingface, gpuWorker],
+  image:   [geminiDirect, replicate, huggingface, lovable, gpuWorker],
   video:   [replicate, gpuWorker],
   lipsync: [sync, replicate, gpuWorker],
   upscale: [replicate, gpuWorker],
