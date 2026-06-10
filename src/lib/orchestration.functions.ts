@@ -25,19 +25,26 @@ export const orchestrationHealth = createServerFn({ method: "POST" })
     if (!isAdmin) throw new Error("Forbidden");
 
     const has = (k: string) => Boolean(process.env[k]);
+    const hasReplicate = has("LOVABLE_CONNECTOR_REPLICATE_API_KEY") || has("REPLICATE_API_KEY");
 
     const providers: ProviderRow[] = [
-      // image
-      { id: "lovable", name: "Lovable AI (Gemini)", kind: "image", envKey: "LOVABLE_API_KEY", configured: has("LOVABLE_API_KEY"), free: true, notes: "google/gemini-2.5-flash-image" },
-      { id: "replicate-image", name: "Replicate", kind: "image", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "seedream-4 · flux-schnell" },
-      { id: "hf", name: "HuggingFace Inference", kind: "image", envKey: "HF_TOKEN", configured: has("HF_TOKEN"), free: true, notes: "flux-schnell · sdxl" },
+      // image — order = orchestrator PRIORITY (Lovable LAST)
+      { id: "gemini",          name: "Gemini direct",           kind: "image",     envKey: "GEMINI_API_KEY",                       configured: has("GEMINI_API_KEY"),            free: true,  notes: "gemini-2.5-flash-image-preview (free tier)" },
+      { id: "replicate-image", name: "Replicate",               kind: "image",     envKey: "LOVABLE_CONNECTOR_REPLICATE_API_KEY",  configured: hasReplicate,                     free: false, notes: "seedream-4 · flux-schnell" },
+      { id: "hf",              name: "HuggingFace Inference",   kind: "image",     envKey: "HF_TOKEN",                             configured: has("HF_TOKEN"),                  free: true,  notes: "flux-schnell · sdxl" },
+      { id: "lovable",         name: "Lovable AI (last)",       kind: "image",     envKey: "LOVABLE_API_KEY",                      configured: has("LOVABLE_API_KEY"),           free: false, notes: "fallback only — credits used last" },
       // video
-      { id: "replicate-video", name: "Replicate", kind: "video", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "kling-v2.1 · seedance-1-pro/lite" },
+      { id: "replicate-video", name: "Replicate",               kind: "video",     envKey: "LOVABLE_CONNECTOR_REPLICATE_API_KEY",  configured: hasReplicate,                     free: false, notes: "kling-v2.1 · seedance-1-pro/lite" },
+      { id: "kling-direct",    name: "Kling direct",            kind: "video",     envKey: "KLING_ACCESS_KEY",                     configured: has("KLING_ACCESS_KEY") && has("KLING_SECRET_KEY"), free: false, notes: "JWT — not yet wired into orchestrator" },
+      { id: "fal-video",       name: "fal.ai",                  kind: "video",     envKey: "FAL_KEY",                              configured: has("FAL_KEY"),                   free: false, notes: "not yet wired into orchestrator" },
       // lipsync
-      { id: "sync", name: "Sync.so", kind: "lipsync", envKey: "SYNC_API_KEY", configured: has("SYNC_API_KEY"), free: false, notes: "lipsync-2 (primary)" },
-      { id: "replicate-lipsync", name: "Replicate", kind: "lipsync", envKey: "REPLICATE_API_KEY", configured: has("REPLICATE_API_KEY"), free: false, notes: "sync-1.6.0 · wav2lip (fallback)" },
+      { id: "sync",            name: "Sync.so",                 kind: "lipsync",   envKey: "SYNC_API_KEY",                         configured: has("SYNC_API_KEY"),              free: false, notes: "lipsync-2 (primary)" },
+      { id: "replicate-lipsync", name: "Replicate",             kind: "lipsync",   envKey: "LOVABLE_CONNECTOR_REPLICATE_API_KEY",  configured: hasReplicate,                     free: false, notes: "sync-1.6.0 · wav2lip (fallback)" },
+      { id: "fal-lipsync",     name: "fal.ai",                  kind: "lipsync",   envKey: "FAL_KEY",                              configured: has("FAL_KEY"),                   free: false, notes: "not yet wired into orchestrator" },
       // inference (text)
-      { id: "lovable-text", name: "Lovable AI Gateway", kind: "inference", envKey: "LOVABLE_API_KEY", configured: has("LOVABLE_API_KEY"), free: true, notes: "gemini-2.5-flash · claude · gpt" },
+      { id: "openrouter",      name: "OpenRouter",              kind: "inference", envKey: "OPENROUTER_API_KEY",                   configured: has("OPENROUTER_API_KEY"),        free: false, notes: "preferred text gateway (cheap)" },
+      { id: "openai",          name: "OpenAI direct",           kind: "inference", envKey: "OPENAI_API_KEY",                       configured: has("OPENAI_API_KEY"),            free: false, notes: "gpt-4o · gpt-4o-mini" },
+      { id: "lovable-text",    name: "Lovable AI Gateway",      kind: "inference", envKey: "LOVABLE_API_KEY",                      configured: has("LOVABLE_API_KEY"),           free: false, notes: "fallback only — credits used last" },
     ];
 
     // GPU workers (admin-registered) — always last in every chain

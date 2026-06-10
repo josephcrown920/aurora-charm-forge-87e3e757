@@ -35,7 +35,7 @@ export type GenerateResult = {
 };
 
 type ProviderAdapter = {
-  name: "lovable" | "replicate" | "huggingface" | "sync" | "runpod";
+  name: "lovable" | "gemini" | "replicate" | "huggingface" | "sync" | "runpod";
   supports: (req: GenerateRequest) => boolean;
   estimateCost: (req: GenerateRequest) => number;
   run: (req: GenerateRequest) => Promise<{ url: string; endpoint: string }>;
@@ -55,10 +55,10 @@ function markFailure(p: string) {
 }
 function markSuccess(p: string) { HEALTH.set(p, { failures: 0, cooldownUntil: 0 }); }
 
-// ─── Lovable (Gemini) ────────────────────────────────────────────────────────
+// ─── Lovable (Gemini via gateway) — USED LAST so paid credits stay preserved ─
 const lovable: ProviderAdapter = {
   name: "lovable",
-  supports: (r) => r.kind === "image",
+  supports: (r) => r.kind === "image" && !!process.env.LOVABLE_API_KEY,
   estimateCost: () => 0.002,
   async run(r) {
     const apiKey = process.env.LOVABLE_API_KEY;
@@ -77,6 +77,52 @@ const lovable: ProviderAdapter = {
     const url: string | undefined = msg?.images?.[0]?.image_url?.url ?? msg?.images?.[0]?.url;
     if (!url) throw new Error("Lovable AI returned no image");
     return { url, endpoint };
+  },
+};
+
+// ─── Gemini direct (GEMINI_API_KEY) — preferred before Lovable credits ───────
+const geminiDirect: ProviderAdapter = {
+  name: "gemini",
+  supports: (r) => r.kind === "image" && !!process.env.GEMINI_API_KEY,
+  estimateCost: () => 0,
+  async run(r) {
+    const key = process.env.GEMINI_API_KEY!;
+    const model = "gemini-2.5-flash-image-preview";
+    const parts: Array<Record<string, unknown>> = [{ text: r.prompt ?? "" }];
+    for (const url of r.imageUrls ?? []) {
+      try {
+        const fetched = await fetch(url);
+        if (!fetched.ok) continue;
+        const buf = Buffer.from(await fetched.arrayBuffer());
+        const mime = fetched.headers.get("content-type") || "image/png";
+        parts.push({ inline_data: { mime_type: mime, data: buf.toString("base64") } });
+      } catch { /* skip bad ref */ }
+    }
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseModalities: ["IMAGE", "TEXT"] } }),
+      },
+    );
+    if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const json = await res.json();
+    const cParts = json?.candidates?.[0]?.content?.parts ?? [];
+    const img = cParts.find((p: Record<string, unknown>) => p.inline_data || p.inlineData) as
+      | { inline_data?: { data?: string; mime_type?: string }; inlineData?: { data?: string; mimeType?: string } }
+      | undefined;
+    const inline = img?.inline_data ?? img?.inlineData;
+    if (!inline?.data) throw new Error("Gemini returned no image");
+    const mime = (inline as { mime_type?: string }).mime_type || (inline as { mimeType?: string }).mimeType || "image/png";
+    const ext = mime.split("/")[1] || "png";
+    const path = `${r.userId ?? "system"}/gemini/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from("studio")
+      .upload(path, Buffer.from(inline.data, "base64"), { contentType: mime, upsert: false });
+    if (error) throw new Error(`Gemini upload failed: ${error.message}`);
+    const { data } = supabaseAdmin.storage.from("studio").getPublicUrl(path);
+    return { url: data.publicUrl, endpoint: `gemini:${model}` };
   },
 };
 
@@ -240,8 +286,12 @@ const gpuWorker: ProviderAdapter = {
 };
 
 // ─── Priority chain per kind ─────────────────────────────────────────────────
+// Order matters: cheapest/free direct providers first, Lovable AI credits LAST.
+// Replicate is preferred for video/lipsync because it's the only one with the
+// full model catalogue. Gemini direct (GEMINI_API_KEY) and HuggingFace are
+// free-tier image providers tried before Lovable's metered credits.
 const PRIORITY: Record<GenerateKind, ProviderAdapter[]> = {
-  image:   [lovable, replicate, huggingface, gpuWorker],
+  image:   [geminiDirect, replicate, huggingface, lovable, gpuWorker],
   video:   [replicate, gpuWorker],
   lipsync: [sync, replicate, gpuWorker],
   upscale: [replicate, gpuWorker],
