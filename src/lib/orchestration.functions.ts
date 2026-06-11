@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { getProviderHealthSnapshot } from "./orchestrator.server";
 
 // ─── Provider health (which keys are configured) ─────────────────────────────
 // Mirrors the priority chains in src/lib/orchestrator.server.ts.
