@@ -36,6 +36,8 @@ export const getMyAffiliate = createServerFn({ method: "GET" })
       data = ins;
     }
 
+    if (!data) throw new Error("Failed to load affiliate record");
+
     // Fetch stats
     const { data: events } = await supabaseAdmin
       .from("affiliate_events")
@@ -57,8 +59,9 @@ export const getMyAffiliate = createServerFn({ method: "GET" })
 
 export const updateAffiliate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: input, context }) => {
-    const { payout_email } = input as { payout_email: string };
+  .inputValidator((d: { payout_email: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { payout_email } = data;
 
     const { error } = await supabaseAdmin
       .from("affiliates")
@@ -68,6 +71,7 @@ export const updateAffiliate = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { success: true };
   });
+
 
 function makeCode(seed: string) {
   return (
