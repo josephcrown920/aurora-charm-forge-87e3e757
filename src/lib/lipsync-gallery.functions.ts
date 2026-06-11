@@ -37,8 +37,9 @@ export const listLipsyncResults = createServerFn({ method: "GET" })
 
 export const getLipsyncResult = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { generationId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { generationId } = data as { generationId: string };
+    const { generationId } = data;
     const { userId } = context;
 
     const { data: gen, error } = await supabaseAdmin
@@ -50,17 +51,16 @@ export const getLipsyncResult = createServerFn({ method: "GET" })
       .maybeSingle();
 
     if (error || !gen) throw new Error("Generation not found");
-
     return gen;
   });
 
 export const deleteLipsyncResult = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { generationId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { generationId } = data as { generationId: string };
+    const { generationId } = data;
     const { userId } = context;
 
-    // Delete from database
     const { error } = await supabaseAdmin
       .from("generations")
       .delete()
@@ -69,9 +69,6 @@ export const deleteLipsyncResult = createServerFn({ method: "POST" })
       .eq("kind", "lipsync");
 
     if (error) throw new Error(error.message);
-
-    // Delete from storage if result exists
-    // (URL is supabase-hosted, so cleanup handled by storage policy)
-
     return { success: true };
   });
+

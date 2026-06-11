@@ -52,15 +52,15 @@ export async function generateOGImage(input: OGImageInput): Promise<string> {
  * Server function to generate and cache OG image metadata.
  * Called during generation completion or share creation.
  */
-export const cacheOGMetadata = createServerFn({ method: "POST" }).handler(
-  async (input: { generationId: string; kind: string; prompt: string; imageUrl?: string }) => {
+export const cacheOGMetadata = createServerFn({ method: "POST" })
+  .inputValidator((input: { generationId: string; kind: string; prompt: string; imageUrl?: string }) => input)
+  .handler(async ({ data: input }) => {
     const ogImageUrl = await generateOGImage({
       type: "share",
       title: `Aurora ${input.kind === "video" ? "Video" : "Image"} — ${input.prompt.slice(0, 60)}`,
       description: input.prompt.slice(0, 160),
       imageUrl: input.imageUrl,
     });
-
     return { ogImageUrl };
-  }
-);
+  });
+

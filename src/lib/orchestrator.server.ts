@@ -191,6 +191,21 @@ function markFailure(p: string) {
 }
 function markSuccess(p: string) { HEALTH.set(p, { failures: 0, cooldownUntil: 0 }); }
 
+/** Public snapshot of in-memory health state (used by the orchestration dashboard). */
+export function getProviderHealthSnapshot() {
+  const now = Date.now();
+  const out: Record<string, { failures: number; cooldownMs: number; ready: boolean }> = {};
+  for (const [name, h] of HEALTH.entries()) {
+    out[name] = {
+      failures: h.failures,
+      cooldownMs: Math.max(0, h.cooldownUntil - now),
+      ready: now > h.cooldownUntil,
+    };
+  }
+  return out;
+}
+
+
 // ─── Lovable (Gemini via gateway) — USED LAST so paid credits stay preserved ─
 const lovable: ProviderAdapter = {
   name: "lovable",

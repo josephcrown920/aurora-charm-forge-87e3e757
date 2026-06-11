@@ -122,24 +122,22 @@ export async function processPaymentSuccess(
 /**
  * Server function: verify and process webhook (called from route)
  */
-export const verifyAndProcessWebhook = createServerFn({ method: "POST" }).handler(
-  async (input: { signature: string; body: string }) => {
+export const verifyAndProcessWebhook = createServerFn({ method: "POST" })
+  .inputValidator((input: { signature: string; body: string }) => input)
+  .handler(async ({ data: input }) => {
     const secret = process.env.PAYSTACK_SECRET_KEY;
     if (!secret) throw new Error("Paystack secret not configured");
 
-    // Verify signature
     if (!verifyPaystackSignature(input.signature, input.body, secret)) {
       throw new Error("Invalid signature");
     }
 
-    // Parse and validate event
     const event = PaymentEventSchema.parse(JSON.parse(input.body));
 
-    // Only process successful charges
     if (event.event !== "charge.success" || event.data.status !== "success") {
       return { status: "ignored" };
     }
 
     return processPaymentSuccess(event);
-  }
-);
+  });
+

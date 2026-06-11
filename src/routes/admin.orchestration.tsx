@@ -104,8 +104,15 @@ function OrchestrationDashboard() {
                                 {p.configured
                                   ? <CheckCircle2 className="size-3 text-emerald-400" />
                                   : <XCircle className="size-3 text-destructive" />}
+                                {p.configured && !p.ready && (
+                                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20" title={`${p.failures} recent failure(s) · cooling down ${Math.ceil(p.cooldownMs/1000)}s`}>COOLDOWN</span>
+                                )}
+                                {p.configured && p.ready && p.failures === 0 && (
+                                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">READY</span>
+                                )}
                               </div>
                               {p.notes && <div className="text-[10px] text-muted-foreground font-mono truncate">{p.notes}</div>}
+
                             </div>
                             {s && (
                               <div className="text-[10px] font-mono text-muted-foreground tabular-nums text-right">

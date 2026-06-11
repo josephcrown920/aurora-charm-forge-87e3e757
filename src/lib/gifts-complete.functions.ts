@@ -8,15 +8,11 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const issueGiftCard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { credits: number; note?: string; design: string }) => d)
   .handler(async ({ data, context }) => {
-    const { credits, note, design } = data as {
-      credits: number;
-      note?: string;
-      design: string;
-    };
+    const { credits, note, design } = data;
     const { userId } = context;
 
-    // Generate unique code
     const code = `GIFT-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
       .toUpperCase();
 
@@ -24,12 +20,10 @@ export const issueGiftCard = createServerFn({ method: "POST" })
       .from("gift_cards")
       .insert({
         code,
-        issued_by: userId,
+        created_by: userId,
         credits,
         design,
         note,
-        redeemed: false,
-        redeemed_by: null,
       })
       .select()
       .single();
@@ -46,7 +40,7 @@ export const listGiftCards = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("gift_cards")
       .select("*")
-      .eq("issued_by", userId)
+      .eq("created_by", userId)
       .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
@@ -55,11 +49,11 @@ export const listGiftCards = createServerFn({ method: "GET" })
 
 export const redeemGiftCard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { code: string }) => d)
   .handler(async ({ data, context }) => {
-    const { code } = data as { code: string };
+    const { code } = data;
     const { userId } = context;
 
-    // Find and validate card
     const { data: card, error: findErr } = await supabaseAdmin
       .from("gift_cards")
       .select("*")
@@ -67,9 +61,8 @@ export const redeemGiftCard = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (findErr || !card) throw new Error("Gift card not found");
-    if (card.redeemed) throw new Error("Gift card already redeemed");
+    if (card.redeemed_at) throw new Error("Gift card already redeemed");
 
-    // Grant credits
     await supabaseAdmin.rpc("grant_credits", {
       _user: userId,
       _amount: card.credits,
@@ -77,11 +70,11 @@ export const redeemGiftCard = createServerFn({ method: "POST" })
       _ref: card.id,
     });
 
-    // Mark as redeemed
     await supabaseAdmin
       .from("gift_cards")
-      .update({ redeemed: true, redeemed_by: userId })
+      .update({ redeemed_at: new Date().toISOString(), redeemed_by: userId })
       .eq("id", card.id);
 
     return { credits: card.credits, success: true };
   });
+

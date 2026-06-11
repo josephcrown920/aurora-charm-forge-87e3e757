@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { getProviderHealthSnapshot } from "./orchestrator.server";
 
 // ─── Provider health (which keys are configured) ─────────────────────────────
 // Mirrors the priority chains in src/lib/orchestrator.server.ts.
@@ -71,13 +72,35 @@ export const orchestrationHealth = createServerFn({ method: "POST" })
       s.cost += Number(l.cost_usd ?? 0);
     }
 
+    const health = getProviderHealthSnapshot();
+    const providersWithHealth = providers.map((p) => {
+      // map dashboard id → orchestrator adapter name
+      const adapterName =
+        p.id === "gemini" ? "gemini" :
+        p.id === "lovable" ? "lovable" :
+        p.id === "hf" ? "huggingface" :
+        p.id === "sync" ? "sync" :
+        p.id === "kling-direct" ? "kling" :
+        p.id === "fal-video" || p.id === "fal-lipsync" ? "fal" :
+        p.id.startsWith("replicate") ? "replicate" :
+        p.id;
+      const h = health[adapterName];
+      return {
+        ...p,
+        ready: p.configured && (h?.ready ?? true),
+        failures: h?.failures ?? 0,
+        cooldownMs: h?.cooldownMs ?? 0,
+      };
+    });
+
     const summary = {
       total: providers.length,
       configured: providers.filter((p) => p.configured).length,
       missing: providers.filter((p) => !p.configured).length,
+      ready: providersWithHealth.filter((p) => p.ready).length,
       workers: workers?.length ?? 0,
       activeWorkers: workers?.filter((w) => w.status === "active").length ?? 0,
     };
 
-    return { providers, workers: workers ?? [], stats, summary, recent: (logs ?? []).slice(0, 50) };
+    return { providers: providersWithHealth, workers: workers ?? [], stats, summary, recent: (logs ?? []).slice(0, 50) };
   });

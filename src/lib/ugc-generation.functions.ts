@@ -25,16 +25,10 @@ export type UGCRequest = {
  */
 export const generateUGCAd = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: UGCRequest) => d)
   .handler(async ({ data, context }) => {
-    const { avatarId, presetId, productPrompt, voiceId } = data as UGCRequest;
+    const { avatarId, presetId, productPrompt } = data;
     const { userId } = context;
-
-    // For now: return a stub indicating the workflow
-    // In production:
-    // 1. Submit to HeyGen for avatar video
-    // 2. Generate script from productPrompt via LLM
-    // 3. Synthesize voice
-    // 4. Composite and return
 
     const { data: gen, error } = await supabaseAdmin
       .from("generations")
@@ -57,3 +51,4 @@ export const generateUGCAd = createServerFn({ method: "POST" })
       estimatedDuration: "2-3 minutes",
     };
   });
+

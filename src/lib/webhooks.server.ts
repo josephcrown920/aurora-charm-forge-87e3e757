@@ -22,11 +22,10 @@ export type Webhook = z.infer<typeof WebhookSchema> & { id: string; secret: stri
  */
 export const registerWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }) => {
-    const input = WebhookSchema.parse(data);
+  .inputValidator((d: z.input<typeof WebhookSchema>) => WebhookSchema.parse(d))
+  .handler(async ({ data: input, context }) => {
     const { userId } = context;
 
-    // Generate a secret for HMAC verification
     const secret = crypto.randomBytes(32).toString("hex");
 
     const { data: webhook, error } = await supabaseAdmin
@@ -45,6 +44,7 @@ export const registerWebhook = createServerFn({ method: "POST" })
 
     return webhook;
   });
+
 
 /**
  * List all webhooks for the authenticated user
@@ -69,8 +69,9 @@ export const listWebhooks = createServerFn({ method: "GET" })
  */
 export const deleteWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { webhookId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { webhookId } = data as { webhookId: string };
+    const { webhookId } = data;
     const { userId } = context;
 
     const { error } = await supabaseAdmin
@@ -88,9 +89,11 @@ export const deleteWebhook = createServerFn({ method: "POST" })
  */
 export const testWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { webhookId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { webhookId } = data as { webhookId: string };
+    const { webhookId } = data;
     const { userId } = context;
+
 
     const { data: webhook } = await supabaseAdmin
       .from("user_webhooks")
