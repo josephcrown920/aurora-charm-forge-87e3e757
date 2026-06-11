@@ -135,24 +135,18 @@ export const HEYGEN_BACKGROUNDS = [
 /**
  * Server function: generate a video via HeyGen
  */
-export const generateHeyGenVideo = createServerFn({ method: "POST" }).handler(
-  async (input: HeyGenRequest) => {
-    const validated = HeyGenRequestSchema.parse(input);
-
+export const generateHeyGenVideo = createServerFn({ method: "POST" })
+  .inputValidator((input: HeyGenRequest) => HeyGenRequestSchema.parse(input))
+  .handler(async ({ data: validated }) => {
     try {
-      const { videoId, status } = await submitHeyGenVideo(validated);
-
-      // Poll immediately (optional: can queue for async polling)
-      let video = await pollHeyGenVideo(videoId);
-
-      // If still pending, return status (client polls later)
+      const { videoId } = await submitHeyGenVideo(validated);
+      const video = await pollHeyGenVideo(videoId);
       if (video.status === "pending") {
-        return { videoId, status: "pending", videoUrl: null };
+        return { videoId, status: "pending" as const, videoUrl: null };
       }
-
       return { videoId, status: video.status, videoUrl: video.video_url };
     } catch (err) {
       throw new Error(`HeyGen generation failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }
-);
+  });
+
