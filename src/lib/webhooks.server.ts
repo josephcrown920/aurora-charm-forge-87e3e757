@@ -69,8 +69,9 @@ export const listWebhooks = createServerFn({ method: "GET" })
  */
 export const deleteWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { webhookId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { webhookId } = data as { webhookId: string };
+    const { webhookId } = data;
     const { userId } = context;
 
     const { error } = await supabaseAdmin
@@ -88,9 +89,11 @@ export const deleteWebhook = createServerFn({ method: "POST" })
  */
 export const testWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: { webhookId: string }) => d)
   .handler(async ({ data, context }) => {
-    const { webhookId } = data as { webhookId: string };
+    const { webhookId } = data;
     const { userId } = context;
+
 
     const { data: webhook } = await supabaseAdmin
       .from("user_webhooks")
