@@ -422,15 +422,15 @@ const gpuWorker: ProviderAdapter = {
 };
 
 // ─── Priority chain per kind ─────────────────────────────────────────────────
-// Order matters: cheapest/free direct providers first, Lovable AI credits LAST.
-// Replicate is preferred for video/lipsync because it's the only one with the
-// full model catalogue. Gemini direct (GEMINI_API_KEY) and HuggingFace are
-// free-tier image providers tried before Lovable's metered credits.
+// Order matters: cheapest/free direct providers first; Lovable credits and Fal LAST.
+// User preference: avoid Fal — only used as final fallback. HuggingFace is wired
+// for free image generation. Kling direct (JWT) handles video without Replicate.
+// HeyGen handles lipsync as a quality alternative to sync.so.
 const PRIORITY: Record<GenerateKind, ProviderAdapter[]> = {
-  image:   [geminiDirect, replicate, huggingface, lovable, gpuWorker],
-  video:   [replicate, gpuWorker],
-  lipsync: [sync, replicate, gpuWorker],
-  upscale: [replicate, gpuWorker],
+  image:   [geminiDirect, huggingface, replicate, lovable, gpuWorker, falFallback],
+  video:   [klingDirect, replicate, gpuWorker, falFallback],
+  lipsync: [sync, heygen, replicate, gpuWorker, falFallback],
+  upscale: [replicate, gpuWorker, falFallback],
 };
 
 async function log(opts: {
