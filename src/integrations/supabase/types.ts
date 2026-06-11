@@ -202,6 +202,7 @@ export type Database = {
           error: string | null
           id: string
           input_images: Json
+          input_videos: Json
           is_favorite: boolean
           is_public: boolean
           kind: string
@@ -223,6 +224,7 @@ export type Database = {
           error?: string | null
           id?: string
           input_images?: Json
+          input_videos?: Json
           is_favorite?: boolean
           is_public?: boolean
           kind?: string
@@ -244,6 +246,7 @@ export type Database = {
           error?: string | null
           id?: string
           input_images?: Json
+          input_videos?: Json
           is_favorite?: boolean
           is_public?: boolean
           kind?: string
@@ -580,6 +583,36 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_webhooks: {
+        Row: {
+          active: boolean
+          created_at: string
+          events: string[]
+          id: string
+          secret: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret?: string
+          url?: string
           user_id?: string
         }
         Relationships: []
