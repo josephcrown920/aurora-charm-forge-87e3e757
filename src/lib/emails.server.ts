@@ -1,10 +1,9 @@
-import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /**
  * Lovable Emails integration — transactional email service.
- * All templates are managed in Lovable Cloud → Emails.
- * This module triggers sends and tracks delivery.
+ * Helpers are plain async functions (not server fns) so they can be called
+ * from any server-only module without RPC overhead.
  */
 
 export type EmailTemplate =
@@ -15,95 +14,84 @@ export type EmailTemplate =
   | "payment-receipt"
   | "gift-redeemed";
 
+export type LifecycleTemplate =
+  | "signup_welcome"
+  | "onboarding_done"
+  | "password_reset_acknowledged";
+
 type EmailPayload = {
   to: string;
-  template: EmailTemplate;
-  data: Record<string, any>;
-  tags?: string[];
+  template: EmailTemplate | LifecycleTemplate;
+  data: Record<string, unknown>;
+  userId?: string;
 };
 
 /**
- * Send a transactional email via Lovable Emails.
- * Integrates with Supabase to track sent/failed status.
+ * Send a transactional email. Logs to email_log table.
  */
-export const sendEmail = createServerFn({ method: "POST" }).handler(
-  async (payload: EmailPayload) => {
-    const { to, template, data, tags = [] } = payload;
+export async function sendEmail(payload: EmailPayload) {
+  const { to, template, userId } = payload;
 
-    // Log the email intent to supabase for tracking
-    const { data: record, error: insertErr } = await supabaseAdmin
-      .from("email_logs")
-      .insert({
-        recipient: to,
-        template,
-        data,
-        tags,
-        status: "queued",
-        sent_at: null,
-      })
-      .select()
-      .single();
+  const { data: record, error: insertErr } = await supabaseAdmin
+    .from("email_log")
+    .insert({
+      to_email: to,
+      template,
+      status: "queued",
+      user_id: userId ?? null,
+    })
+    .select()
+    .single();
 
-    if (insertErr) throw new Error(`Failed to log email: ${insertErr.message}`);
+  if (insertErr) throw new Error(`Failed to log email: ${insertErr.message}`);
 
-    // In production: POST to Lovable Emails API
-    // const apiKey = process.env.LOVABLE_EMAILS_API_KEY!;
-    // const response = await fetch("https://emails.lovable.dev/send", {
-    //   method: "POST",
-    //   headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    //   body: JSON.stringify({ to, template, data }),
-    // });
-    // if (!response.ok) throw new Error("Email send failed");
+  // TODO: integrate with actual email provider (Resend / Lovable Emails) here.
+  await supabaseAdmin
+    .from("email_log")
+    .update({ status: "sent" })
+    .eq("id", record.id);
 
-    // Mark as sent
-    await supabaseAdmin
-      .from("email_logs")
-      .update({ status: "sent", sent_at: new Date().toISOString() })
-      .eq("id", record.id);
-
-    return { success: true, emailId: record.id };
-  }
-);
-
-/**
- * Welcome email: 5 free credits on signup
- */
-export async function sendWelcomeEmail(userId: string, displayName: string, email: string) {
-  const { data: profile } = await supabaseAdmin
-    .from("profiles")
-    .select("credits")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  return sendEmail({
-    to: email,
-    template: "welcome-5-credits",
-    data: {
-      displayName,
-      credits: profile?.credits ?? 5,
-      dashboardUrl: "https://aurorastudiostar.lovable.app/studio",
-    },
-    tags: ["onboarding", "welcome"],
-  });
+  return { success: true as const, emailId: record.id };
 }
 
 /**
- * Render complete: notify user their generation is ready
+ * Lifecycle email entrypoint used by emails.functions.ts.
  */
+export async function sendLifecycleEmail(args: {
+  userId: string;
+  to: string;
+  template: LifecycleTemplate;
+  vars?: Record<string, unknown>;
+}) {
+  return sendEmail({
+    to: args.to,
+    template: args.template,
+    data: args.vars ?? {},
+    userId: args.userId,
+  });
+}
+
+export async function sendWelcomeEmail(userId: string, _displayName: string, email: string) {
+  return sendEmail({
+    to: email,
+    template: "welcome-5-credits",
+    data: { displayName: _displayName },
+    userId,
+  });
+}
+
 export async function sendRenderCompleteEmail(
   userId: string,
   generationId: string,
   kind: string,
-  duration?: number
+  duration?: number,
 ) {
   const { data: user } = await supabaseAdmin
     .from("profiles")
     .select("email, display_name")
     .eq("user_id", userId)
     .maybeSingle();
-
   if (!user?.email) return;
-
   return sendEmail({
     to: user.email,
     template: "render-complete",
@@ -111,92 +99,69 @@ export async function sendRenderCompleteEmail(
       displayName: user.display_name || "Creator",
       kind: kind === "video" ? "Video" : "Image",
       duration,
-      viewUrl: `https://aurorastudiostar.lovable.app/studio?gen=${generationId}`,
+      generationId,
     },
-    tags: ["generation", "complete"],
+    userId,
   });
 }
 
-/**
- * Low credit nudge: user has <5 credits remaining
- */
 export async function sendLowCreditNudge(userId: string) {
   const { data: user } = await supabaseAdmin
     .from("profiles")
     .select("email, display_name, credits")
     .eq("user_id", userId)
     .maybeSingle();
-
   if (!user?.email || !user.credits || user.credits > 5) return;
-
   return sendEmail({
     to: user.email,
     template: "low-credit-nudge",
     data: {
       displayName: user.display_name || "Creator",
       creditsRemaining: user.credits,
-      buyUrl: "https://aurorastudiostar.lovable.app/dashboard/billing",
     },
-    tags: ["billing", "engagement"],
+    userId,
   });
 }
 
-/**
- * Weekly digest: summary of renders + stats
- */
 export async function sendWeeklyDigest(userId: string) {
   const { data: user } = await supabaseAdmin
     .from("profiles")
     .select("email, display_name")
     .eq("user_id", userId)
     .maybeSingle();
-
   if (!user?.email) return;
-
-  // Fetch this week's generations
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const { data: gens } = await supabaseAdmin
     .from("generations")
     .select("id, kind, status")
     .eq("user_id", userId)
     .gte("created_at", weekAgo);
-
   const counts = {
     images: gens?.filter((g) => g.kind === "image").length ?? 0,
     videos: gens?.filter((g) => g.kind === "video").length ?? 0,
     lipsyncs: gens?.filter((g) => g.kind === "lipsync").length ?? 0,
   };
-
   return sendEmail({
     to: user.email,
     template: "weekly-digest",
-    data: {
-      displayName: user.display_name || "Creator",
-      ...counts,
-      studioUrl: "https://aurorastudiostar.lovable.app/studio",
-    },
-    tags: ["digest", "engagement"],
+    data: { displayName: user.display_name || "Creator", ...counts },
+    userId,
   });
 }
 
-/**
- * Payment receipt: confirmation of credit purchase
- */
 export async function sendPaymentReceipt(
   userId: string,
   paymentId: string,
   amount: number,
   currency: string,
-  creditsGranted: number
+  creditsGranted: number,
 ) {
   const { data: user } = await supabaseAdmin
     .from("profiles")
     .select("email, display_name")
     .eq("user_id", userId)
     .maybeSingle();
-
   if (!user?.email) return;
-
   return sendEmail({
     to: user.email,
     template: "payment-receipt",
@@ -206,28 +171,22 @@ export async function sendPaymentReceipt(
       currency,
       creditsGranted,
       reference: paymentId,
-      dashboardUrl: "https://aurorastudiostar.lovable.app/dashboard/billing",
     },
-    tags: ["payment", "receipt"],
+    userId,
   });
 }
 
-/**
- * Gift redeemed: notify user they received gift credits
- */
 export async function sendGiftRedeemedEmail(
   userId: string,
   fromUser: string,
-  creditsRedeemed: number
+  creditsRedeemed: number,
 ) {
   const { data: user } = await supabaseAdmin
     .from("profiles")
     .select("email, display_name")
     .eq("user_id", userId)
     .maybeSingle();
-
   if (!user?.email) return;
-
   return sendEmail({
     to: user.email,
     template: "gift-redeemed",
@@ -235,8 +194,7 @@ export async function sendGiftRedeemedEmail(
       displayName: user.display_name || "Creator",
       fromUser,
       creditsRedeemed,
-      studioUrl: "https://aurorastudiostar.lovable.app/studio",
     },
-    tags: ["gift", "engagement"],
+    userId,
   });
 }
