@@ -35,10 +35,146 @@ export type GenerateResult = {
 };
 
 type ProviderAdapter = {
-  name: "lovable" | "gemini" | "replicate" | "huggingface" | "sync" | "runpod";
+  name: "lovable" | "gemini" | "replicate" | "huggingface" | "sync" | "runpod" | "kling" | "heygen" | "fal";
   supports: (req: GenerateRequest) => boolean;
   estimateCost: (req: GenerateRequest) => number;
   run: (req: GenerateRequest) => Promise<{ url: string; endpoint: string }>;
+};
+
+// ─── Kling direct (JWT signed) ───────────────────────────────────────────────
+function klingJwt(accessKey: string, secretKey: string): string {
+  const enc = (o: object) =>
+    Buffer.from(JSON.stringify(o)).toString("base64url");
+  const header = enc({ alg: "HS256", typ: "JWT" });
+  const now = Math.floor(Date.now() / 1000);
+  const payload = enc({ iss: accessKey, exp: now + 1800, nbf: now - 5 });
+  const data = `${header}.${payload}`;
+  const crypto = require("crypto") as typeof import("crypto");
+  const sig = crypto.createHmac("sha256", secretKey).update(data).digest("base64url");
+  return `${data}.${sig}`;
+}
+
+const KLING_BASE = "https://api.klingai.com";
+const klingDirect: ProviderAdapter = {
+  name: "kling",
+  supports: (r) => r.kind === "video" && !!process.env.KLING_ACCESS_KEY && !!process.env.KLING_SECRET_KEY,
+  estimateCost: () => 0.30,
+  async run(r) {
+    const token = klingJwt(process.env.KLING_ACCESS_KEY!, process.env.KLING_SECRET_KEY!);
+    const isImg2Vid = !!r.imageUrls?.[0];
+    const path = isImg2Vid ? "/v1/videos/image2video" : "/v1/videos/text2video";
+    const body: Record<string, unknown> = {
+      model_name: "kling-v1",
+      prompt: r.prompt ?? "",
+      duration: String(r.duration ?? 5),
+      aspect_ratio: "16:9",
+      mode: "std",
+    };
+    if (isImg2Vid) body.image = r.imageUrls![0];
+    const create = await fetch(`${KLING_BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+    if (!create.ok) throw new Error(`Kling ${create.status}: ${(await create.text()).slice(0, 200)}`);
+    const created = await create.json();
+    const taskId = created?.data?.task_id;
+    if (!taskId) throw new Error("Kling returned no task_id");
+    const deadline = Date.now() + 10 * 60_000;
+    while (Date.now() < deadline) {
+      await new Promise((s) => setTimeout(s, 6000));
+      const t2 = klingJwt(process.env.KLING_ACCESS_KEY!, process.env.KLING_SECRET_KEY!);
+      const poll = await fetch(`${KLING_BASE}${path}/${taskId}`, {
+        headers: { Authorization: `Bearer ${t2}` },
+      });
+      if (!poll.ok) continue;
+      const pj = await poll.json();
+      const status = pj?.data?.task_status;
+      if (status === "succeed") {
+        const url = pj?.data?.task_result?.videos?.[0]?.url;
+        if (!url) throw new Error("Kling: no video url");
+        return { url, endpoint: `kling:${path}` };
+      }
+      if (status === "failed") throw new Error(`Kling failed: ${pj?.data?.task_status_msg ?? "unknown"}`);
+    }
+    throw new Error("Kling poll timeout");
+  },
+};
+
+// ─── HeyGen (lipsync via video.translate; best-effort) ───────────────────────
+const heygen: ProviderAdapter = {
+  name: "heygen",
+  supports: (r) => r.kind === "lipsync" && !!process.env.HEYGEN_API_KEY,
+  estimateCost: () => 0.40,
+  async run(r) {
+    if (!r.videoUrl || !r.audioUrl) throw new Error("heygen: video+audio required");
+    const key = process.env.HEYGEN_API_KEY!;
+    const create = await fetch("https://api.heygen.com/v2/video/lipsync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Api-Key": key },
+      body: JSON.stringify({ video_url: r.videoUrl, audio_url: r.audioUrl }),
+    });
+    if (!create.ok) throw new Error(`HeyGen ${create.status}: ${(await create.text()).slice(0, 200)}`);
+    const cj = await create.json();
+    const videoId = cj?.data?.video_id ?? cj?.video_id;
+    if (!videoId) throw new Error("HeyGen returned no video_id");
+    const deadline = Date.now() + 10 * 60_000;
+    while (Date.now() < deadline) {
+      await new Promise((s) => setTimeout(s, 5000));
+      const st = await fetch(`https://api.heygen.com/v1/video_status.get?video_id=${videoId}`, {
+        headers: { "X-Api-Key": key },
+      });
+      if (!st.ok) continue;
+      const sj = await st.json();
+      const status = sj?.data?.status;
+      if (status === "completed") {
+        const url = sj?.data?.video_url;
+        if (!url) throw new Error("HeyGen: no video url");
+        return { url, endpoint: "heygen:lipsync" };
+      }
+      if (status === "failed") throw new Error(`HeyGen failed: ${sj?.data?.error ?? "unknown"}`);
+    }
+    throw new Error("HeyGen poll timeout");
+  },
+};
+
+// ─── Fal (LAST fallback — user prefers other providers) ──────────────────────
+const FAL_MAP: Record<string, { path: string; kind: GenerateKind; cost: number }> = {
+  "fal-fallback/flux-schnell": { path: "fal-ai/flux/schnell", kind: "image", cost: 0.005 },
+  "fal-fallback/kling-video":  { path: "fal-ai/kling-video/v1/standard/image-to-video", kind: "video", cost: 0.40 },
+  "fal-fallback/sync-lipsync": { path: "fal-ai/sync-lipsync", kind: "lipsync", cost: 0.30 },
+};
+const falFallback: ProviderAdapter = {
+  name: "fal",
+  // Only activates when explicitly addressed OR when nothing else handles the kind
+  supports: (r) => !!process.env.FAL_KEY,
+  estimateCost: (r) => (r.kind === "video" ? 0.40 : r.kind === "lipsync" ? 0.30 : 0.005),
+  async run(r) {
+    const key = process.env.FAL_KEY!;
+    const fallback =
+      r.kind === "image" ? "fal-ai/flux/schnell" :
+      r.kind === "video" ? "fal-ai/kling-video/v1/standard/image-to-video" :
+      r.kind === "lipsync" ? "fal-ai/sync-lipsync" : null;
+    const path = (r.model && FAL_MAP[r.model]?.path) || fallback;
+    if (!path) throw new Error(`Fal: no path for kind ${r.kind}`);
+    const input: Record<string, unknown> = {};
+    if (r.prompt) input.prompt = r.prompt;
+    if (r.imageUrls?.[0]) input.image_url = r.imageUrls[0];
+    if (r.videoUrl) input.video_url = r.videoUrl;
+    if (r.audioUrl) input.audio_url = r.audioUrl;
+    if (r.duration) input.duration = r.duration;
+    const res = await fetch(`https://fal.run/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Key ${key}` },
+      body: JSON.stringify(input),
+    });
+    if (!res.ok) throw new Error(`Fal ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const j = await res.json();
+    const url =
+      j?.video?.url ?? j?.image?.url ?? j?.images?.[0]?.url ?? j?.url ?? j?.output;
+    if (!url || typeof url !== "string") throw new Error("Fal: no output url");
+    return { url, endpoint: `fal:${path}` };
+  },
 };
 
 // ─── Health tracking ─────────────────────────────────────────────────────────
@@ -286,15 +422,15 @@ const gpuWorker: ProviderAdapter = {
 };
 
 // ─── Priority chain per kind ─────────────────────────────────────────────────
-// Order matters: cheapest/free direct providers first, Lovable AI credits LAST.
-// Replicate is preferred for video/lipsync because it's the only one with the
-// full model catalogue. Gemini direct (GEMINI_API_KEY) and HuggingFace are
-// free-tier image providers tried before Lovable's metered credits.
+// Order matters: cheapest/free direct providers first; Lovable credits and Fal LAST.
+// User preference: avoid Fal — only used as final fallback. HuggingFace is wired
+// for free image generation. Kling direct (JWT) handles video without Replicate.
+// HeyGen handles lipsync as a quality alternative to sync.so.
 const PRIORITY: Record<GenerateKind, ProviderAdapter[]> = {
-  image:   [geminiDirect, replicate, huggingface, lovable, gpuWorker],
-  video:   [replicate, gpuWorker],
-  lipsync: [sync, replicate, gpuWorker],
-  upscale: [replicate, gpuWorker],
+  image:   [geminiDirect, huggingface, replicate, lovable, gpuWorker, falFallback],
+  video:   [klingDirect, replicate, gpuWorker, falFallback],
+  lipsync: [sync, heygen, replicate, gpuWorker, falFallback],
+  upscale: [replicate, gpuWorker, falFallback],
 };
 
 async function log(opts: {
